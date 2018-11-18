@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Derby Sysinfo" type="Application" factoryName="Application" singleton="true">
+    <option name="MAIN_CLASS_NAME" value="org.apache.derby.tools.sysinfo" />
+    <module name="oak-git-persistence" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
