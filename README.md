@@ -5,7 +5,7 @@ This is a project is Created with the goal to implement an OAK persistence layer
 
 ## Description
 This is a project is Created with the goal to implement an OAK persistence layer (Data Store). that persists the data in a
-local directory using the git object database.Because the Oak architecture does not provide a way to configure a new Data Store
+local directory using the git object database. Because the Oak architecture does not provide a way to configure a new Data Store
 implementation, the solution has to be implemented as a JDBC driver.
 
 
@@ -15,7 +15,7 @@ As of now this project has only one Module. There is no Parent Project or other 
 
 ## Build
   1. Using Maven
-      * Use Maven Plugins  and maven commands to build the project.
+      * Use Maven Plugins and maven commands to build the project.
       
        
 ## How to build your code locally using Eclipse
@@ -24,15 +24,15 @@ As of now this project has only one Module. There is no Parent Project or other 
 
 ## How to build your code locally using IntelliJ
     
- To build the project in IntelliJ,we need to configure maven commands(mvn clean install) in IntelliJ
+ To build the project in IntelliJ, we need to configure maven commands(mvn clean install) in IntelliJ
     
     1. In IntelliJ IDE Tool bar Click on Run option. It will show lot of options in the dropdown menu.
-    2. Clcik on Edit Configurations, it will open a pop up window.
-    3. Clcik on + symbol to create a new configuration
+    2. Click on Edit Configurations, it will open a popup window.
+    3. Click on + symbol to create a new configuration
     4. Select maven option for creating maven goal.
     5.  Add the values to below options.
-               a. Working directory ( Project Root Path)
-               b. Command line ( Clean install )
+               a. Working directory (Project Root Path)
+               b. Command line (Clean install)
                c. Profiles ( If there is any profile specific goals)
     6. Give the Goal name and Apply all the settings and click on OK.
     
@@ -42,12 +42,12 @@ As of now this project has only one Module. There is no Parent Project or other 
   
 ## How to build your code locally in Command prompt  
 
- To build this project in local Command prompt ,We need to follow the below steps
+ To build this project in local Command prompt, we need to follow the below steps
     
     1. Make sure that maven is installed in your local.
     2. Go to the root folder of the project in local file system.
     3. open Command prompt at the root folder level
-    4. Run the maven commands ( mvn clean install).
+    4. Run the maven commands (mvn clean install).
 
 
 ## Testing
