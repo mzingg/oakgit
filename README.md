@@ -20,6 +20,15 @@ As of now this project has only one Module. There is no Parent Project or other 
        
 ## How to build your code locally using Eclipse
 
+	1.	Pull the complete project from GIT
+	2.	Unzip the project
+	3.	Open Eclipse go to Help/Eclipse Marketplace  search for Maven 
+	4.	Install the “Maven Integration for Eclipse” package
+	5.	Go to "File"/ "Import" in the following window choose "Maven"/ "Existing Maven Projects" click "Next"
+	6.	Choose the root directory, select all Projects and Finish the import
+	7.	Wait until Eclipse loads all dependencies 
+	8.	Right click on the "project folder"/ "Run As"/ "Maven Install"
+
 
 
 ## How to build your code locally using IntelliJ
