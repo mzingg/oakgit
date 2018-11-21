@@ -31,7 +31,7 @@ public class OakDatabaseDriverSandboxTest {
 
     @BeforeAll
     private static void configureDerby() {
-        System.setProperty("derby.stream.error.field", SystemUtils.IS_OS_WINDOWS ? "./NUL" : "/dev/null");
+        System.setProperty("derby.stream.error.field", "com.diconium.oak.TestHelpers.DERBY_DEV_NULL");
     }
 
     @AfterEach
