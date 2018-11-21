@@ -20,9 +20,7 @@ As of now this project has only one Module. There is no Parent Project or other 
 		* Maven Integration for Eclipse
 		* Lombok
 	- IntelliJ plugins:
-		* ......
-		* ......
-
+		* Lombok
 
 ## Build
   1. Using Maven
@@ -79,5 +77,13 @@ This project is developed with Test Driven Development Approach.
 The project comes with the auto-public repository configured. To setup the repository in your Maven settings, refer to:
 
     http://helpx.adobe.com/experience-manager/kb/SetUpTheAdobeMavenRepository.html
+
+
+## More Information
+
+For more information about build this project, please go through the below link.
+
+      https://confluence.diconium.com/display/devTools/Project+Setup
+      
 
 
