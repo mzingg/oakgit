@@ -37,14 +37,23 @@ As of now this project has only one Module. There is no Parent Project or other 
     4. Run the maven commands (mvn clean install).
       
        
-## How to build your code locally using Eclipse
+## How to import your code locally using Eclipse
 
 	1.	Go to "File"/ "Import" in the following window choose "Maven"/ "Existing Maven Projects" click "Next"
 	2.	Choose the root directory, select all Projects and Finish the import
 	3.	Wait until Eclipse loads all dependencies 
-	4.	Right click on the "project root folder"/ "Run As"/ "Maven Install"
-
-
+	
+## How to build your code locally using Eclipse	
+	
+    1. In Eclipse IDE Tool bar Click on Run option. It will show lot of options in the dropdown menu.
+    2. Click on "Run Configurations", it will open a popup window.
+    3. Right click "Maven Build", select "New Configuration"
+    4.  Add the values to below options.
+               a. Put in the Name of your configuration
+               b. Base directory (Project Root Path)
+               c. Goals (Clean install)
+               d. Profiles ( If there is any profile specific goals)
+    6. Apply all the settings and click on Run to execute your configuration and run the project.
 
 ## How to build your code locally using IntelliJ
     
