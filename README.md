@@ -12,22 +12,39 @@ implementation, the solution has to be implemented as a JDBC driver.
 ## Structure
 As of now this project has only one Module. There is no Parent Project or other modules.
 
+## Installation requirements
+	- JDK
+	- Maven
+	- Eclipse or IntelliJ
+	- Eclipse plugins:
+		* Maven Integration for Eclipse
+		* Lombok
+	- IntelliJ plugins:
+		* ......
+		* ......
+
 
 ## Build
   1. Using Maven
       * Use Maven Plugins and maven commands to build the project.
       
+      
+## How to build your code locally in Command prompt  
+
+ To build this project in local Command prompt, we need to follow the below steps
+    
+    1. Make sure that maven is installed in your local.
+    2. Go to the root folder of the project in local file system.
+    3. open Command prompt at the root folder level
+    4. Run the maven commands (mvn clean install).
+      
        
 ## How to build your code locally using Eclipse
 
-	1.	Pull the complete project from GIT
-	2.	Unzip the project
-	3.	Open Eclipse go to Help/Eclipse Marketplace  search for Maven 
-	4.	Install the “Maven Integration for Eclipse” package
-	5.	Go to "File"/ "Import" in the following window choose "Maven"/ "Existing Maven Projects" click "Next"
-	6.	Choose the root directory, select all Projects and Finish the import
-	7.	Wait until Eclipse loads all dependencies 
-	8.	Right click on the "project folder"/ "Run As"/ "Maven Install"
+	1.	Go to "File"/ "Import" in the following window choose "Maven"/ "Existing Maven Projects" click "Next"
+	2.	Choose the root directory, select all Projects and Finish the import
+	3.	Wait until Eclipse loads all dependencies 
+	4.	Right click on the "project root folder"/ "Run As"/ "Maven Install"
 
 
 
@@ -48,16 +65,6 @@ As of now this project has only one Module. There is no Parent Project or other 
     
  Now we can run the build with the Given goal name.
  
-  
-## How to build your code locally in Command prompt  
-
- To build this project in local Command prompt, we need to follow the below steps
-    
-    1. Make sure that maven is installed in your local.
-    2. Go to the root folder of the project in local file system.
-    3. open Command prompt at the root folder level
-    4. Run the maven commands (mvn clean install).
-
 
 ## Testing
 
