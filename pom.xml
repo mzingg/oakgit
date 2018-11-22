@@ -112,6 +112,7 @@
 
         <!-- junit-platform-launcher Public API for configuring and launching test plans — typically used by IDEs and build tools.
          See JUnit Platform Launcher API for details.https://junit.org/junit5/docs/current/user-guide/#launcher-api
+         We are facing this issue mainly in older version of Intellij (2017)
          -->
         <!-- Some times Junit5 test cases are not recognised in IntelliJ. Getting the Warning error when trying to run the test cases.
          WARNING: TestEngine with ID 'junit-jupiter' failed to discover tests
