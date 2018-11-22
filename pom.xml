@@ -32,7 +32,7 @@
                         <target>1.8</target>
                     </configuration>
                 </plugin>
-                <!-- Maven Surefire Plugin -->
+                <!-- Maven Surefire Plugin is required to run the test cases -->
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.0</version>
@@ -110,22 +110,13 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>5.3.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>5.3.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher -->
+        <!-- junit-platform-launcher Public API for configuring and launching test plans — typically used by IDEs and build tools.
+         See JUnit Platform Launcher API for details.https://junit.org/junit5/docs/current/user-guide/#launcher-api
+         -->
+        <!-- Some times Junit5 test cases are not recognised in IntelliJ. Getting the Warning error when trying to run the test cases.
+         WARNING: TestEngine with ID 'junit-jupiter' failed to discover tests
+         To fix this issue we need to add the junit-platform-launcher in pom file.
+         -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
