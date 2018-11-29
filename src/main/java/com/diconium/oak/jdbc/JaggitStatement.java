@@ -1,6 +1,5 @@
 package com.diconium.oak.jdbc;
 
-import com.diconium.oak.jdbc.operation.OperationDetector;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
@@ -16,12 +15,12 @@ public class JaggitStatement extends UnsupportedJaggitStatement {
     @Override
     public ResultSet executeQuery(String sql) throws SQLException {
         System.out.println(sql);
-        return new OperationDetector().forSql(sql).orElseThrow(() -> new SQLException("unknown operation: " + sql));
+        return null;
     }
 
     public boolean execute(String sql) {
         System.out.println(sql);
-        return new OperationDetector().forSql(sql).isPresent();
+        return false;
     }
 
     @Override
