@@ -1,7 +1,5 @@
 package com.diconium.oak.jdbc;
 
-import com.diconium.oak.TestHelpers;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
@@ -22,7 +20,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static com.diconium.oak.TestHelpers.getTestDirectory;
+import static com.diconium.oak.jdbc.TestHelpers.getTestDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -37,7 +35,7 @@ public class OakDatabaseDriverSandboxTest {
     @AfterEach
     void cleanupDrivers() throws Exception {
         for (Driver driver: Collections.list(DriverManager.getDrivers())) {
-            if (driver instanceof JaggitDriver) {
+            if (driver instanceof OakGitDriver) {
                 DriverManager.deregisterDriver(driver);
             }
         }
@@ -54,16 +52,15 @@ public class OakDatabaseDriverSandboxTest {
     }
 
     @Test
-    void createContentRepositoryWithJaggitDriverInstantiatesOakSession() throws Exception {
+    void createContentRepositoryWithOakGitDriverInstantiatesOakSession() throws Exception {
         Path gitDirectory = TestHelpers.getTestDirectory("oak-connection-test");
         Git.init().setDirectory(gitDirectory.toFile()).call();
-        DriverManager.registerDriver(new JaggitDriver());
-        DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:jaggit://" + gitDirectory.toAbsolutePath(), "", "");
-
+        DriverManager.registerDriver(new OakGitDriver());
+        DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
         ContentRepository contentRepository = new Oak(aNodeStore(dataSource)).with(new OpenSecurityProvider()).createContentRepository();
         ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
-        assertThat(session, is(instanceOf(ContentSession.class)));
+       assertThat(session, is(instanceOf(ContentSession.class)));
     }
 
     private DocumentNodeStore aNodeStore(DataSource dataSource) throws SQLException {

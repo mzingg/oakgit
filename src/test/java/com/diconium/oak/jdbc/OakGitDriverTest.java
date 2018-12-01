@@ -1,6 +1,5 @@
 package com.diconium.oak.jdbc;
 
-import com.diconium.oak.TestHelpers;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -11,17 +10,17 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
 
-import static com.diconium.oak.TestHelpers.getTestDirectory;
+import static com.diconium.oak.jdbc.TestHelpers.getTestDirectory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class JaggitDriverTest {
+class OakGitDriverTest {
 
     @AfterEach
     void cleanupDrivers() throws Exception {
         for (Enumeration<Driver> drivers = DriverManager.getDrivers(); drivers.hasMoreElements(); ) {
             Driver driver = drivers.nextElement();
-            if (driver instanceof JaggitDriver) {
+            if (driver instanceof OakGitDriver) {
                 DriverManager.deregisterDriver(driver);
             }
         }
@@ -33,11 +32,11 @@ class JaggitDriverTest {
         String absoluteDirectoryPath = gitDirectory.toAbsolutePath().toString();
         Git.init().setDirectory(gitDirectory.toFile()).call();
 
-        DriverManager.registerDriver(new JaggitDriver());
-        Connection connection = DriverManager.getConnection("jdbc:jaggit://" + absoluteDirectoryPath);
+        DriverManager.registerDriver(new OakGitDriver());
+        Connection connection = DriverManager.getConnection("jdbc:oakgit://" + absoluteDirectoryPath);
 
-        assertTrue(connection instanceof JaggitConnection);
-        assertEquals(absoluteDirectoryPath, ((JaggitConnection) connection).getGit().getRepository().getWorkTree().getAbsolutePath());
+        assertTrue(connection instanceof OakGitConnection);
+        assertEquals(absoluteDirectoryPath, ((OakGitConnection) connection).getGit().getRepository().getWorkTree().getAbsolutePath());
     }
 
 }

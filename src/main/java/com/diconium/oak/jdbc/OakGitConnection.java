@@ -14,10 +14,10 @@ import java.sql.Statement;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public class JaggitConnection extends DefaultJaggitConnection {
+public class OakGitConnection extends DefaultOakGitConnection {
 
     @NonNull
-    private final JaggitDriverConfiguration configuration;
+    private final OakGitDriverConfiguration configuration;
 
     private Git git;
 
@@ -30,17 +30,17 @@ public class JaggitConnection extends DefaultJaggitConnection {
 
     @Override
     public DatabaseMetaData getMetaData() {
-        return new JaggitDatabaseMetadata(configuration.getUrl(), configuration.getArtifactId(), configuration.getVersion());
+        return new OakGitDatabaseMetadata(configuration.getUrl(), configuration.getArtifactId(), configuration.getVersion());
     }
 
     @Override
     public Statement createStatement() {
-        return new JaggitStatement(this);
+        return new OakGitStatement(this);
     }
 
     @Override
     public PreparedStatement prepareStatement(String sql) {
-        return new JaggitPreparedStatement(this, sql);
+        return new OakGitPreparedStatement(this, sql);
     }
 
     @Override
