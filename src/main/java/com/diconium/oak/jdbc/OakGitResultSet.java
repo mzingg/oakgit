@@ -14,21 +14,21 @@ import java.util.Optional;
 
 @Getter
 @Setter
-public class JaggitResultSet extends UnsupportedResultSet {
+public class OakGitResultSet extends UnsupportedResultSet {
 
-    public static final JaggitResultSet EMPTY_RESULT_SET = new JaggitResultSet(StringUtils.EMPTY);
+    public static final OakGitResultSet EMPTY_RESULT_SET = new OakGitResultSet(StringUtils.EMPTY);
     private final String tableName;
 
     private List<Tuple4<String, Integer, Integer, List<Object>>> columns;
     private int pointer;
 
-    public JaggitResultSet(String tableName) {
+    public OakGitResultSet(String tableName) {
         this.tableName = tableName;
         columns = new ArrayList<>();
         pointer = 0;
     }
 
-    public JaggitResultSet add(String columnName, int type, int precision, Object... entries) {
+    public OakGitResultSet add(String columnName, int type, int precision, Object... entries) {
         Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
         int index = colIndex.orElse(columns.size());
         if (!colIndex.isPresent()) {
@@ -101,7 +101,7 @@ public class JaggitResultSet extends UnsupportedResultSet {
     @Override
     public String getSchemaName(int column) throws SQLException {
         if (column >= 1 && column <= columns.size()) {
-            return "jaggit";
+            return "oakgit";
         }
         throw new SQLException("column does not exist");
     }

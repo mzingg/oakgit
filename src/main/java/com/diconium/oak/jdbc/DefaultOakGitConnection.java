@@ -1,8 +1,6 @@
 package com.diconium.oak.jdbc;
 
-import java.sql.Connection;
-
-public abstract class DefaultJaggitConnection extends UnsupportedConnection {
+public abstract class DefaultOakGitConnection extends UnsupportedConnection {
 
     @Override
     public void setAutoCommit(boolean autoCommit) {
@@ -16,7 +14,7 @@ public abstract class DefaultJaggitConnection extends UnsupportedConnection {
 
     @Override
     public int getTransactionIsolation() {
-        return Connection.TRANSACTION_READ_COMMITTED;
+        return TRANSACTION_READ_COMMITTED;
     }
 
     @Override

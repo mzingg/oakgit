@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 
 @RequiredArgsConstructor
-public class JaggitStatement extends UnsupportedJaggitStatement {
+public class OakGitStatement extends UnsupportedOakGitStatement {
 
     private final Connection connection;
 

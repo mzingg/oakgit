@@ -10,9 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class JaggitPreparedStatement extends UnsupportedPreparedStatement {
+public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
-    protected JaggitPreparedStatement(Connection connection, String sql) {
+    protected OakGitPreparedStatement(Connection connection, String sql) {
         super(connection, sql);
     }
 

@@ -15,7 +15,7 @@ public abstract class UnsupportedPreparedStatement implements PreparedStatement 
 
     @Getter(AccessLevel.PROTECTED)
     @Delegate
-    private final JaggitStatement statement;
+    private final OakGitStatement statement;
 
     private final Connection connection;
 
@@ -25,7 +25,7 @@ public abstract class UnsupportedPreparedStatement implements PreparedStatement 
     protected UnsupportedPreparedStatement(Connection connection, String sql) {
         this.connection = connection;
         this.sql = sql;
-        this.statement = new JaggitStatement(connection);
+        this.statement = new OakGitStatement(connection);
     }
 
     @Override

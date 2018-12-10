@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
-public abstract class UnsupportedJaggitStatement implements Statement {
+public abstract class UnsupportedOakGitStatement implements Statement {
 
     public int executeUpdate(String sql) {
         throw new UnsupportedOperationException();

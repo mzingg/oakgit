@@ -12,15 +12,15 @@ import java.nio.file.Paths;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class JaggitDriverConfiguration {
+public class OakGitDriverConfiguration {
 
-    private static final String URL_PREFIX = "jdbc:jaggit://";
+    private static final String URL_PREFIX = "jdbc:oakgit://";
 
-    public static final JaggitDriverConfiguration INVALID_CONFIGURATION = new JaggitDriverConfiguration("invalid url", Version.valueOf("0.0.0"), "jaggit");
+    public static final OakGitDriverConfiguration INVALID_CONFIGURATION = new OakGitDriverConfiguration("invalid url", Version.valueOf("0.0.0"), "oakgit");
 
-    public static JaggitDriverConfiguration fromUrl(String url, Version version, String artifactId) {
+    public static OakGitDriverConfiguration fromUrl(String url, Version version, String artifactId) {
         if (StringUtils.startsWith(url, URL_PREFIX)) {
-            return new JaggitDriverConfiguration(url, version, artifactId);
+            return new OakGitDriverConfiguration(url, version, artifactId);
         }
 
         return INVALID_CONFIGURATION;

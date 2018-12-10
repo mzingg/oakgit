@@ -14,21 +14,21 @@ import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-public class JaggitDriver implements Driver {
+public class OakGitDriver implements Driver {
 
     static {
         try {
-            DriverManager.registerDriver(new JaggitDriver());
+            DriverManager.registerDriver(new OakGitDriver());
         } catch (SQLException e) {
-            throw new RuntimeException("Can't register jaggit driver!");
+            throw new RuntimeException("Can't register oakgit driver!");
         }
     }
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
-        JaggitDriverConfiguration configuration = JaggitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
-        if (configuration != JaggitDriverConfiguration.INVALID_CONFIGURATION) {
-            return new JaggitConnection(configuration);
+        OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
+        if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
+            return new OakGitConnection(configuration);
         }
 
         throw new SQLException("Invalid connection url");
@@ -36,7 +36,7 @@ public class JaggitDriver implements Driver {
 
     @Override
     public boolean acceptsURL(String url) {
-        return JaggitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId()) != JaggitDriverConfiguration.INVALID_CONFIGURATION;
+        return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId()) != OakGitDriverConfiguration.INVALID_CONFIGURATION;
     }
 
     @Override
@@ -77,8 +77,8 @@ public class JaggitDriver implements Driver {
             } else {
                 model = reader.read(
                         new InputStreamReader(
-                                JaggitDriver.class.getResourceAsStream(
-                                        "/META-INF/maven/jaggit/jaggit/pom.xml"
+                                OakGitDriver.class.getResourceAsStream(
+                                        "/META-INF/maven/oakgit/oakgit/pom.xml"
                                 )
                         )
                 );

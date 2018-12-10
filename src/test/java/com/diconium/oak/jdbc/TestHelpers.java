@@ -1,4 +1,4 @@
-package com.diconium.oak;
+package com.diconium.oak.jdbc;
 
 import org.apache.commons.io.FileUtils;
 

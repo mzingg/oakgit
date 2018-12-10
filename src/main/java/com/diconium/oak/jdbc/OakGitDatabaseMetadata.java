@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
 
 @AllArgsConstructor
-public class JaggitDatabaseMetadata implements DatabaseMetaData {
+public class OakGitDatabaseMetadata implements DatabaseMetaData {
 
     @NonNull
     private final String url;
@@ -693,7 +693,7 @@ public class JaggitDatabaseMetadata implements DatabaseMetaData {
 
     @Override
     public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate) {
-        return JaggitResultSet.EMPTY_RESULT_SET;
+        return OakGitResultSet.EMPTY_RESULT_SET;
     }
 
     @Override
