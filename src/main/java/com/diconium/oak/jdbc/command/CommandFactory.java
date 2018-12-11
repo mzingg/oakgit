@@ -12,13 +12,13 @@ public class CommandFactory {
 
         if (Pattern.matches("create table .*", sqlCommand)) {
 
-            CreateTableCommand commandObj = new CreateTableCommand();
+            CreateContainerCommand commandObj = new CreateContainerCommand();
             String containerName = RegularExpressionUtil.getTableName(sqlCommand);
             commandObj.setContainerName(containerName);
             return commandObj;
 
         } else if (Pattern.matches("insert into .*", sqlCommand)) {
-            InsertIntoTableCommand commandObj = new InsertIntoTableCommand();
+            InsertIntoContainerCommand commandObj = new InsertIntoContainerCommand();
             String containerName = RegularExpressionUtil.getTableName(sqlCommand);
             commandObj.setContainerName(containerName);
             return commandObj;
