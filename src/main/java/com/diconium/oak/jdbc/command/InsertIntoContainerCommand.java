@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 @Getter
 @Setter
-public class InsertIntoTableCommand implements Command {
+public class InsertIntoContainerCommand implements Command {
 
     private String containerName = StringUtils.EMPTY;
 

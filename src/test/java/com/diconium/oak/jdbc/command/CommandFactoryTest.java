@@ -1,6 +1,5 @@
 package com.diconium.oak.jdbc.command;
 
-import com.diconium.oak.jdbc.command.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,27 +34,27 @@ class CommandFactoryTest{
     }
 
     @Test
-    void getCommandForSqlWithCreateTablePatternReturnsInstanceOfCreateTableCommand() {
+    void getCommandForSqlWithCreateContainerPatternReturnsInstanceOfCreateTableCommand() {
         Command commandObj = CommandFactory.getCommandForSql(CREATE_TABLE_PATTERN_TEST);
-        assertThat(commandObj, is(instanceOf(CreateTableCommand.class)));
+        assertThat(commandObj, is(instanceOf(CreateContainerCommand.class)));
     }
 
     @Test
-    void getCommandForSqlWithCreateTableColumnsPatternReturnsInstanceOfCreateTableCommand() {
+    void getCommandForSqlWithCreateContainerColumnsPatternReturnsInstanceOfCreateTableCommand() {
         Command commandObj = CommandFactory.getCommandForSql(CREATE_TABLE_COLUMNS_PATTERN_TEST);
-        assertThat(commandObj, is(instanceOf(CreateTableCommand.class)));
+        assertThat(commandObj, is(instanceOf(CreateContainerCommand.class)));
 
     }
 
     @Test
-    void getCommandForSqlWithInsertTablePatternReturnInstanceOfInsertTableCommand() {
+    void getCommandForSqlWithInsertContainerPatternReturnInstanceOfInsertTableCommand() {
         Command commandObj = CommandFactory.getCommandForSql(INSERT_INTO_TABLE_PATTERN_TEST);
-        assertThat(commandObj, is(instanceOf(InsertIntoTableCommand.class)));
+        assertThat(commandObj, is(instanceOf(InsertIntoContainerCommand.class)));
 
     }
 
     @Test
-    void getCommandForSqlWithGetByIDFromTablePatternReturnsInstanceOfGetByIdCommand() {
+    void getCommandForSqlWithGetByIDFromContainerPatternReturnsInstanceOfGetByIdCommand() {
         Command commandObj = CommandFactory.getCommandForSql(GET_BY_ID_FROM_TABLE_PATTERN_TEST);
         assertThat(commandObj, is(instanceOf(GetByIdCommand.class)));
 

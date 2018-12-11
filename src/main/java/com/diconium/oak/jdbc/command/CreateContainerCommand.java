@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
-public class CreateTableCommand implements Command {
+public class CreateContainerCommand implements Command {
 
     private String containerName = StringUtils.EMPTY;
 
