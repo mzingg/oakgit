@@ -1,16 +1,19 @@
-package com.diconium.oak.jdbc.command;
+package com.diconium.oak.command;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.regex.Pattern;
 
 @Getter
 @Setter
 public class InsertIntoContainerCommand implements Command {
 
     private String containerName = StringUtils.EMPTY;
+
+    /**
+     * data field for Data object
+     */
+    private String data;
 
 
 }

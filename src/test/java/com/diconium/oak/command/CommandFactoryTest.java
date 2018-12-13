@@ -1,4 +1,4 @@
-package com.diconium.oak.jdbc.command;
+package com.diconium.oak.command;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,44 +25,36 @@ class CommandFactoryTest{
 
     public static final String UNAVAILABLE_PATTERN_TEST = "update customers SET ContactName = 'Alfred Schmidt', City= 'Frankfurt' where CustomerID = 1;";
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
     void getCommandForSqlWithCreateContainerPatternReturnsInstanceOfCreateTableCommand() {
-        Command commandObj = CommandFactory.getCommandForSql(CREATE_TABLE_PATTERN_TEST);
+        Command commandObj = new CommandFactory().getCommandForSql(CREATE_TABLE_PATTERN_TEST);
         assertThat(commandObj, is(instanceOf(CreateContainerCommand.class)));
     }
 
     @Test
     void getCommandForSqlWithCreateContainerColumnsPatternReturnsInstanceOfCreateTableCommand() {
-        Command commandObj = CommandFactory.getCommandForSql(CREATE_TABLE_COLUMNS_PATTERN_TEST);
+        Command commandObj = new CommandFactory().getCommandForSql(CREATE_TABLE_COLUMNS_PATTERN_TEST);
         assertThat(commandObj, is(instanceOf(CreateContainerCommand.class)));
 
     }
 
     @Test
     void getCommandForSqlWithInsertContainerPatternReturnInstanceOfInsertTableCommand() {
-        Command commandObj = CommandFactory.getCommandForSql(INSERT_INTO_TABLE_PATTERN_TEST);
+        Command commandObj = new CommandFactory().getCommandForSql(INSERT_INTO_TABLE_PATTERN_TEST);
         assertThat(commandObj, is(instanceOf(InsertIntoContainerCommand.class)));
 
     }
 
     @Test
     void getCommandForSqlWithGetByIDFromContainerPatternReturnsInstanceOfGetByIdCommand() {
-        Command commandObj = CommandFactory.getCommandForSql(GET_BY_ID_FROM_TABLE_PATTERN_TEST);
-        assertThat(commandObj, is(instanceOf(GetByIdCommand.class)));
+        Command commandObj = new CommandFactory().getCommandForSql(GET_BY_ID_FROM_TABLE_PATTERN_TEST);
+        assertThat(commandObj, is(instanceOf(GetContainerCommand.class)));
 
     }
 
     @Test
     void getCommandForSqlWithUnAvailablePattern() {
-        Command commandObj = CommandFactory.getCommandForSql(UNAVAILABLE_PATTERN_TEST);
+        Command commandObj = new CommandFactory().getCommandForSql(UNAVAILABLE_PATTERN_TEST);
         assertThat(commandObj,is(instanceOf(NoOperationCommand.class)));
 
     }
