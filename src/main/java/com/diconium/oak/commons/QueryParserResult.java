@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 @Getter
+// Todo: Create Unit Tests
 public class QueryParserResult {
 
     public static final QueryParserResult ERROR_RESULT = new QueryParserResult(ResultType.ERROR);
@@ -11,6 +12,8 @@ public class QueryParserResult {
     private ResultType type;
 
     private String tableName = StringUtils.EMPTY;
+
+    // Todo: Refactor the data field so that it can be used by all types of result to transport their data
     private String data = StringUtils.EMPTY;
 
     public QueryParserResult(ResultType type) {
