@@ -15,6 +15,8 @@ import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectBody;
+import net.sf.jsqlparser.statement.select.WithItem;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -31,7 +33,8 @@ public class QueryParser {
         try {
             return new QueryParserResult(getType(sqlQuery))
                     .withTableName(getTableName(sqlQuery))
-                    .withData(getData(sqlQuery));
+                    .withData(getData(sqlQuery))
+                    .withID(getId(sqlQuery));
         } catch (JSQLParserException e) {
             return QueryParserResult.ERROR_RESULT;
         }
@@ -104,4 +107,27 @@ public class QueryParser {
         return data;
     }
 
+    
+ // TODO: Re factor code so that this method is private
+    protected static String getId(String sqlCommand) throws JSQLParserException {
+    	String id = StringUtils.EMPTY;
+    	 Statement statement = CCJSqlParserUtil.parse(sqlCommand);
+    	 // TODO: write the logic to get the Id from select query
+    	if (statement instanceof Select) {
+    		
+    		 Select selectStatement = (Select) statement;
+    		 
+    		 List<WithItem> itemList = selectStatement.getWithItemsList();
+    		 
+    		 
+    		 
+    	
+    		 
+    	}
+    	
+    	 return id;
+    	
+    }
+    
+    
 }

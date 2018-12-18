@@ -31,8 +31,12 @@ public class CommandFactory {
             return commandObj;
 
         } else if (queryParserResult.getType() == QueryParserResult.ResultType.SELECT) {
-            // TODO: Implement Select by Id command
-            return new GetContainerCommand();
+        	
+        	SelectFromContainerByIdCommand commandObj = new SelectFromContainerByIdCommand();
+        	commandObj.setContainerName(queryParserResult.getTableName());
+        	commandObj.setID(queryParserResult.getId());
+        	
+            return commandObj;
         }
 
         return new NoOperationCommand();
