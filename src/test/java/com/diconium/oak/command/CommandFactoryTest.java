@@ -59,4 +59,10 @@ class CommandFactoryTest{
 
     }
 
+    @Test
+    void getCommandForSqlWithSelectIdFromContainerPatternReturnInstanceOfSelectFromContainerByIdCommand() {
+        Command commandObj = new CommandFactory().getCommandForSql(GET_BY_ID_FROM_TABLE_PATTERN_TEST);
+        assertThat(commandObj,is(instanceOf(SelectFromContainerByIdCommand.class)));
+
+    }
 }

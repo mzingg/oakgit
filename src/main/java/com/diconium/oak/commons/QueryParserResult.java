@@ -12,6 +12,8 @@ public class QueryParserResult {
     private ResultType type;
 
     private String tableName = StringUtils.EMPTY;
+    
+    private String id = StringUtils.EMPTY;
 
     // Todo: Refactor the data field so that it can be used by all types of result to transport their data
     private String data = StringUtils.EMPTY;
@@ -22,6 +24,11 @@ public class QueryParserResult {
 
     public QueryParserResult withTableName(String tableName) {
         this.tableName = tableName;
+        return this;
+    }
+    
+    public QueryParserResult withID(String Id) {
+        this.id = Id;
         return this;
     }
 
