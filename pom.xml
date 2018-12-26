@@ -16,7 +16,7 @@
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 
         <oak.version>1.8.3</oak.version>
-        <jgit.version>5.0.1.201806211838-r</jgit.version>
+        <jgit.version>5.2.0.201812061821-r</jgit.version>
 
     </properties>
 

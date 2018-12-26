@@ -1,5 +1,6 @@
 package com.diconium.oak.jdbc;
 
+import com.diconium.oak.TestHelpers;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
@@ -20,7 +21,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static com.diconium.oak.jdbc.TestHelpers.getTestDirectory;
+import static com.diconium.oak.TestHelpers.aCleanTestDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -53,7 +54,7 @@ public class OakDatabaseDriverSandboxTest {
 
     @Test
     void createContentRepositoryWithOakGitDriverInstantiatesOakSession() throws Exception {
-        Path gitDirectory = TestHelpers.getTestDirectory("oak-connection-test");
+        Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
         Git.init().setDirectory(gitDirectory.toFile()).call();
         DriverManager.registerDriver(new OakGitDriver());
         DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
