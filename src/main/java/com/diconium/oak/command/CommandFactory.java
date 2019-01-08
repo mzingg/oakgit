@@ -12,6 +12,13 @@ import java.util.regex.Pattern;
 public class CommandFactory {
 
 
+    // TODO: check in Unit Tests what happens when you pass null sqlCommand
+    /**
+     * Returns a {@link Command} for a given SQL string.
+     *
+     * @param sqlCommand {@link String}
+     * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recocnized as a command.
+     */
     public Command getCommandForSql(String sqlCommand) {
 
         QueryParserResult queryParserResult = new QueryParser().parse(sqlCommand);
