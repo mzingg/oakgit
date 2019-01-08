@@ -9,6 +9,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
+/**
+ * Returns a {@link Command} for a given SQL string.
+ *
+ * @param sqlCommand {@link String}
+ * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recognized as a command.
+ */
+
 public class CommandFactory {
 
 
