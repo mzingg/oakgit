@@ -28,7 +28,6 @@ public class QueryParser {
 
     private static final String SELECT_BY_ID_QUERY = "select \\* from (\\w+) where ID = '(\\d+)'";
 
-    // TODO: Refactor unit tests to only test this method
     public QueryParserResult parse(String sqlQuery) {
         try {
             return new QueryParserResult(getType(sqlQuery))

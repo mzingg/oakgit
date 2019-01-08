@@ -4,9 +4,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.diconium.oak.commons.QueryParser;
+import com.diconium.oak.commons.QueryParserResult;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+
+import org.apache.commons.lang3.StringUtils;
 
 class CommandFactoryTest{
 
@@ -64,6 +69,7 @@ class CommandFactoryTest{
     void getCommandForSqlWithSelectIdFromContainerPatternReturnInstanceOfSelectFromContainerByIdCommand() {
         Command commandObj = new CommandFactory().getCommandForSql(GET_BY_ID_FROM_TABLE_PATTERN_TEST);
         assertThat(commandObj,is(instanceOf(SelectFromContainerByIdCommand.class)));
-
     }
+        
+    
 }
