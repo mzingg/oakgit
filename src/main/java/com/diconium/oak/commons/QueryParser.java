@@ -79,8 +79,7 @@ public class QueryParser {
         return tableName;
     }
 
-    // TODO: refactor code so that this method is private
-    protected static String getData(String command) throws JSQLParserException {
+    private static String getData(String command) throws JSQLParserException {
         String data = StringUtils.EMPTY;
         Statement statement = CCJSqlParserUtil.parse(command);
         if (statement instanceof Insert) {
@@ -107,8 +106,7 @@ public class QueryParser {
     }
 
     
- // TODO: Re factor code so that this method is private
-    protected static String getId(String sqlCommand) throws JSQLParserException {
+    private static String getId(String sqlCommand) throws JSQLParserException {
     	String id = StringUtils.EMPTY;
     	 Statement statement = CCJSqlParserUtil.parse(sqlCommand);
     	 // TODO: write the logic to get the Id from select query
