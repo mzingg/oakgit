@@ -29,14 +29,18 @@ public class QueryParser {
     private static final String SELECT_BY_ID_QUERY = "select \\* from (\\w+) where ID = '(\\d+)'";
 
     public QueryParserResult parse(String sqlQuery) {
-        try {
-            return new QueryParserResult(getType(sqlQuery))
-                    .withTableName(getTableName(sqlQuery))
-                    .withData(getData(sqlQuery))
-                    .withID(getId(sqlQuery));
-        } catch (JSQLParserException e) {
-            return QueryParserResult.ERROR_RESULT;
-        }
+    	if(sqlQuery != null) {
+	        try {
+        		return new QueryParserResult(getType(sqlQuery))
+        				.withTableName(getTableName(sqlQuery))
+                        .withData(getData(sqlQuery))
+                        .withID(getId(sqlQuery));
+	        } catch (JSQLParserException ignored) {
+	        	// pass through to default error result
+	        }
+    	}                    
+        
+        return QueryParserResult.ERROR_RESULT;
     }
 
     // TODO: Refactor all private methods so that QueryParseResult can be filled in one go.
@@ -49,7 +53,7 @@ public class QueryParser {
             type = QueryParserResult.ResultType.INSERT;
         } else if (Pattern.matches(SELECT_BY_ID_QUERY, sqlQuery)) {
             type = QueryParserResult.ResultType.SELECT;
-        }
+        } 
         return type;
     }
 
@@ -115,7 +119,6 @@ public class QueryParser {
     		 Select selectStatement = (Select) statement;
     		 
     		 List<WithItem> itemList = selectStatement.getWithItemsList();
-    		 
     		 
     		 
     	
