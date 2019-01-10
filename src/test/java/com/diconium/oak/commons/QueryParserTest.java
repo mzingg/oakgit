@@ -1,13 +1,9 @@
 package com.diconium.oak.commons;
 
-import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.insert.Insert;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,7 +16,14 @@ class QueryParserTest {
     void parseWithEmptySqlQueryReturnsErrorResult() throws Exception {
     	QueryParserResult actual = new QueryParser().parse(StringUtils.EMPTY);
     	
-    	assertThat(actual, is(QueryParserResult.ERROR_RESULT));    	
+    	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));     	
+    }
+    
+    @Test
+    void parseWithNullSqlQueryReturnsErrorResult() throws Exception {
+    	QueryParserResult actual = new QueryParser().parse(null);
+    	
+    	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));  	
     }
     
     @Test
