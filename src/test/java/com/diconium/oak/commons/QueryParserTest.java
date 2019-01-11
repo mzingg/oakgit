@@ -34,7 +34,7 @@ class QueryParserTest {
     }
 
     @Test
-    void parseTableNameTestWithCoumnNames() {
+    void parseWithCreateQueryReturnTestTableName() {
         QueryParserResult actual = new QueryParser().parse(
         		"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
                     "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
@@ -44,7 +44,7 @@ class QueryParserTest {
     }
 
     @Test
-    void parseTableNameTestWithInsertQuery() {
+    void parseWithInsertQueryReturnTestTableName() {
     	QueryParserResult actual = new QueryParser().parse(
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
     		            "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
@@ -53,7 +53,7 @@ class QueryParserTest {
     }
 
     @Test
-    void parseTableNameTestWithSelectQuery() {
+    void parseWithSelectQueryReturnTestTableName() {
     	QueryParserResult actual = new QueryParser().parse("select * from expected");
     	
     	assertThat(actual.getTableName(), is("expected"));
@@ -61,7 +61,7 @@ class QueryParserTest {
     }
 
     @Test
-    void parseTableNameTestWithSelectQueryHavingWhereClause() {
+    void parseWithSelectQueryHavingWhereClauseReturnTestTableName() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
     	
     	assertThat(actual.getTableName(), is("DATASTORE_DATA"));
@@ -69,14 +69,14 @@ class QueryParserTest {
     }
 
     @Test
-    void parseTableNameTestWithInvalidSelectQueryReturnsException() {
+    void parseWithInvalidSelectQueryReturnsException() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
     	
     	assertThat(actual.getTableName(), is(StringUtils.EMPTY));
     }
 
     @Test
-    public void parseStatementFromInsertSqlQueryGivesInsertObject() throws Exception {
+    public void parseWithInsertQueryReturnsInsertObject() throws Exception {
         Statement statement = CCJSqlParserUtil.parse(
         "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
     		            "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
@@ -86,7 +86,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseStatementFromCreateTableSqlQueryWillNotGivesInsertObject() throws Exception {
+    public void parseWithCreateTableSqlQueryWillNotReturnInsertObject() throws Exception {
         Statement statement = CCJSqlParserUtil.parse(
         "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
                     "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
@@ -97,7 +97,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseDataWithProperInsertSQLQueryWithDataInQueryReturnsData() throws Exception {
+    public void parseWithInsertSQLQueryWithDataInQueryReturnsData() throws Exception {
         QueryParserResult actual = new QueryParser().parse(
         		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
                 "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
@@ -107,7 +107,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseDataWithCreateSQLQueryReturnsNOData() throws Exception {
+    public void parseWithCreateSQLQueryReturnsNOData() throws Exception {
     	QueryParserResult actual = new QueryParser().parse(
     			"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
                         "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
@@ -118,7 +118,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseDataWithInsertQueryWithoutDataReturnsNoData() throws Exception {
+    public void parseWithInsertQueryWithoutDataReturnsNoData() throws Exception {
     	QueryParserResult actual = new QueryParser().parse(
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
             "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350)");
@@ -127,7 +127,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseDataWithInsertQueryWithEmptyDataReturnsEmptyData() throws Exception {
+    public void parseWithInsertQueryWithEmptyDataReturnsEmptyData() throws Exception {
     	QueryParserResult actual = new QueryParser().parse(
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
             "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
