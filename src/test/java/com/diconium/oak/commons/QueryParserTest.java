@@ -76,27 +76,6 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithInsertQueryReturnsInsertObject() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse(
-        "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
-    		            "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
-        
-        assertThat(statement, instanceOf(Insert.class));
-
-    }
-
-    @Test
-    public void parseWithCreateTableSqlQueryWillNotReturnInsertObject() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse(
-        "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
-                    "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
-                    "SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
-        
-        assertThat(statement, not(instanceOf(Insert.class)));
-
-    }
-
-    @Test
     public void parseWithInsertSQLQueryWithDataInQueryReturnsData() throws Exception {
         QueryParserResult actual = new QueryParser().parse(
         		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
@@ -143,6 +122,27 @@ class QueryParserTest {
         "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
     	
     	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT))); 
+    }
+    
+    /*
+    @Test
+    public void parseWithInsertQueryReturnsInsertObject() throws Exception {
+        Statement statement = CCJSqlParserUtil.parse(
+        "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
+    		            "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
+        
+        assertThat(statement, instanceOf(Insert.class));
+
+    }
+    */
+    
+    @Test
+    public void parseWithInsertQueryReturnsInsertObject() throws Exception {
+        QueryParserResult actual = new QueryParser().parse(
+        		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
+                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
+        
+        assertThat(actual.getClass().getTypeName(), is(QueryParserResult.ResultType.UNKNOWN));
     }
 
 
