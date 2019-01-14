@@ -93,7 +93,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithCreateSQLQueryReturnsNOData(){
+    public void parseWithCreateSQLQueryReturnsNoData(){
     	QueryParserResult actual = new QueryParser().parse(
     			"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
                         "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
