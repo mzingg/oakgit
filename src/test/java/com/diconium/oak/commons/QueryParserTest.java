@@ -69,10 +69,17 @@ class QueryParserTest {
     }
 
     @Test
-    void parseWithInvalidSelectQueryReturnsException() {
+    void parseWithInvalidSelectQueryReturnsEmptyTableName() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
     	
     	assertThat(actual.getTableName(), is(StringUtils.EMPTY));
+    }
+    
+    @Test
+    void parseWithInvalidSelectQueryReturnsException() {
+    	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
+    	
+    	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));
     }
 
     @Test
@@ -146,6 +153,14 @@ class QueryParserTest {
         
         assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.SELECT)));
     }
+    
+    @Test
+    public void parseWithDeleteQueryReturnsUnknownObject() throws Exception {
+        QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = '0'");
+        
+        assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.UNKNOWN)));
+    }
+    
 
 
 }
