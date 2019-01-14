@@ -124,25 +124,27 @@ class QueryParserTest {
     	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT))); 
     }
     
-    /*
-    @Test
-    public void parseWithInsertQueryReturnsInsertObject() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse(
-        "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
-    		            "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
-        
-        assertThat(statement, instanceOf(Insert.class));
-
-    }
-    */
-    
     @Test
     public void parseWithInsertQueryReturnsInsertObject() throws Exception {
         QueryParserResult actual = new QueryParser().parse(
         		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
                 "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
         
-        assertThat(actual.getClass().getTypeName(), is(QueryParserResult.ResultType.UNKNOWN));
+        assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.INSERT)));
+    }
+    
+    @Test
+    public void parseWithCreateQueryReturnsCreateObject() throws Exception {
+        QueryParserResult actual = new QueryParser().parse("create table SETTINGS");
+        
+        assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.CREATE)));
+    }
+    
+    @Test
+    public void parseWithSelectQueryReturnsSelectObject() throws Exception {
+        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
+        
+        assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.SELECT)));
     }
 
 
