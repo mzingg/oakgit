@@ -13,14 +13,14 @@ class QueryParserTest {
 
 
     @Test
-    void parseWithEmptySqlQueryReturnsErrorResult() throws Exception {
+    void parseWithEmptySqlQueryReturnsErrorResult(){
     	QueryParserResult actual = new QueryParser().parse(StringUtils.EMPTY);
     	
     	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));     	
     }
     
     @Test
-    void parseWithNullSqlQueryReturnsErrorResult() throws Exception {
+    void parseWithNullSqlQueryReturnsErrorResult(){
     	QueryParserResult actual = new QueryParser().parse(null);
     	
     	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));  	
@@ -83,7 +83,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithInsertSQLQueryWithDataInQueryReturnsData() throws Exception {
+    public void parseWithInsertSQLQueryWithDataInQueryReturnsData(){
         QueryParserResult actual = new QueryParser().parse(
         		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
                 "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
@@ -93,7 +93,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithCreateSQLQueryReturnsNOData() throws Exception {
+    public void parseWithCreateSQLQueryReturnsNOData(){
     	QueryParserResult actual = new QueryParser().parse(
     			"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
                         "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
@@ -104,7 +104,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithInsertQueryWithoutDataReturnsNoData() throws Exception {
+    public void parseWithInsertQueryWithoutDataReturnsNoData(){
     	QueryParserResult actual = new QueryParser().parse(
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
             "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350)");
@@ -113,7 +113,7 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithInsertQueryWithEmptyDataReturnsEmptyData() throws Exception {
+    public void parseWithInsertQueryWithEmptyDataReturnsEmptyData(){
     	QueryParserResult actual = new QueryParser().parse(
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
             "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
@@ -132,7 +132,7 @@ class QueryParserTest {
     }
     
     @Test
-    public void parseWithInsertQueryReturnsInsertObject() throws Exception {
+    public void parseWithInsertQueryReturnsInsertObject(){
         QueryParserResult actual = new QueryParser().parse(
         		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
                 "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
@@ -141,21 +141,21 @@ class QueryParserTest {
     }
     
     @Test
-    public void parseWithCreateQueryReturnsCreateObject() throws Exception {
+    public void parseWithCreateQueryReturnsCreateObject(){
         QueryParserResult actual = new QueryParser().parse("create table SETTINGS");
         
         assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.CREATE)));
     }
     
     @Test
-    public void parseWithSelectQueryReturnsSelectObject() throws Exception {
+    public void parseWithSelectQueryReturnsSelectObject(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
         
         assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.SELECT)));
     }
     
     @Test
-    public void parseWithDeleteQueryReturnsUnknownObject() throws Exception {
+    public void parseWithDeleteQueryReturnsUnknownObject(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = '0'");
         
         assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.UNKNOWN)));
