@@ -1,8 +1,5 @@
 package com.diconium.oak.commons;
 
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.insert.Insert;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 

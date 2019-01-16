@@ -22,39 +22,40 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class QueryParser {
 
-    private static final String SELECT_BY_ID_QUERY = "select \\* from (\\w+) where ID = '(\\d+)'";
 
     public QueryParserResult parse(String sqlQuery) {
-    	if(sqlQuery != null) {
-	        try {
-        		return new QueryParserResult(getType(sqlQuery))
-        				.withTableName(getTableName(sqlQuery))
-                        .withData(getData(sqlQuery))
-                        .withID(getId(sqlQuery));
-	        } catch (JSQLParserException ignored) {
-	        	// pass through to default error result
-	        }
-    	}                    
-        
+        if (sqlQuery != null) {
+            try {
+                return buildQueryResult(sqlQuery);
+            } catch (JSQLParserException ignored) {
+                // pass through to default error result
+            }
+        }
+
         return QueryParserResult.ERROR_RESULT;
     }
 
-    // TODO: Refactor all private methods so that QueryParseResult can be filled in one go.
-    //  Do NOT start with this without having unit tests (see todos above)!
-    private QueryParserResult.ResultType getType(String sqlQuery) {
-        QueryParserResult.ResultType type = QueryParserResult.ResultType.UNKNOWN;
-        if (Pattern.matches("create table .*", sqlQuery)) {
-            type = QueryParserResult.ResultType.CREATE;
-        } else if (Pattern.matches("insert into .*", sqlQuery)) {
-            type = QueryParserResult.ResultType.INSERT;
-        } else if (Pattern.matches(SELECT_BY_ID_QUERY, sqlQuery)) {
-            type = QueryParserResult.ResultType.SELECT;
-        } 
-        return type;
+    private QueryParserResult buildQueryResult(String sqlQuery) throws JSQLParserException {
+        Statement statement = CCJSqlParserUtil.parse(sqlQuery);
+        return new QueryParserResult(getTypeFromStatementType(statement))
+                .withTableName(getTableName(sqlQuery))
+                .withData(getData(sqlQuery))
+                .withID(getId(sqlQuery));
+    }
+
+    private QueryParserResult.ResultType getTypeFromStatementType(Statement statement) {
+        if (statement instanceof Insert) {
+            return QueryParserResult.ResultType.INSERT;
+        } else if (statement instanceof Select) {
+            return QueryParserResult.ResultType.SELECT;
+        } else if (statement instanceof CreateTable) {
+            return QueryParserResult.ResultType.CREATE;
+        }
+
+        return QueryParserResult.ResultType.UNKNOWN;
     }
 
     private static String getTableName(String command) throws JSQLParserException {
@@ -109,25 +110,25 @@ public class QueryParser {
         return data;
     }
 
-    
+
     private static String getId(String sqlCommand) throws JSQLParserException {
     	String id = StringUtils.EMPTY;
     	 Statement statement = CCJSqlParserUtil.parse(sqlCommand);
     	 // TODO: write the logic to get the Id from select query
     	if (statement instanceof Select) {
-    		
+
     		 Select selectStatement = (Select) statement;
-    		 
+
     		 List<WithItem> itemList = selectStatement.getWithItemsList();
-    		 
-    		 
-    	
-    		 
+
+
+
+
     	}
-    	
+
     	 return id;
-    	
+
     }
-    
-    
+
+
 }
