@@ -2,7 +2,9 @@ package com.diconium.oak.commons;
 
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.ItemsList;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -15,7 +17,6 @@ import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectBody;
-import net.sf.jsqlparser.statement.select.WithItem;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,9 +42,9 @@ public class QueryParser {
     private QueryParserResult buildQueryResult(String sqlQuery) throws JSQLParserException {
         Statement statement = CCJSqlParserUtil.parse(sqlQuery);
         return new QueryParserResult(getTypeFromStatementType(statement))
-                .withTableName(getTableName(sqlQuery))
-                .withData(getData(sqlQuery))
-                .withID(getId(sqlQuery));
+                .withTableName(getTableName(statement))
+                .withData(getData(statement))
+                .withID(getId(statement));
     }
 
     private QueryParserResult.ResultType getTypeFromStatementType(Statement statement) {
@@ -58,10 +59,9 @@ public class QueryParser {
         return QueryParserResult.ResultType.UNKNOWN;
     }
 
-    private static String getTableName(String command) throws JSQLParserException {
+    private static String getTableName(Statement statement) throws JSQLParserException {
         String tableName = StringUtils.EMPTY;
 
-        Statement statement = CCJSqlParserUtil.parse(command);
         if (statement instanceof Insert) {
             Insert insertStatement = (Insert) statement;
             tableName = insertStatement.getTable().getName();
@@ -84,9 +84,8 @@ public class QueryParser {
         return tableName;
     }
 
-    private static String getData(String command) throws JSQLParserException {
+    private static String getData(Statement statement) throws JSQLParserException {
         String data = StringUtils.EMPTY;
-        Statement statement = CCJSqlParserUtil.parse(command);
         if (statement instanceof Insert) {
             Insert insertStatement = (Insert) statement;
             List<Column> columnsList = insertStatement.getColumns();
@@ -111,24 +110,27 @@ public class QueryParser {
     }
 
 
-    private static String getId(String sqlCommand) throws JSQLParserException {
-    	String id = StringUtils.EMPTY;
-    	 Statement statement = CCJSqlParserUtil.parse(sqlCommand);
-    	 // TODO: write the logic to get the Id from select query
+    private static String getId(Statement statement) throws JSQLParserException {
+		String id = StringUtils.EMPTY;
     	if (statement instanceof Select) {
-
-    		 Select selectStatement = (Select) statement;
-
-    		 List<WithItem> itemList = selectStatement.getWithItemsList();
-
-
-
-
+	    	Expression whereExpression = ((PlainSelect)((Select) statement).getSelectBody()).getWhere();
+	    	if(whereExpression instanceof EqualsTo) {
+	    		Expression left = ((EqualsTo)whereExpression).getLeftExpression();
+	    		Expression right = ((EqualsTo)whereExpression).getRightExpression();
+	    		String sRight = StringUtils.EMPTY;
+	    		if (right instanceof StringValue) {
+		    		sRight = ((StringValue)right).getValue();
+	    		} else if (right instanceof LongValue) {
+		    		sRight = ((LongValue)right).getStringValue();
+	    		}
+	    		if(left instanceof Column && ((Column)left).getColumnName().equals("ID") && StringUtils.isNotEmpty(sRight)) {
+	    			id = sRight;
+	    		}
+    		}
     	}
-
     	 return id;
-
     }
+	
 
 
 }
