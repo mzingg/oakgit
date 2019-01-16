@@ -158,6 +158,45 @@ class QueryParserTest {
         assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.UNKNOWN)));
     }
     
+    @Test
+    public void parseWithDeleteQueryAndNoIdReturnsEmptyId(){
+        QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = ''");
+        
+        assertThat(actual.getId(), is(StringUtils.EMPTY));
+    }
+    
+    @Test
+    public void parseWithSelectQueryAndEmptyIdReturnsEmptyId(){
+        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ''");
+        
+        assertThat(actual.getId(), is(StringUtils.EMPTY));
+    }
+    
+    @Test
+    public void parseWithSelectQueryAndNoIdReturnsError(){
+        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ");
+        
+        assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));
+    }
+    
+    @Test
+    public void parseWithSelectQueryAndIdStringReturnsString(){
+        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '34'");
+        
+        assertThat(actual.getId(), is("34"));
+    }
 
+    @Test
+    public void parseWithSelectQueryAndIdIntReturnsEmptyString(){
+        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 34");
+        
+        assertThat(actual.getId(), is("34"));
+    }
 
+    @Test
+    public void parseWithSelectQueryAndIdNullReturnsEmptyId(){
+        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 'null'");
+        
+        assertThat(actual.getId(), is("null"));
+    }
 }
