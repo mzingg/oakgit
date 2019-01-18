@@ -19,6 +19,9 @@ public class QueryParserResult {
     private String data = StringUtils.EMPTY;
 
     public QueryParserResult(ResultType type) {
+    	if(type == null) {
+    		throw new IllegalArgumentException();
+    	}
         this.type = type;
     }
 
