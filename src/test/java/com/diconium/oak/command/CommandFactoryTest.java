@@ -58,12 +58,10 @@ class CommandFactoryTest{
     }
     
     @Test
-    void getCommandForSqlWithNullReturnNoOperationCommand() throws Exception{
+    void getCommandForSqlWithNullReturnErrorCommand() throws Exception{
     	Command commandObj = new CommandFactory().getCommandForSql(null);
     	
-    	assertThat(commandObj, is(instanceOf(NoOperationCommand.class)));
+    	assertThat(commandObj, is(instanceOf(ErrorCommand.class)));
     }
-
-        
     
 }
