@@ -1,5 +1,6 @@
 package com.diconium.oak.jdbc;
 
+import com.diconium.oak.TestHelpers;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
 
-import static com.diconium.oak.jdbc.TestHelpers.getTestDirectory;
+import static com.diconium.oak.TestHelpers.aCleanTestDirectory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,7 +29,7 @@ class OakGitDriverTest {
 
     @Test
     void driverInitialisationWithValidPathReturnsConnectionConfiguredForTheGivenPath() throws Exception {
-        Path gitDirectory = TestHelpers.getTestDirectory("driver-init-test");
+        Path gitDirectory = TestHelpers.aCleanTestDirectory("driver-init-test");
         String absoluteDirectoryPath = gitDirectory.toAbsolutePath().toString();
         Git.init().setDirectory(gitDirectory.toFile()).call();
 
