@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import com.diconium.oakgit.commons.QueryParserResult.ResultType;
 
+import java.util.Collections;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +39,7 @@ public class QueryParserResultTest {
     void queryParserResultWithCreateReturnsEmptyId() {
         QueryParserResult actual = new QueryParserResult(ResultType.CREATE);
 
-        assertThat(actual.getId(), is(StringUtils.EMPTY));
+        assertThat(actual.getId(Collections.emptyMap()), is(StringUtils.EMPTY));
     }
 
     @Test

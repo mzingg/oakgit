@@ -3,6 +3,8 @@ package com.diconium.oakgit.commons;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -84,10 +86,10 @@ class QueryParserTest {
         QueryParserResult actual = new QueryParser().parse(
                 "insert into SETTINGS(ID, MODIFIED, HASBINARY) values ('anId', 'vModified', 'vhasBinary')");
 
-        assertThat(actual.getInsertTuples().size(), is(3));
-        assertThat(actual.getInsertTuples().get("ID"), is("anId"));
-        assertThat(actual.getInsertTuples().get("MODIFIED"), is("vModified"));
-        assertThat(actual.getInsertTuples().get("HASBINARY"), is("vhasBinary"));
+        assertThat(actual.getInsertData(Collections.emptyMap()).size(), is(3));
+        assertThat(actual.getInsertData(Collections.emptyMap()).get("ID"), is("anId"));
+        assertThat(actual.getInsertData(Collections.emptyMap()).get("MODIFIED"), is("vModified"));
+        assertThat(actual.getInsertData(Collections.emptyMap()).get("HASBINARY"), is("vhasBinary"));
     }
 
     @Test
@@ -95,10 +97,10 @@ class QueryParserTest {
         QueryParserResult actual = new QueryParser().parse(
         		"insert into SETTINGS(ID, MODIFIED, HASBINARY) values (?, ?, ?)");
 
-        assertThat(actual.getInsertTuples().size(), is(3));
-        assertThat(actual.getInsertTuples().get("ID"), is("?#1"));
-        assertThat(actual.getInsertTuples().get("MODIFIED"), is("?#2"));
-        assertThat(actual.getInsertTuples().get("HASBINARY"), is("?#3"));
+        assertThat(actual.getInsertData(Collections.emptyMap()).size(), is(3));
+        assertThat(actual.getInsertData(Collections.emptyMap()).get("ID"), is("?#1"));
+        assertThat(actual.getInsertData(Collections.emptyMap()).get("MODIFIED"), is("?#2"));
+        assertThat(actual.getInsertData(Collections.emptyMap()).get("HASBINARY"), is("?#3"));
     }
 
     @Test
@@ -106,7 +108,7 @@ class QueryParserTest {
     	QueryParserResult actual = new QueryParser().parse(
     			"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint)");
 
-        assertThat(actual.getInsertTuples().size(), is(0));
+        assertThat(actual.getInsertData(Collections.emptyMap()).size(), is(0));
     }
 
     @Test
@@ -145,7 +147,7 @@ class QueryParserTest {
     public void parseWithSelectQueryAndEmptyIdReturnsEmptyId(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ''");
 
-        assertThat(actual.getId(), is(StringUtils.EMPTY));
+        assertThat(actual.getId(Collections.emptyMap()), is(StringUtils.EMPTY));
     }
 
     @Test
@@ -159,21 +161,21 @@ class QueryParserTest {
     public void parseWithSelectQueryAndIdStringReturnsString(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '34'");
 
-        assertThat(actual.getId(), is("34"));
+        assertThat(actual.getId(Collections.emptyMap()), is("34"));
     }
 
     @Test
     public void parseWithSelectQueryAndIdIntReturnsEmptyString(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 34");
 
-        assertThat(actual.getId(), is("34"));
+        assertThat(actual.getId(Collections.emptyMap()), is("34"));
     }
 
     @Test
     public void parseWithSelectQueryAndIdNullReturnsEmptyId(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 'null'");
 
-        assertThat(actual.getId(), is("null"));
+        assertThat(actual.getId(Collections.emptyMap()), is("null"));
     }
 
     @Test
@@ -187,6 +189,6 @@ class QueryParserTest {
     public void parseWithDeleteQueryAndNoIdReturnsEmptyId(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = ''");
 
-        assertThat(actual.getId(), is(StringUtils.EMPTY));
+        assertThat(actual.getId(Collections.emptyMap()), is(StringUtils.EMPTY));
     }
 }

@@ -1,9 +1,7 @@
 package com.diconium.oakgit.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
 import lombok.experimental.Wither;
 
 @Getter
@@ -13,28 +11,29 @@ import lombok.experimental.Wither;
 public class ContainerEntry {
 
     @NonNull
+    @Wither(AccessLevel.NONE)
     private final String ID;
 
-    private long MODIFIED = 0L;
+    private long modified = 0L;
 
-    private boolean HASBINARY = false;
+    private boolean hasBinary = false;
 
-    private boolean DELETEDONCE = false;
+    private boolean deletedOnce = false;
 
-    private long MODCOUNT = 0L;
+    private long modcount = 0L;
 
-    private long CMODCOUNT = 0L;
+    private long cmodcount = 0L;
 
-    private long DSIZE = 0L;
+    private long dsize = 0L;
 
-    private short VERSION = 0;
+    private int version = 0;
 
-    private short SDTYPE = 0;
+    private int sdtype = 0;
 
-    private long SDMAXREVTIME = 0L;
+    private long sdmaxrevtime = 0L;
 
-    private byte[] DATA = new byte[0];
+    private byte[] data = new byte[0];
 
-    private byte[] BDATA = new byte[0];
+    private byte[] bdata = new byte[0];
 
 }

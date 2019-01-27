@@ -14,4 +14,10 @@ public class CreateContainerCommand implements Command {
 
     private String containerName = StringUtils.EMPTY;
 
+    @Override
+    public String toString() {
+        return "CreateContainerCommand{" +
+                "containerName='" + containerName + '\'' +
+                '}';
+    }
 }

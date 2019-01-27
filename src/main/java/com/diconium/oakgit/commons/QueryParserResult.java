@@ -1,5 +1,7 @@
 package com.diconium.oakgit.commons;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -7,15 +9,15 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.StringValue;
+import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.GreaterThan;
+import net.sf.jsqlparser.expression.operators.relational.MinorThan;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QueryParserResult {
 
@@ -24,7 +26,7 @@ public class QueryParserResult {
         CREATE,
         SELECT,
         ERROR,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static final QueryParserResult ERROR_RESULT = new QueryParserResult(ResultType.ERROR);
@@ -55,13 +57,13 @@ public class QueryParserResult {
     private Expression whereExpression = NULL_WHERE_EXPRESSION;
 
     public QueryParserResult(ResultType type) {
-    	if(type == null) {
-    		throw new IllegalArgumentException();
-    	}
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
         this.type = type;
     }
 
-    public String getId() {
+    public String getId(Map<Integer, Object> placeholderData) {
         String id = StringUtils.EMPTY;
         if (getType() == ResultType.SELECT) {
             if (whereExpression instanceof EqualsTo) {
@@ -78,28 +80,41 @@ public class QueryParserResult {
                 }
             }
         } else if (getType() == ResultType.INSERT) {
-            id = getInsertTuples().getOrDefault(COLUMN_NAME_ID, StringUtils.EMPTY);
+            id = (String) getInsertData(placeholderData).getOrDefault(COLUMN_NAME_ID, StringUtils.EMPTY);
         }
         return id;
     }
 
-    public Map<String, String> getInsertTuples() {
-        Map<String, String> result = new LinkedHashMap<>();
+    public Tuple2<String, String> getSelectIdRange(Map<Integer, Object> placeholderData) {
+        if (getType() == ResultType.SELECT) {
+            if (whereExpression instanceof AndExpression) {
+                AndExpression andExpression = (AndExpression)whereExpression;
+                if (andExpression.getLeftExpression() instanceof GreaterThan && andExpression.getRightExpression() instanceof MinorThan) {
+                    GreaterThan leftExpression = (GreaterThan) andExpression.getLeftExpression();
+                    MinorThan rightExpression = (MinorThan) andExpression.getRightExpression();
+                    // TODO: finish reading idmin and idMax
+                }
+            }
+        }
+
+        return Tuple.of("0", "0");
+    }
+
+    public Map<String, Object> getInsertData(Map<Integer, Object> placeholderData) {
+        Map<String, Object> result = new LinkedHashMap<>();
 
         for (int i = 0; i < insertColumns.size() && i < insertExpressions.size(); i++) {
             String columnName = insertColumns.get(i).getColumnName();
-            String columnValue = StringUtils.EMPTY;
+            Object columnValue = StringUtils.EMPTY;
             if (insertExpressions.get(i) instanceof StringValue) {
                 StringValue value = (StringValue) insertExpressions.get(i);
                 columnValue = value.getValue();
             } else if (insertExpressions.get(i) instanceof JdbcParameter) {
                 JdbcParameter value = (JdbcParameter) insertExpressions.get(i);
-                columnValue = "?#" + value.getIndex();
+                columnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
             }
 
-            if (StringUtils.isNotBlank(columnName) && StringUtils.isNotBlank(columnValue)) {
-                result.put(columnName, columnValue);
-            }
+            result.put(columnName, columnValue);
         }
 
         return result;

@@ -1,5 +1,6 @@
 package com.diconium.oakgit.jdbc;
 
+import com.diconium.oakgit.engine.CommandFactory;
 import com.diconium.oakgit.engine.inmemory.InMemoryCommandProcessor;
 import com.github.zafarkhaja.semver.Version;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +30,7 @@ public class OakGitDriver implements Driver {
     public Connection connect(String url, Properties info) throws SQLException {
         OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
         if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
-            return new OakGitConnection(configuration, new InMemoryCommandProcessor());
+            return new OakGitConnection(configuration, new InMemoryCommandProcessor(), new CommandFactory());
         }
 
         throw new SQLException("Invalid connection url");

@@ -2,6 +2,6 @@ package com.diconium.oakgit.engine;
 
 public interface CommandProcessor {
 
-    void execute(Command command);
+    CommandResult execute(Command command);
 
 }

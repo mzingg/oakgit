@@ -1,13 +1,15 @@
 package com.diconium.oakgit.jdbc;
 
 import com.diconium.oakgit.engine.CommandFactory;
+import com.diconium.oakgit.engine.CommandProcessor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
+@Getter
 @RequiredArgsConstructor
 public class OakGitStatement extends UnsupportedOakGitStatement {
 
@@ -15,21 +17,29 @@ public class OakGitStatement extends UnsupportedOakGitStatement {
 
     @Override
     public ResultSet executeQuery(String sql) throws SQLException {
-        connection.getProcessor().execute(new CommandFactory().getCommandForSql(sql));
-        return null;
+        OakGitConnection connection = getConnection();
+        CommandProcessor processor = connection.getProcessor();
+        CommandFactory factory = connection.getCommandFactory();
+
+        return processor.execute(factory.getCommandForSql(sql)).toResultSet();
     }
 
     public boolean execute(String sql) {
-        System.out.println(sql);
-        return false;
-    }
+        OakGitConnection connection = getConnection();
+        CommandProcessor processor = connection.getProcessor();
+        CommandFactory factory = connection.getCommandFactory();
 
-    @Override
-    public Connection getConnection() {
-        return connection;
+        return processor.execute(factory.getCommandForSql(sql)).wasSuccessfull();
     }
 
     public void close() {
     }
 
+    public void setPoolable(boolean poolable) {
+
+    }
+
+    public boolean isPoolable() {
+        return false;
+    }
 }

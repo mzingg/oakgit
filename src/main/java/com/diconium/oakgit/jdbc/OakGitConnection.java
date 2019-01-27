@@ -1,5 +1,6 @@
 package com.diconium.oakgit.jdbc;
 
+import com.diconium.oakgit.engine.CommandFactory;
 import com.diconium.oakgit.engine.CommandProcessor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -22,6 +23,9 @@ public class OakGitConnection extends DefaultOakGitConnection {
 
     @NonNull
     private final CommandProcessor processor;
+
+    @NonNull
+    private final CommandFactory commandFactory;
 
     private Git git;
 

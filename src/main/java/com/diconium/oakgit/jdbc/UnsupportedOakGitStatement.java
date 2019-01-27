@@ -138,14 +138,6 @@ public abstract class UnsupportedOakGitStatement implements Statement {
         throw new UnsupportedOperationException();
     }
 
-    public void setPoolable(boolean poolable) {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isPoolable() {
-        throw new UnsupportedOperationException();
-    }
-
     public void closeOnCompletion() {
         throw new UnsupportedOperationException();
     }

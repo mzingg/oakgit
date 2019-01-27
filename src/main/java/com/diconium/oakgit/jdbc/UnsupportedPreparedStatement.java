@@ -2,6 +2,7 @@ package com.diconium.oakgit.jdbc;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.experimental.Delegate;
 
 import java.io.InputStream;
@@ -17,17 +18,13 @@ public abstract class UnsupportedPreparedStatement implements PreparedStatement 
     @Delegate
     private final OakGitStatement statement;
 
+    @NonNull
     @Getter(AccessLevel.PROTECTED)
     private final String sql;
 
     protected UnsupportedPreparedStatement(OakGitConnection connection, String sql) {
         this.sql = sql;
         this.statement = new OakGitStatement(connection);
-    }
-
-    @Override
-    public int executeUpdate() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
