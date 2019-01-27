@@ -1,9 +1,12 @@
 package com.diconium.oakgit.engine;
 
-import com.diconium.oakgit.engine.commands.ErrorCommand;
-import com.diconium.oakgit.engine.commands.NoOperationCommand;
+import com.diconium.oakgit.engine.commands.*;
+import com.diconium.oakgit.engine.model.MetaDataEntry;
+import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
+import com.diconium.oakgit.engine.model.UpdateSet;
 import com.diconium.oakgit.queryparsing.QueryParser;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,14 +33,74 @@ public class CommandFactory {
     public Command getCommandForSql(String sqlCommand, Map<Integer, Object> placeholderData) {
 
         QueryParserResult queryParserResult = new QueryParser().parse(sqlCommand);
+
         if (!queryParserResult.isValid()) {
-            return new ErrorCommand()
-                .setOriginSql(sqlCommand)
-                .setPlaceholderData(placeholderData)
-                .setErrorMessage("Error while parsing the query " + sqlCommand);
+            return new ErrorCommand("Error while parsing the query " + sqlCommand);
         }
 
-        return queryParserResult.asCommand(placeholderData);
+        if (queryParserResult.getResultType() == QueryParserResult.ResultType.CREATE) {
+
+            return new CreateContainerCommand()
+                    .setContainerName(queryParserResult.getTableName());
+
+        } else if (queryParserResult.getResultType() == QueryParserResult.ResultType.INSERT) {
+
+            if (queryParserResult.getTableName().equals("DATASTORE_META")) {
+
+                MetaDataEntry data = new MetaDataEntry()
+                        .setId(queryParserResult.getId(placeholderData));
+                return new InsertIntoContainerCommand<>(MetaDataEntry.class)
+                        .setContainerName(queryParserResult.getTableName())
+                        .setData(data);
+
+            } else {
+
+                NodeAndSettingsEntry data = NodeAndSettingsEntry.buildNodeSettingsDataForInsert(placeholderData, queryParserResult);
+                return new InsertIntoContainerCommand<>(NodeAndSettingsEntry.class)
+                        .setContainerName(queryParserResult.getTableName())
+                        .setData(data);
+
+            }
+
+        } else if (queryParserResult.getResultType() == QueryParserResult.ResultType.SELECT) {
+
+            if (StringUtils.isNotBlank(queryParserResult.getId(placeholderData))) {
+
+                return new SelectFromContainerByIdCommand()
+                        .setContainerName(queryParserResult.getTableName())
+                        .setId(queryParserResult.getId(placeholderData));
+
+            } else {
+
+//                Tuple2<String, String> selectIdRange = queryParserResult.getSelectIdRange(placeholderData);
+//                return new SelectFromContainerByIdRangeCommand()
+//                        .setContainerName(queryParserResult.getTableName())
+//                        .setIdMin(selectIdRange._1)
+//                        .setIdMax(selectIdRange._2);
+
+            }
+
+        } else if (queryParserResult.getResultType() == QueryParserResult.ResultType.UPDATE) {
+
+            UpdateSet data = new UpdateSet()
+                    .withValue("newModified", placeholderData.get(1)) // placeholder 2 is the same as 1
+                    .withValue("newHasBinary", placeholderData.get(3))
+                    .withValue("newDeletedOnce", placeholderData.get(4))
+                    .withValue("newModCount", placeholderData.get(5))
+                    .withValue("newCModCount", placeholderData.get(6))
+                    .withValue("dsizeAddition", new Long((Integer)placeholderData.get(7)))
+                    .withValue("newData", placeholderData.get(8))
+                    .withValue("newVersion", 2);
+
+            return new UpdatDataInContainerCommand()
+                    .setId((String) placeholderData.get(9))
+                    .setModCount((Long) placeholderData.get(10))
+                    .setContainerName(queryParserResult.getTableName())
+                    .setData(data);
+
+        }
+
+        return new NoOperationCommand(sqlCommand, placeholderData);
     }
 
 }

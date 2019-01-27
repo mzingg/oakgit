@@ -1,6 +1,7 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
 import com.diconium.oakgit.UnitTest;
+import com.diconium.oakgit.queryparsing.QueryParserResult;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.delete.Delete;
@@ -33,7 +34,7 @@ class DeleteAnalyzerTest {
 
         target.getParserResult(statement);
 
-        verify(target).queryParserFor(statement, Delete.class);
+        verify(target).queryParserFor(statement, Delete.class, QueryParserResult.ResultType.DELETE);
     }
 
 }

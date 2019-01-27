@@ -2,7 +2,6 @@ package com.diconium.oakgit.engine.commands;
 
 import com.diconium.oakgit.engine.Command;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
@@ -12,10 +11,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
-public class CreateContainerCommand extends AbstractCommand<CreateContainerCommand> {
+@ToString
+public class CreateContainerCommand implements Command {
 
-    @NonNull
     private String containerName = StringUtils.EMPTY;
 
 }

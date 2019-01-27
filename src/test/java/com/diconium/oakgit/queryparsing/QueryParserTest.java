@@ -1,138 +1,165 @@
 package com.diconium.oakgit.queryparsing;
 
-import com.diconium.oakgit.UnitTest;
-import com.diconium.oakgit.queryparsing.analyzer.CreateAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.DeleteAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.InsertAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.SelectByIdAnalyzer;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static com.diconium.oakgit.queryparsing.SingleValueId.INVALID_ID;
+import static com.diconium.oakgit.queryparsing.QueryAnalyzer.INVALID_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.*;
 
 class QueryParserTest {
 
-    @UnitTest
-    void parseWithEmptySqlQueryReturnsErrorResult() {
-        QueryParserResult actual = new QueryParser().parse(StringUtils.EMPTY);
+    @Test
+    void parseWithEmptySqlQueryReturnsErrorResult(){
+    	QueryParserResult actual = new QueryParser().parse(StringUtils.EMPTY);
 
-        assertThat(actual.isValid(), is(false));
+    	assertThat(actual.isValid(), is(false));
     }
 
-    @UnitTest
-    void parseWithNullSqlQueryReturnsErrorResult() {
-        QueryParserResult actual = new QueryParser().parse(null);
+    @Test
+    void parseWithNullSqlQueryReturnsErrorResult(){
+    	QueryParserResult actual = new QueryParser().parse(null);
 
-        assertThat(actual.isValid(), is(false));
+    	assertThat(actual.isValid(), is(false));
     }
 
-    @UnitTest
-    void parseWithInsertQueryReturnTestTableName() {
-        QueryParserResult actual = new QueryParser().parse(
-            "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
-                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
-
-        assertThat(actual.getTableName(), is("PRODUCTS"));
-    }
-
-    @UnitTest
-    void parseWithSelectQueryHavingWhereClauseReturnTestTableName() {
-        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
-
-        assertThat(actual.getTableName(), is("DATASTORE_DATA"));
-
-    }
-
-    @UnitTest
-    void parseWithInvalidSelectQueryReturnsInvalid() {
-        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
-
-        assertThat(actual.isValid(), is(false));
-    }
-
-    @UnitTest
-    void parseWithInvalidSelectQueryReturnsException() {
-        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
-
-        assertThat(actual.isValid(), is(false));
-    }
-
-
-    @UnitTest
-    public void parseWithInValidInsertQueryReturnsException() {
-        QueryParserResult actual = new QueryParser().parse(
-            "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data,)\n" +
-                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
-
-        assertThat(actual.isValid(), is(false));
-    }
-
-    @UnitTest
-    public void parseWithInsertQueryReturnsInsertObject() {
-        QueryParserResult actual = new QueryParser().parse(
-            "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
-                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
-
-        assertThat(actual.getAnalyzer(), isA(InsertAnalyzer.class));
-    }
-
-    @UnitTest
-    public void parseWithCreateQueryReturnsCreateObject() {
+    @Test
+    void parseWithCreateTableQueryReturnResultWithExpectedTableName() {
         QueryParserResult actual = new QueryParser().parse("create table SETTINGS");
 
-        assertThat(actual.getAnalyzer(), isA(CreateAnalyzer.class));
+        assertThat(actual.getTableName(), is("SETTINGS"));
     }
 
-    @UnitTest
-    public void parseWithSelectQueryReturnsSelectObject() {
+    @Test
+    void parseWithCreateQueryReturnTestTableName() {
+        QueryParserResult actual = new QueryParser().parse(
+        		"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
+                    "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
+                    "SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
+
+        assertThat(actual.getTableName(), is("CLUSTERNODES"));
+    }
+
+    @Test
+    void parseWithInsertQueryReturnTestTableName() {
+    	QueryParserResult actual = new QueryParser().parse(
+    			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
+    		            "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
+
+    	assertThat(actual.getTableName(), is("PRODUCTS"));
+    }
+
+    @Test
+    void parseWithSelectQueryReturnTestTableName() {
+    	QueryParserResult actual = new QueryParser().parse("select * from expected");
+
+    	assertThat(actual.getTableName(), is("expected"));
+
+    }
+
+    @Test
+    void parseWithSelectQueryHavingWhereClauseReturnTestTableName() {
+    	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
+
+    	assertThat(actual.getTableName(), is("DATASTORE_DATA"));
+
+    }
+
+    @Test
+    void parseWithInvalidSelectQueryReturnsInvalid() {
+    	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
+
+    	assertThat(actual.isValid(), is(false));
+    }
+
+    @Test
+    void parseWithInvalidSelectQueryReturnsException() {
+    	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
+
+    	assertThat(actual.isValid(), is(false));
+    }
+
+
+    @Test
+    public void parseWithInValidInsertQueryReturnsException() {
+    	QueryParserResult actual = new QueryParser().parse(
+    			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data,)\n" +
+        "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
+
+        assertThat(actual.isValid(), is(false));
+    }
+
+    @Test
+    public void parseWithInsertQueryReturnsInsertObject(){
+        QueryParserResult actual = new QueryParser().parse(
+        		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
+                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
+
+        assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.INSERT)));
+    }
+
+    @Test
+    public void parseWithCreateQueryReturnsCreateObject(){
+        QueryParserResult actual = new QueryParser().parse("create table SETTINGS");
+
+        assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.CREATE)));
+    }
+
+    @Test
+    public void parseWithSelectQueryReturnsSelectObject(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
 
-        assertThat(actual.getAnalyzer(), isA(SelectByIdAnalyzer.class));
+        assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.SELECT)));
     }
 
-    @UnitTest
-    public void parseWithSelectQueryAndEmptyIdReturnsInvalidId() {
+    @Test
+    public void parseWithSelectQueryAndEmptyIdReturnsInvalidId(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ''");
 
-        assertThat(actual.getId(Collections.emptyMap()).isPresent(), is(false));
+        assertThat(actual.getId(Collections.emptyMap()), is(sameInstance(INVALID_ID)));
     }
 
-    @UnitTest
-    public void parseWithSelectQueryAndNoIdReturnsError() {
+    @Test
+    public void parseWithSelectQueryAndNoIdReturnsError(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ");
 
         assertThat(actual.isValid(), is(false));
     }
 
-    @UnitTest
-    public void parseWithSelectQueryAndIdStringReturnsString() {
+    @Test
+    public void parseWithSelectQueryAndIdStringReturnsString(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '34'");
 
-        assertThat(actual.getId(Collections.emptyMap()).orElse(INVALID_ID).value(), is("34"));
+        assertThat(actual.getId(Collections.emptyMap()), is("34"));
     }
 
-    @UnitTest
-    public void parseWithSelectQueryAndIdIntReturnsEmptyString() {
+    @Test
+    public void parseWithSelectQueryAndIdIntReturnsEmptyString(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 34");
 
-        assertThat(actual.getId(Collections.emptyMap()).orElse(INVALID_ID).value(), is("34"));
+        assertThat(actual.getId(Collections.emptyMap()), is("34"));
     }
 
-    @UnitTest
-    public void parseWithDeleteQueryReturnsDeleteType() {
+    @Test
+    public void parseWithSelectQueryAndIdNullReturnsEmptyId(){
+        QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 'null'");
+
+        assertThat(actual.getId(Collections.emptyMap()), is("null"));
+    }
+
+    @Test
+    public void parseWithDeleteQueryReturnsDeleteType(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = '0'");
 
-        assertThat(actual.getAnalyzer(), isA(DeleteAnalyzer.class));
+        assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.DELETE)));
     }
 
-    @UnitTest
-    public void parseWithDeleteQueryAndNoIdReturnsEmptyId() {
+    @Test
+    public void parseWithDeleteQueryAndNoIdReturnsEmptyId(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = ''");
 
-        assertThat(actual.getId(Collections.emptyMap()).isPresent(), is(false));
+        assertThat(actual.getId(Collections.emptyMap()), is(sameInstance(INVALID_ID)));
     }
 }

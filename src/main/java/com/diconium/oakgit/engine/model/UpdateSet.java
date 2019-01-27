@@ -19,7 +19,6 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> UpdateSet whenHasValue(@NonNull String name, Class<T> targetType, Consumer<T> consumer) {
         if (updatedValues.containsKey(name)) {
             Object value = updatedValues.get(name);
@@ -34,7 +33,6 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> Optional<T> getValue(@NonNull String name, Class<T> targetType) {
         if (updatedValues.containsKey(name)) {
             Object value = updatedValues.get(name);

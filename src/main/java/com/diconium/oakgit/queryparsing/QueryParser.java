@@ -1,6 +1,10 @@
 package com.diconium.oakgit.queryparsing;
 
-import com.diconium.oakgit.queryparsing.analyzer.*;
+import com.diconium.oakgit.queryparsing.analyzer.CreateAnalyzer;
+import com.diconium.oakgit.queryparsing.analyzer.DeleteAnalyzer;
+import com.diconium.oakgit.queryparsing.analyzer.InsertAnalyzer;
+import com.diconium.oakgit.queryparsing.analyzer.PlainSelectAnalyzer;
+import com.diconium.oakgit.queryparsing.analyzer.UpdateAnalyzer;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -11,13 +15,10 @@ import java.util.List;
 public class QueryParser {
 
     private static final List<QueryAnalyzer> DEFAULT_ANALYZERS = new ArrayList<>();
-
     static {
         DEFAULT_ANALYZERS.add(new InsertAnalyzer());
         DEFAULT_ANALYZERS.add(new CreateAnalyzer());
-        DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
-        DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
-        DEFAULT_ANALYZERS.add(new SelectInAnalyzer());
+        DEFAULT_ANALYZERS.add(new PlainSelectAnalyzer());
         DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
         DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
     }
@@ -44,7 +45,7 @@ public class QueryParser {
             }
         }
 
-        return QueryParserResult.Error("sqlQuery must not be null");
+        return  QueryParserResult.Error("sqlQuery must not be null");
     }
 
 }

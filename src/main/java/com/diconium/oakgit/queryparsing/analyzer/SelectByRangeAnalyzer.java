@@ -1,8 +1,5 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
-import com.diconium.oakgit.engine.Command;
-import com.diconium.oakgit.engine.commands.ErrorCommand;
-import com.diconium.oakgit.engine.commands.SelectFromContainerByIdRangeCommand;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
@@ -36,7 +33,7 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return queryParserFor(statement, Select.class);
+        return queryParserFor(statement, Select.class, QueryParserResult.ResultType.SELECT);
     }
 
     @Override
@@ -55,25 +52,24 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
         });
     }
 
-    @Override
-    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
-        Optional<RangeQueryId> id = getId(statement, placeholderData).map(i -> (RangeQueryId) i);
-
-        if (id.isPresent()) {
-            RangeQueryId rangeQueryId = id.get();
-            return new SelectFromContainerByIdRangeCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData)
-                .setContainerName(getTableName(statement))
-                .setIdMin(rangeQueryId.leftValue())
-                .setIdMax(rangeQueryId.rightValue());
-        }
-
-        return new ErrorCommand()
-            .setOriginSql(statement.toString())
-            .setPlaceholderData(placeholderData)
-            .setErrorMessage("Cannot create command with an invalid id");
-    }
+//    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+//        Optional<RangeQueryId> id = getId(statement, placeholderData).map(i -> (RangeQueryId) i);
+//
+//        if (id.isPresent()) {
+//            RangeQueryId rangeQueryId = id.get();
+//            return new SelectFromContainerByIdRangeCommand()
+//                .setOriginSql(statement.toString())
+//                .setPlaceholderData(placeholderData)
+//                .setContainerName(getTableName(statement))
+//                .setIdMin(rangeQueryId.leftValue())
+//                .setIdMax(rangeQueryId.rightValue());
+//        }
+//
+//        return new ErrorCommand()
+//            .setOriginSql(statement.toString())
+//            .setPlaceholderData(placeholderData)
+//            .setErrorMessage("Cannot create command with an invalid id");
+//    }
 
     private Optional<QueryId> extractIdFromWhere(Expression whereExpression, Map<Integer, Object> placeholderData) {
         if (whereExpression instanceof AndExpression) {

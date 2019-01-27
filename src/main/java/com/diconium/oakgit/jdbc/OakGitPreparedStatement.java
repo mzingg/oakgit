@@ -16,12 +16,13 @@ import java.util.Map;
 
 public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
-    private final List<String> commandList = new ArrayList<>();
-    private final Map<Integer, Object> placeholderData = new LinkedHashMap<>();
-
     protected OakGitPreparedStatement(OakGitConnection connection, String sql) {
         super(connection, sql);
     }
+
+    private List<String> commandList = new ArrayList<>();
+
+    private Map<Integer, Object> placeholderData = new LinkedHashMap<>();
 
     @Override
     public int executeUpdate() {
@@ -30,6 +31,11 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
         CommandFactory factory = connection.getCommandFactory();
 
         return processor.execute(factory.getCommandForSql(getSql(), placeholderData)).affectedCount();
+    }
+
+    @Override
+    public void setLong(int parameterIndex, long x) throws SQLException {
+        placeholderData.put(parameterIndex, x);
     }
 
     @Override
@@ -64,12 +70,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     }
 
     @Override
-    public void setLong(int parameterIndex, long x) {
-        placeholderData.put(parameterIndex, x);
-    }
-
-    @Override
-    public void setBytes(int parameterIndex, byte[] x) {
+    public void setBytes(int parameterIndex, byte[] x) throws SQLException {
         placeholderData.put(parameterIndex, x);
     }
 
@@ -87,7 +88,13 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     public void setBinaryStream(int parameterIndex, InputStream stream, int length) {
         if (stream != null) {
             try {
-                placeholderData.put(parameterIndex, IOUtils.readFully(stream, length));
+                byte[] bytes;
+                if (length > 0) {
+                    bytes = IOUtils.toByteArray(stream, length);
+                } else {
+                    bytes = IOUtils.toByteArray(stream);
+                }
+                placeholderData.put(parameterIndex, bytes);
             } catch (IOException e) {
                 throw new IllegalArgumentException(e);
             }

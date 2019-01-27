@@ -19,15 +19,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Map;
 import java.util.Optional;
 
-public class SelectByIdAnalyzer implements QueryAnalyzer {
+public class PlainSelectAnalyzer implements QueryAnalyzer {
 
     private static final String COLUMN_NAME_ID = "ID";
 
     @Override
     public boolean interestedIn(Statement statement) {
-        return statement instanceof Select &&
-            ((Select) statement).getSelectBody() instanceof PlainSelect &&
-            ((PlainSelect) ((Select) statement).getSelectBody()).getWhere() instanceof EqualsTo;
+        return statement instanceof Select && ((Select) statement).getSelectBody() instanceof PlainSelect;
     }
 
     @Override
@@ -50,23 +48,6 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
             return extractIdFromWhere(selectBody.getWhere(), placeholderData);
         });
     }
-
-//    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
-//        Optional<QueryId> id = getId(statement, placeholderData);
-//
-//        if (id.isPresent()) {
-//            return new SelectFromContainerByIdCommand()
-//                .setOriginSql(statement.toString())
-//                .setPlaceholderData(placeholderData)
-//                .setContainerName(getTableName(statement))
-//                .setId(id.get().value());
-//        }
-//
-//        return new ErrorCommand()
-//            .setOriginSql(statement.toString())
-//            .setPlaceholderData(placeholderData)
-//            .setErrorMessage("Cannot create command with an invalid id");
-//    }
 
     private Optional<QueryId> extractIdFromWhere(Expression whereExpression, Map<Integer, Object> placeholderData) {
         if (whereExpression instanceof EqualsTo) {

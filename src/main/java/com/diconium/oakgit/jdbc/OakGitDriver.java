@@ -3,6 +3,7 @@ package com.diconium.oakgit.jdbc;
 import com.diconium.oakgit.engine.CommandFactory;
 import com.diconium.oakgit.engine.inmemory.InMemoryCommandProcessor;
 import com.github.zafarkhaja.semver.Version;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 
 public class OakGitDriver implements Driver {
 
-    private final static InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor("./sqlCommand.log");
+    private final static InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor();
 
     static {
         try {
@@ -28,8 +29,7 @@ public class OakGitDriver implements Driver {
     }
 
     private static Version readMavenVersion() {
-        return Version.valueOf("0.0.1-SNAPSHOT");
-//        return Version.valueOf(StringUtils.substringBefore(readMavenModel().getVersion(), "-"));
+        return Version.valueOf(StringUtils.substringBefore(readMavenModel().getVersion(), "-"));
     }
 
     private static Model readMavenModel() {
@@ -56,8 +56,7 @@ public class OakGitDriver implements Driver {
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
-        OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), "oak-git");
-//        OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
+        OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
         if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
 
             return new OakGitConnection(configuration, PROCESSOR, new CommandFactory());
@@ -68,8 +67,7 @@ public class OakGitDriver implements Driver {
 
     @Override
     public boolean acceptsURL(String url) {
-        return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), "oak-git") != OakGitDriverConfiguration.INVALID_CONFIGURATION;
-//        return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId()) != OakGitDriverConfiguration.INVALID_CONFIGURATION;
+        return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId()) != OakGitDriverConfiguration.INVALID_CONFIGURATION;
     }
 
     @Override

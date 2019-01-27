@@ -1,14 +1,10 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
-import com.diconium.oakgit.engine.Command;
-import com.diconium.oakgit.engine.commands.ErrorCommand;
-import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
-import com.diconium.oakgit.engine.model.MetaDataEntry;
-import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
-import com.diconium.oakgit.queryparsing.SingleValueId;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.StringValue;
@@ -25,8 +21,6 @@ import java.util.Optional;
 
 public class InsertAnalyzer implements QueryAnalyzer {
 
-    private static final String COLUMN_NAME_ID = "ID";
-
     @Override
     public boolean interestedIn(Statement statement) {
         return statement instanceof Insert;
@@ -34,12 +28,15 @@ public class InsertAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return queryParserFor(statement, Insert.class);
+        return queryParserFor(statement, Insert.class, QueryParserResult.ResultType.INSERT);
     }
 
+
+    //            result.setInsertColumns(insertStatement.getColumns());
+//            result.setInsertExpressions(((ExpressionList) insertStatement.getItemsList()).getExpressions());
     @Override
     public Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData) {
-        return whileInterestedOrThrow(statement, Insert.class, stm -> getDataField(stm, COLUMN_NAME_ID, String.class, placeholderData).map(SingleValueId::new));
+        return whileInterestedOrThrow(statement, Insert.class, stm -> Optional.empty());
     }
 
     @Override
@@ -47,37 +44,43 @@ public class InsertAnalyzer implements QueryAnalyzer {
         return whileInterestedOrThrow(statement, Insert.class, stm -> stm.getTable().getName());
     }
 
-    @Override
-    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
-        Optional<QueryId> id = getId(statement, placeholderData);
+    public Tuple2<String, String> getSelectIdRange(Map<Integer, Object> placeholderData) {
+//        if (getType() == ResultType.SELECT) {
+//            if (whereExpression instanceof AndExpression) {
+//                AndExpression andExpression = (AndExpression)whereExpression;
+//                if (andExpression.getLeftExpression() instanceof GreaterThan && andExpression.getRightExpression() instanceof MinorThan) {
+//                    GreaterThan leftExpression = (GreaterThan) andExpression.getLeftExpression();
+//                    MinorThan rightExpression = (MinorThan) andExpression.getRightExpression();
+//
+//                    String leftColumnName = ((Column) leftExpression.getLeftExpression()).getColumnName();
+//                    Object leftColumnValue = StringUtils.EMPTY;
+//                    if (leftExpression.getRightExpression() instanceof StringValue) {
+//                        StringValue value = (StringValue) leftExpression.getRightExpression();
+//                        leftColumnValue = value.getValue();
+//                    } else if (leftExpression.getRightExpression() instanceof JdbcParameter) {
+//                        JdbcParameter value = (JdbcParameter) leftExpression.getRightExpression();
+//                        leftColumnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
+//                    }
+//
+//                    String rightColumnName = ((Column) rightExpression.getLeftExpression()).getColumnName();
+//                    Object rightColumnValue = StringUtils.EMPTY;
+//                    if (rightExpression.getRightExpression() instanceof StringValue) {
+//                        StringValue value = (StringValue) rightExpression.getRightExpression();
+//                        rightColumnValue = value.getValue();
+//                    } else if (rightExpression.getRightExpression() instanceof JdbcParameter) {
+//                        JdbcParameter value = (JdbcParameter) rightExpression.getRightExpression();
+//                        rightColumnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
+//                    }
+//
+//                    if (leftColumnName.equals(COLUMN_NAME_ID) && rightColumnName.equals(COLUMN_NAME_ID)) {
+//                        return Tuple.of(leftColumnValue.toString(), rightColumnValue.toString());
+//                    }
+//
+//                }
+//            }
+//        }
 
-        if (id.isPresent()) {
-            if (getTableName(statement).equals("DATASTORE_META")) {
-
-                MetaDataEntry data = new MetaDataEntry()
-                    .setId(id.get().value());
-                return new InsertIntoContainerCommand<>(MetaDataEntry.class)
-                    .setOriginSql(statement.toString())
-                    .setPlaceholderData(placeholderData)
-                    .setContainerName(getTableName(statement))
-                    .setData(data);
-
-            } else {
-
-                NodeAndSettingsEntry data = NodeAndSettingsEntry.buildNodeSettingsDataForInsert(statement, placeholderData, this);
-                return new InsertIntoContainerCommand<>(NodeAndSettingsEntry.class)
-                    .setOriginSql(statement.toString())
-                    .setPlaceholderData(placeholderData)
-                    .setContainerName(getTableName(statement))
-                    .setData(data);
-
-            }
-        }
-
-        return new ErrorCommand()
-            .setOriginSql(statement.toString())
-            .setPlaceholderData(placeholderData)
-            .setErrorMessage("Cannot create command with an invalid id");
+        return Tuple.of("0", "0");
     }
 
     @Override
@@ -99,7 +102,7 @@ public class InsertAnalyzer implements QueryAnalyzer {
                     columnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
                 }
 
-                result.put(columnName.toLowerCase(), columnValue);
+                result.put(columnName, columnValue);
             }
 
             return result;

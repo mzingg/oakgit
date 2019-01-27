@@ -4,7 +4,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class Container {
@@ -35,7 +39,7 @@ public class Container {
     public <T extends ContainerEntry<T>> Optional<ContainerEntry<T>> findByIdAndModCount(String id, long modCount, Class<T> resultType) {
         if (entries.containsKey(id)) {
             ContainerEntry<?> entry = entries.get(id);
-            if (resultType.isAssignableFrom(entry.getClass()) && (entry.getModCount() == null || modCount <= entry.getModCount())) {
+            if (resultType.isAssignableFrom(entry.getClass()) && (entry.getModCount() == null || entry.getModCount() == modCount)) {
                 return Optional.of((T) entry);
             }
         }

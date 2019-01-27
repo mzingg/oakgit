@@ -1,5 +1,6 @@
 package com.diconium.oakgit.engine;
 
+import com.diconium.oakgit.engine.commands.*;
 import com.diconium.oakgit.UnitTest;
 import com.diconium.oakgit.engine.commands.CreateContainerCommand;
 import com.diconium.oakgit.engine.commands.ErrorCommand;

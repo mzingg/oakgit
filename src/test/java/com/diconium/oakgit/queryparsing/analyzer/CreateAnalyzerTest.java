@@ -1,11 +1,16 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
 import com.diconium.oakgit.UnitTest;
+import com.diconium.oakgit.queryparsing.QueryParserResult;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.diconium.oakgit.TestHelpers.placeholderData;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,7 +42,7 @@ class CreateAnalyzerTest {
 
         target.getParserResult(statement);
 
-        verify(target).queryParserFor(statement, CreateTable.class);
+        verify(target).queryParserFor(statement, CreateTable.class, QueryParserResult.ResultType.CREATE);
     }
 
     @UnitTest
@@ -68,6 +73,21 @@ class CreateAnalyzerTest {
         Statement statement = CCJSqlParserUtil.parse("create table SETTINGS");
         Map<Integer, Object> placeholderData = placeholderData();
 
-        assertThrows(UnsupportedOperationException.class, () -> new CreateAnalyzer().getId(statement, placeholderData));
+        assertThat(new CreateAnalyzer().getId(statement, placeholderData), isEmptyOptional());
+    }
+
+    public static <T> Matcher<Optional<T>> isEmptyOptional() {
+        return new BaseMatcher<>() {
+            @Override
+            public boolean matches(Object o) {
+                return o instanceof Optional<?> && ((Optional<?>) o).isEmpty();
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("empty Optional");
+            }
+
+        };
     }
 }
