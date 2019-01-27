@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="AllUnitTests" type="JUnit" factoryName="JUnit" activateToolWindowBeforeRun="false" singleton="true">
-    <option name="PACKAGE_NAME" value="com.diconium.oak" />
+    <option name="PACKAGE_NAME" value="com.diconium.oakgit" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />
