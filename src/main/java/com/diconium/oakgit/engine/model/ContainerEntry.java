@@ -1,4 +1,4 @@
-package com.diconium.oakgit.model;
+package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import org.apache.commons.lang3.StringUtils;

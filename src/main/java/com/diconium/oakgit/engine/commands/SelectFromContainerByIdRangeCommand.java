@@ -2,7 +2,7 @@ package com.diconium.oakgit.engine.commands;
 
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.CommandResult;
-import com.diconium.oakgit.model.ContainerEntry;
+import com.diconium.oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;

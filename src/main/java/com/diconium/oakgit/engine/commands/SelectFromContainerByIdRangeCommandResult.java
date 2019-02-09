@@ -2,7 +2,7 @@ package com.diconium.oakgit.engine.commands;
 
 import com.diconium.oakgit.engine.CommandResult;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
-import com.diconium.oakgit.model.ContainerEntry;
+import com.diconium.oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.sql.ResultSet;
 import java.util.List;
 
-import static com.diconium.oakgit.model.ContainerEntry.isValidAndNotEmpty;
+import static com.diconium.oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
 public class SelectFromContainerByIdRangeCommandResult<T extends ContainerEntry<T>> implements CommandResult {

@@ -7,14 +7,13 @@ import com.diconium.oakgit.engine.commands.CreateContainerCommand;
 import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
 import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
 import com.diconium.oakgit.engine.commands.SelectFromContainerByIdRangeCommand;
-import com.diconium.oakgit.model.Container;
-import com.diconium.oakgit.model.ContainerEntry;
-import com.diconium.oakgit.model.NodeAndSettingsEntry;
+import com.diconium.oakgit.engine.model.Container;
+import com.diconium.oakgit.engine.model.ContainerEntry;
+import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.diconium.oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
@@ -67,7 +66,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
     }
 
     private Container getContainer(String name) {
-        return Optional.ofNullable(containerMap.get(name)).orElse(NULL_CONTAINER);
+        return containerMap.getOrDefault(name, NULL_CONTAINER);
     }
 
 }

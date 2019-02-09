@@ -1,4 +1,4 @@
-package com.diconium.oakgit.model;
+package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.commons.QueryParserResult;
 import com.diconium.oakgit.jdbc.OakGitResultSet;

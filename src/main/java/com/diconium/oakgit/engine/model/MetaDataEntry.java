@@ -1,12 +1,10 @@
-package com.diconium.oakgit.model;
+package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import lombok.*;
 import lombok.experimental.Wither;
 import org.apache.calcite.avatica.SqlType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 @Getter

@@ -3,8 +3,8 @@ package com.diconium.oakgit.engine;
 import com.diconium.oakgit.commons.QueryParser;
 import com.diconium.oakgit.commons.QueryParserResult;
 import com.diconium.oakgit.engine.commands.*;
-import com.diconium.oakgit.model.NodeAndSettingsEntry;
-import com.diconium.oakgit.model.MetaDataEntry;
+import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
+import com.diconium.oakgit.engine.model.MetaDataEntry;
 import io.vavr.Tuple2;
 import org.apache.commons.lang3.StringUtils;
 

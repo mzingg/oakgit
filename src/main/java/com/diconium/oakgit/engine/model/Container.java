@@ -1,4 +1,4 @@
-package com.diconium.oakgit.model;
+package com.diconium.oakgit.engine.model;
 
 import lombok.Getter;
 import lombok.NonNull;
