@@ -1,14 +1,21 @@
 package com.diconium.oakgit.jdbc;
 
+import com.diconium.oakgit.engine.CommandFactory;
+import com.diconium.oakgit.engine.CommandProcessor;
 import io.vavr.Tuple2;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.oak.commons.IOUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
@@ -18,65 +25,69 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
     private List<String> commandList = new ArrayList<>();
 
-    @Getter(AccessLevel.PROTECTED)
-    protected List<Tuple2<Integer, Object>> parameter;
+    private Map<Integer, Object> placeholderData = new LinkedHashMap<>();
 
     @Override
     public int executeUpdate() {
-        try {
-            getStatement().executeQuery(getSql());
-            return 1;
-        } catch (SQLException e) {
+        OakGitConnection connection = getConnection();
+        CommandProcessor processor = connection.getProcessor();
+        CommandFactory factory = connection.getCommandFactory();
 
-        }
-
-        return 0;
+        return processor.execute(factory.getCommandForSql(getSql(), placeholderData)).affectedCount();
     }
 
     @Override
     public ResultSet executeQuery() throws SQLException {
-        System.out.println("PREPARED SQL: " + getSql());
-        return getStatement().executeQuery(getSql());
+        OakGitConnection connection = getConnection();
+        CommandProcessor processor = connection.getProcessor();
+        CommandFactory factory = connection.getCommandFactory();
+
+        return processor.execute(factory.getCommandForSql(getSql(), placeholderData)).toResultSet();
     }
 
     @Override
     public void addBatch() {
-        System.out.println("ADD BATCH SQL: " + getSql());
         commandList.add(getSql());
     }
 
     public int[] executeBatch() {
         int[] result = new int[commandList.size()];
         for (int i = 0; i < commandList.size(); i++) {
-            System.out.println("EXECUTE BATCH SQL: " + commandList.get(i));
-            try {
-                getStatement().executeQuery(commandList.get(i));
-                result[i] = 1;
-            } catch (SQLException e) {
+            OakGitConnection connection = getConnection();
+            CommandProcessor processor = connection.getProcessor();
+            CommandFactory factory = connection.getCommandFactory();
 
-            }
+            result[i] = processor.execute(factory.getCommandForSql(commandList.get(i), placeholderData)).affectedCount();
         }
         return result;
     }
 
     @Override
     public void setString(int parameterIndex, String x) {
-        System.out.println(parameterIndex + "=" + x);
+        placeholderData.put(parameterIndex, x);
     }
 
     @Override
     public void setObject(int parameterIndex, Object x) {
-        System.out.println(parameterIndex + "=" + x);
+        placeholderData.put(parameterIndex, x);
     }
 
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType) {
-        System.out.println(parameterIndex + "=" + x);
+        placeholderData.put(parameterIndex, x);
     }
 
     @Override
-    public void setBinaryStream(int parameterIndex, InputStream x, int length) {
-        System.out.println(parameterIndex + "=inputstream");
+    public void setBinaryStream(int parameterIndex, InputStream stream, int length) {
+        if (stream != null) {
+            try {
+                placeholderData.put(parameterIndex, IOUtils.readBytes(stream));
+            } catch (IOException e) {
+                throw new IllegalArgumentException(e);
+            }
+        } else {
+            placeholderData.put(parameterIndex, StringUtils.EMPTY);
+        }
     }
 
 }

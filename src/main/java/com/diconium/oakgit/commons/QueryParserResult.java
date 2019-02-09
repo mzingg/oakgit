@@ -92,7 +92,31 @@ public class QueryParserResult {
                 if (andExpression.getLeftExpression() instanceof GreaterThan && andExpression.getRightExpression() instanceof MinorThan) {
                     GreaterThan leftExpression = (GreaterThan) andExpression.getLeftExpression();
                     MinorThan rightExpression = (MinorThan) andExpression.getRightExpression();
-                    // TODO: finish reading idmin and idMax
+
+                    String leftColumnName = ((Column) leftExpression.getLeftExpression()).getColumnName();
+                    Object leftColumnValue = StringUtils.EMPTY;
+                    if (leftExpression.getRightExpression() instanceof StringValue) {
+                        StringValue value = (StringValue) leftExpression.getRightExpression();
+                        leftColumnValue = value.getValue();
+                    } else if (leftExpression.getRightExpression() instanceof JdbcParameter) {
+                        JdbcParameter value = (JdbcParameter) leftExpression.getRightExpression();
+                        leftColumnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
+                    }
+
+                    String rightColumnName = ((Column) rightExpression.getLeftExpression()).getColumnName();
+                    Object rightColumnValue = StringUtils.EMPTY;
+                    if (rightExpression.getRightExpression() instanceof StringValue) {
+                        StringValue value = (StringValue) rightExpression.getRightExpression();
+                        rightColumnValue = value.getValue();
+                    } else if (rightExpression.getRightExpression() instanceof JdbcParameter) {
+                        JdbcParameter value = (JdbcParameter) rightExpression.getRightExpression();
+                        rightColumnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
+                    }
+
+                    if (leftColumnName.equals(COLUMN_NAME_ID) && rightColumnName.equals(COLUMN_NAME_ID)) {
+                        return Tuple.of(leftColumnValue.toString(), rightColumnValue.toString());
+                    }
+
                 }
             }
         }
@@ -119,4 +143,15 @@ public class QueryParserResult {
 
         return result;
     }
+
+    @SuppressWarnings("unchecked")
+    public <T> Optional<T> getInsertDataField(String fieldName, Class<T> targetType, Map<Integer, Object> placeholderData) {
+        Object fieldValue = getInsertData(placeholderData).getOrDefault(fieldName, null);
+        if (fieldValue != null && targetType.isAssignableFrom(fieldValue.getClass())) {
+            return Optional.of((T) fieldValue);
+        }
+
+        return Optional.empty();
+    }
+
 }

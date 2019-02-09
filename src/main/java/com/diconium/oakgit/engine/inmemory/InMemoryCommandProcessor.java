@@ -9,11 +9,14 @@ import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
 import com.diconium.oakgit.engine.commands.SelectFromContainerByIdRangeCommand;
 import com.diconium.oakgit.model.Container;
 import com.diconium.oakgit.model.ContainerEntry;
+import com.diconium.oakgit.model.NodeAndSettingsEntry;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.diconium.oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
 public class InMemoryCommandProcessor implements CommandProcessor {
 
@@ -29,6 +32,8 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             String containerName = ((CreateContainerCommand) command).getContainerName();
             containerMap.put(containerName, new Container(containerName));
 
+            return SUCCESSFULL_RESULT_WITHOUT_DATA;
+
         } else if (command instanceof InsertIntoContainerCommand) {
 
             InsertIntoContainerCommand insertCommand = (InsertIntoContainerCommand) command;
@@ -36,12 +41,15 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             getContainer(insertCommand.getContainerName())
                     .setEntry(insertCommand.getData());
 
+            return SUCCESSFULL_RESULT_WITHOUT_DATA;
+
         } else if (command instanceof SelectFromContainerByIdCommand) {
 
             SelectFromContainerByIdCommand selectCommand = (SelectFromContainerByIdCommand) command;
 
-            Optional<ContainerEntry> foundEntry = getContainer(selectCommand.getContainerName())
-                    .findById(selectCommand.getId());
+            ContainerEntry<NodeAndSettingsEntry> foundEntry = getContainer(selectCommand.getContainerName())
+                    .findById(selectCommand.getId(), NodeAndSettingsEntry.class)
+                    .orElse(ContainerEntry.emptyOf(NodeAndSettingsEntry.class));
 
             return selectCommand.buildResult(foundEntry);
 
@@ -49,10 +57,10 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             SelectFromContainerByIdRangeCommand selectCommand = (SelectFromContainerByIdRangeCommand) command;
 
-            List<ContainerEntry> foundEntry = getContainer(selectCommand.getContainerName())
-                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax());
+            List<ContainerEntry<NodeAndSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
+                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), NodeAndSettingsEntry.class);
 
-            return selectCommand.buildResult(foundEntry);
+            return selectCommand.buildResult(foundEntries);
         }
 
         return CommandResult.NO_RESULT;

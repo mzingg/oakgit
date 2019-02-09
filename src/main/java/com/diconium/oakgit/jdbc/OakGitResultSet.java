@@ -28,13 +28,24 @@ public class OakGitResultSet extends UnsupportedResultSet {
         pointer = 0;
     }
 
-    public OakGitResultSet add(String columnName, int type, int precision, Object... entries) {
+    public OakGitResultSet add(String columnName, int type, int precision, Object value) {
         Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
         int index = colIndex.orElse(columns.size());
         if (!colIndex.isPresent()) {
             columns.add(new Tuple4<>(columnName, type, precision, new ArrayList<>()));
         }
-        columns.get(index)._4.addAll(Arrays.asList(entries));
+        columns.get(index)._4.add(value);
+
+        return this;
+    }
+
+    public OakGitResultSet addMultiple(String columnName, int type, int precision, List<Object> values) {
+        Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
+        int index = colIndex.orElse(columns.size());
+        if (!colIndex.isPresent()) {
+            columns.add(new Tuple4<>(columnName, type, precision, new ArrayList<>()));
+        }
+        columns.get(index)._4.addAll(values);
 
         return this;
     }

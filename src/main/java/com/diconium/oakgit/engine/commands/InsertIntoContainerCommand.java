@@ -13,12 +13,20 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public class InsertIntoContainerCommand implements Command {
+public class InsertIntoContainerCommand<T extends ContainerEntry> implements Command {
 
     @NonNull
     private final String containerName;
 
     @NonNull
-    private final ContainerEntry data;
+    private final T data;
 
+
+    @Override
+    public String toString() {
+        return "InsertIntoContainerCommand{" +
+                "containerName='" + containerName + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }

@@ -3,7 +3,6 @@ package com.diconium.oakgit.model;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -14,34 +13,43 @@ public class Container {
     @Getter
     private final String name;
 
-    private final Map<String, ContainerEntry> entries = new HashMap<>();
+    private final Map<String, ContainerEntry<?>> entries = new HashMap<>();
 
     public Container setEntry(@NonNull ContainerEntry entry) {
-        entries.put(entry.getID(), entry);
+        entries.put(entry.getId(), entry);
         return this;
     }
 
-    public Optional<ContainerEntry> findById(String id) {
+    @SuppressWarnings("unchecked")
+    public <T extends ContainerEntry<T>> Optional<ContainerEntry<T>> findById(String id, Class<T> resultType) {
         if (entries.containsKey(id)) {
-            return Optional.of(entries.get(id));
+            ContainerEntry<?> containerEntry = entries.get(id);
+            if (resultType.isAssignableFrom(containerEntry.getClass())) {
+                return Optional.of((T) containerEntry);
+            }
         }
         return Optional.empty();
     }
 
-    public List<ContainerEntry> findByIdRange(String idMin, String idMax) {
-        ArrayList<ContainerEntry> result = new ArrayList<>();
+    @SuppressWarnings("unchecked")
+    public <T extends ContainerEntry<T>> List<ContainerEntry<T>> findByIdRange(String idMin, String idMax, Class<T> resultType) {
+        ArrayList<ContainerEntry<T>> result = new ArrayList<>();
 
         try {
             int min = Integer.parseInt(idMin);
             int max = Integer.parseInt(idMax);
             for (String key : entries.keySet()) {
-                try {
-                    int k = Integer.parseInt(key);
-                    if (k > min && k < max) {
-                        result.add(entries.get(key));
+                ContainerEntry<?> containerEntry = entries.get(key);
+                if (resultType.isAssignableFrom(containerEntry.getClass())) {
+                    try {
+                        int k = Integer.parseInt(key);
+                        if (k > min && k < max) {
+
+                            result.add((T) containerEntry);
+                        }
+                    } catch (NumberFormatException skipped) {
+                        // skip this entry
                     }
-                } catch (NumberFormatException skipped) {
-                    // skip this entry
                 }
             }
         } catch (NumberFormatException ignored) {

@@ -3,7 +3,8 @@ package com.diconium.oakgit.engine;
 import com.diconium.oakgit.commons.QueryParser;
 import com.diconium.oakgit.commons.QueryParserResult;
 import com.diconium.oakgit.engine.commands.*;
-import com.diconium.oakgit.model.ContainerEntry;
+import com.diconium.oakgit.model.NodeAndSettingsEntry;
+import com.diconium.oakgit.model.MetaDataEntry;
 import io.vavr.Tuple2;
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,8 +47,17 @@ public class CommandFactory {
 
         } else if (queryParserResult.getType() == QueryParserResult.ResultType.INSERT) {
 
-            ContainerEntry data = new ContainerEntry(queryParserResult.getId(placeholderData));
-            return new InsertIntoContainerCommand(queryParserResult.getTableName(), data);
+            if (queryParserResult.getTableName().equals("DATASTORE_META")) {
+
+                MetaDataEntry data = new MetaDataEntry(queryParserResult.getId(placeholderData));
+                return new InsertIntoContainerCommand<>(queryParserResult.getTableName(), data);
+
+            } else {
+
+                NodeAndSettingsEntry data = NodeAndSettingsEntry.buildNodeSettingsDataForInsert(placeholderData, queryParserResult);
+                return new InsertIntoContainerCommand<>(queryParserResult.getTableName(), data);
+
+            }
 
         } else if (queryParserResult.getType() == QueryParserResult.ResultType.SELECT) {
 

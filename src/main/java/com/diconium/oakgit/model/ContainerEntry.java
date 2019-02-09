@@ -1,39 +1,112 @@
 package com.diconium.oakgit.model;
 
-import lombok.*;
-import lombok.experimental.Accessors;
-import lombok.experimental.Wither;
+import com.diconium.oakgit.jdbc.OakGitResultSet;
+import org.apache.commons.lang3.StringUtils;
 
-@Getter
-@Wither
-@RequiredArgsConstructor
-@AllArgsConstructor
-public class ContainerEntry {
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.Consumer;
 
-    @NonNull
-    @Wither(AccessLevel.NONE)
-    private final String ID;
+public interface ContainerEntry<T extends ContainerEntry>  {
 
-    private long modified = 0L;
+    String EMPTY_ID_VALUE = "EMPTY";
 
-    private boolean hasBinary = false;
+    /**
+     * Returns an instance of an empty container typed to the given class.
+     * Always returns a new object instance. Calls the ctor(String) of the given type class.
+     * Use {@link ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is empty.
+     * @param entryClass
+     * @param <T>
+     * @return ContainerEntry
+     */
+    static <T extends ContainerEntry<T>> ContainerEntry<T> emptyOf(Class<T> entryClass) {
+        try {
+            return entryClass.getConstructor(String.class).newInstance(EMPTY_ID_VALUE);
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new IllegalArgumentException("no ctor with id string found for ContainerEntry implementation");
+        }
+    }
 
-    private boolean deletedOnce = false;
+    /**
+     * Tests if a given containerEntry object is of the empty type.
+     * @param containerEntry
+     * @return boolean
+     */
+    static boolean isEmpty(ContainerEntry<?> containerEntry) {
+        return containerEntry == null || EMPTY_ID_VALUE.equals(containerEntry.getId());
+    }
 
-    private long modcount = 0L;
+    /**
+     * Returns an instance of an invalid container typed to the given class.
+     * Always returns a new object instance. Use {@link ContainerEntry#isInvalid(ContainerEntry)}
+     * to test if a given object is invalid.
+     * @param entryClass
+     * @param <T>
+     * @return ContainerEntry
+     */
+    static <T extends ContainerEntry<T>> ContainerEntry<T> invalidOf(Class<T> entryClass) {
+        return new InvalidContainerEntry<T>();
+    }
 
-    private long cmodcount = 0L;
+    /**
+     * Tests if a given containerEntry object is of the invalid type.
+     * @param containerEntry
+     * @return boolean
+     */
+    static boolean isInvalid(ContainerEntry<?> containerEntry) {
+        return containerEntry instanceof InvalidContainerEntry;
+    }
 
-    private long dsize = 0L;
+    /**
+     * Combines !{@link ContainerEntry#isEmpty(ContainerEntry)} and !{@link ContainerEntry#isInvalid(ContainerEntry)}
+     * @param containerEntry
+     * @return
+     */
+    static boolean isValidAndNotEmpty(ContainerEntry<?> containerEntry) {
+        return !isInvalid(containerEntry) && !isEmpty(containerEntry);
+    }
 
-    private int version = 0;
+    /**
+     * A unique id for this entry.
+     *
+     * @return String
+     */
+    String getId();
 
-    private int sdtype = 0;
+    Consumer<OakGitResultSet> getResultSetModifier();
 
-    private long sdmaxrevtime = 0L;
+    /**
+     * NULL object type to indicate an empty entry.
+     * @param <T>
+     */
+    class EmptyContainerEntry<T extends ContainerEntry<T>>  implements ContainerEntry<T> {
 
-    private byte[] data = new byte[0];
+        @Override
+        public String getId() {
+            return StringUtils.EMPTY;
+        }
 
-    private byte[] bdata = new byte[0];
+        @Override
+        public Consumer<OakGitResultSet> getResultSetModifier() {
+            return (resultSet) -> {};
+        }
 
+    }
+
+    /**
+     * NULL object type to indicate an invalid entry.
+     * @param <T>
+     */
+    class InvalidContainerEntry<T extends ContainerEntry<T>>  implements ContainerEntry<T> {
+
+        @Override
+        public String getId() {
+            return "INVALID";
+        }
+
+        @Override
+        public Consumer<OakGitResultSet> getResultSetModifier() {
+            throw new IllegalArgumentException("trying to apply invalid entry to a result set");
+        }
+
+    }
 }
