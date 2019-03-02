@@ -5,6 +5,7 @@ import com.diconium.oakgit.commons.QueryParserResult;
 import com.diconium.oakgit.engine.commands.*;
 import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
 import com.diconium.oakgit.engine.model.MetaDataEntry;
+import com.diconium.oakgit.engine.model.UpdateSet;
 import io.vavr.Tuple2;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,13 +50,18 @@ public class CommandFactory {
 
             if (queryParserResult.getTableName().equals("DATASTORE_META")) {
 
-                MetaDataEntry data = new MetaDataEntry(queryParserResult.getId(placeholderData));
-                return new InsertIntoContainerCommand<>(queryParserResult.getTableName(), data);
+                MetaDataEntry data = new MetaDataEntry()
+                        .setId(queryParserResult.getId(placeholderData));
+                return new InsertIntoContainerCommand<>(MetaDataEntry.class)
+                        .setContainerName(queryParserResult.getTableName())
+                        .setData(data);
 
             } else {
 
                 NodeAndSettingsEntry data = NodeAndSettingsEntry.buildNodeSettingsDataForInsert(placeholderData, queryParserResult);
-                return new InsertIntoContainerCommand<>(queryParserResult.getTableName(), data);
+                return new InsertIntoContainerCommand<>(NodeAndSettingsEntry.class)
+                        .setContainerName(queryParserResult.getTableName())
+                        .setData(data);
 
             }
 
@@ -77,6 +83,23 @@ public class CommandFactory {
 
             }
 
+        } else if (queryParserResult.getType() == QueryParserResult.ResultType.UPDATE) {
+
+            UpdateSet data = new UpdateSet()
+                    .withValue("newModified", placeholderData.get(1)) // placeholder 2 is the same as 1
+                    .withValue("newHasBinary", placeholderData.get(3))
+                    .withValue("newDeletedOnce", placeholderData.get(4))
+                    .withValue("newModCount", placeholderData.get(5))
+                    .withValue("newCModCount", placeholderData.get(6))
+                    .withValue("dsizeAddition", placeholderData.get(7))
+                    .withValue("newData", placeholderData.get(8))
+                    .withValue("newVersion", 2);
+
+            return new UpdatDataInContainerCommand()
+                    .setId((String) placeholderData.get(9))
+                    .setModCount((Long) placeholderData.get(10))
+                    .setContainerName(queryParserResult.getTableName())
+                    .setData(data);
 
         }
 

@@ -25,6 +25,7 @@ public class QueryParserResult {
         INSERT,
         CREATE,
         SELECT,
+        UPDATE,
         ERROR,
         UNKNOWN
     }

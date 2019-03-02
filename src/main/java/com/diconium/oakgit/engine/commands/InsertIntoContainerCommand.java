@@ -5,6 +5,8 @@ import com.diconium.oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 
@@ -12,15 +14,22 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @Getter
-@RequiredArgsConstructor
+@Setter
 public class InsertIntoContainerCommand<T extends ContainerEntry> implements Command {
 
     @NonNull
-    private final String containerName;
+    private String containerName = StringUtils.EMPTY;
 
     @NonNull
-    private final T data;
+    private T data;
 
+    public InsertIntoContainerCommand(@NonNull Class<T> dataClass) {
+        try {
+            this.data = dataClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+           throw new IllegalArgumentException(e);
+        }
+    }
 
     @Override
     public String toString() {

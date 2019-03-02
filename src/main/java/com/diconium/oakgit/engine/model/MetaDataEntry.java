@@ -1,21 +1,20 @@
 package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
-import lombok.*;
-import lombok.experimental.Wither;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.apache.calcite.avatica.SqlType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Consumer;
 
 @Getter
-@Wither
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Setter
 public class MetaDataEntry implements ContainerEntry<MetaDataEntry> {
 
     @NonNull
-    @Wither(AccessLevel.NONE)
-    private final String id;
+    private String id = StringUtils.EMPTY;
 
     private long lastmod = 0L;
 

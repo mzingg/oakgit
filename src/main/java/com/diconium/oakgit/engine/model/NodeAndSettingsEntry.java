@@ -2,22 +2,21 @@ package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.commons.QueryParserResult;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
-import lombok.*;
-import lombok.experimental.Wither;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.apache.calcite.avatica.SqlType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.function.Consumer;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
-@AllArgsConstructor
 public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry> {
 
     @NonNull
-    @Wither(AccessLevel.NONE)
-    private final String id;
+    private String id = StringUtils.EMPTY;
 
     private long modified = 0L;
 
@@ -78,7 +77,8 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
     }
 
     public static NodeAndSettingsEntry buildNodeSettingsDataForInsert(@NonNull Map<Integer, Object> placeholderData, @NonNull QueryParserResult queryParserResult) {
-        NodeAndSettingsEntry data = new NodeAndSettingsEntry(queryParserResult.getId(placeholderData));
+        NodeAndSettingsEntry data = new NodeAndSettingsEntry()
+                .setId(queryParserResult.getId(placeholderData));
         queryParserResult
                 .getInsertDataField("MODIFIED", Long.class, placeholderData)
                 .ifPresent(data::setModified);

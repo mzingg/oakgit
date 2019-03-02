@@ -3,12 +3,9 @@ package com.diconium.oakgit.engine.model;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.Consumer;
 
 public interface ContainerEntry<T extends ContainerEntry>  {
-
-    String EMPTY_ID_VALUE = "EMPTY";
 
     /**
      * Returns an instance of an empty container typed to the given class.
@@ -20,9 +17,9 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      */
     static <T extends ContainerEntry<T>> ContainerEntry<T> emptyOf(Class<T> entryClass) {
         try {
-            return entryClass.getConstructor(String.class).newInstance(EMPTY_ID_VALUE);
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new IllegalArgumentException("no ctor with id string found for ContainerEntry implementation");
+            return entryClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalArgumentException("no empty ctor found for ContainerEntry implementation");
         }
     }
 
@@ -32,7 +29,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      * @return boolean
      */
     static boolean isEmpty(ContainerEntry<?> containerEntry) {
-        return containerEntry == null || EMPTY_ID_VALUE.equals(containerEntry.getId());
+        return containerEntry == null || StringUtils.EMPTY.equals(containerEntry.getId());
     }
 
     /**

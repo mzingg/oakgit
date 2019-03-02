@@ -15,6 +15,7 @@ import net.sf.jsqlparser.statement.create.table.CreateTable;
 import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.select.*;
 
+import net.sf.jsqlparser.statement.update.Update;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
@@ -61,6 +62,9 @@ public class QueryParser {
                     result.setWhereExpression(selectBody.getWhere());
                 }
             }
+        } else if (statement instanceof Update) {
+            Update updateStatement = (Update) statement;
+            result.setTableName(updateStatement.getTables().iterator().next().getName());
         }
     }
 
@@ -71,6 +75,8 @@ public class QueryParser {
             return QueryParserResult.ResultType.SELECT;
         } else if (statement instanceof CreateTable) {
             return QueryParserResult.ResultType.CREATE;
+        } else if (statement instanceof Update) {
+            return QueryParserResult.ResultType.UPDATE;
         }
 
         return QueryParserResult.ResultType.UNKNOWN;
