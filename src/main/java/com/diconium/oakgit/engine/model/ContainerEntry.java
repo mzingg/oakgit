@@ -69,6 +69,10 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      */
     String getId();
 
+    Long getModCount();
+
+    Consumer<OakGitResultSet> getResultSetTypeModifier();
+
     Consumer<OakGitResultSet> getResultSetModifier();
 
     /**
@@ -80,6 +84,16 @@ public interface ContainerEntry<T extends ContainerEntry>  {
         @Override
         public String getId() {
             return StringUtils.EMPTY;
+        }
+
+        @Override
+        public Long getModCount() {
+            return 0L;
+        }
+
+        @Override
+        public Consumer<OakGitResultSet> getResultSetTypeModifier() {
+            return (resultSet) -> {};
         }
 
         @Override
@@ -97,12 +111,22 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
         @Override
         public String getId() {
-            return "INVALID";
+            throw new UnsupportedOperationException("trying to get id from an invalid entry");
+        }
+
+        @Override
+        public Long getModCount() {
+            throw new UnsupportedOperationException("trying to get mod count from an invalid entry");
+        }
+
+        @Override
+        public Consumer<OakGitResultSet> getResultSetTypeModifier() {
+            throw new UnsupportedOperationException("trying to apply invalid entry to a result set");
         }
 
         @Override
         public Consumer<OakGitResultSet> getResultSetModifier() {
-            throw new IllegalArgumentException("trying to apply invalid entry to a result set");
+            throw new UnsupportedOperationException("trying to apply invalid entry to a result set");
         }
 
     }

@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 public class OakGitDriver implements Driver {
 
+    private final static InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor();
+
     static {
         try {
             DriverManager.registerDriver(new OakGitDriver());
@@ -30,7 +32,8 @@ public class OakGitDriver implements Driver {
     public Connection connect(String url, Properties info) throws SQLException {
         OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
         if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
-            return new OakGitConnection(configuration, new InMemoryCommandProcessor(), new CommandFactory());
+
+            return new OakGitConnection(configuration, PROCESSOR, new CommandFactory());
         }
 
         throw new SQLException("Invalid connection url");

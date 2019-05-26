@@ -4,7 +4,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class Container {
@@ -15,7 +19,7 @@ public class Container {
 
     private final Map<String, ContainerEntry<?>> entries = new HashMap<>();
 
-    public Container setEntry(@NonNull ContainerEntry entry) {
+    public <T extends ContainerEntry<T>> Container setEntry(@NonNull ContainerEntry<T> entry) {
         entries.put(entry.getId(), entry);
         return this;
     }
@@ -23,9 +27,20 @@ public class Container {
     @SuppressWarnings("unchecked")
     public <T extends ContainerEntry<T>> Optional<ContainerEntry<T>> findById(String id, Class<T> resultType) {
         if (entries.containsKey(id)) {
-            ContainerEntry<?> containerEntry = entries.get(id);
-            if (resultType.isAssignableFrom(containerEntry.getClass())) {
-                return Optional.of((T) containerEntry);
+            ContainerEntry<?> entry = entries.get(id);
+            if (resultType.isAssignableFrom(entry.getClass())) {
+                return Optional.of((T) entry);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends ContainerEntry<T>> Optional<ContainerEntry<T>> findByIdAndModCount(String id, long modCount, Class<T> resultType) {
+        if (entries.containsKey(id)) {
+            ContainerEntry<?> entry = entries.get(id);
+            if (resultType.isAssignableFrom(entry.getClass()) && (entry.getModCount() == null || entry.getModCount() == modCount)) {
+                return Optional.of((T) entry);
             }
         }
         return Optional.empty();
@@ -36,15 +51,11 @@ public class Container {
         ArrayList<ContainerEntry<T>> result = new ArrayList<>();
 
         try {
-            int min = Integer.parseInt(idMin);
-            int max = Integer.parseInt(idMax);
             for (String key : entries.keySet()) {
                 ContainerEntry<?> containerEntry = entries.get(key);
                 if (resultType.isAssignableFrom(containerEntry.getClass())) {
                     try {
-                        int k = Integer.parseInt(key);
-                        if (k > min && k < max) {
-
+                        if (containerEntry.getId().compareTo(idMin) >= 0 && containerEntry.getId().compareTo(idMax) <= 0) {
                             result.add((T) containerEntry);
                         }
                     } catch (NumberFormatException skipped) {

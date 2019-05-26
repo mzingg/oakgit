@@ -21,18 +21,28 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
     private List<Tuple4<String, Integer, Integer, List<Object>>> columns;
     private int pointer;
+    private boolean wasNull;
 
     public OakGitResultSet(String tableName) {
         this.tableName = tableName;
         columns = new ArrayList<>();
-        pointer = 0;
+        pointer = -1;
     }
 
-    public OakGitResultSet add(String columnName, int type, int precision, Object value) {
+    public OakGitResultSet addColumn(String columnName, int type, int precision) {
+        Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
+        if (!colIndex.isPresent()) {
+            columns.add(new Tuple4<>(columnName, type, precision, new ArrayList<>()));
+        }
+
+        return this;
+    }
+
+    public OakGitResultSet addValue(String columnName, Object value) {
         Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
         int index = colIndex.orElse(columns.size());
         if (!colIndex.isPresent()) {
-            columns.add(new Tuple4<>(columnName, type, precision, new ArrayList<>()));
+            throw new IllegalArgumentException("column does not exist");
         }
         columns.get(index)._4.add(value);
 
@@ -118,10 +128,57 @@ public class OakGitResultSet extends UnsupportedResultSet {
     }
 
     @Override
+    public boolean wasNull() {
+        return wasNull;
+    }
+
+    @Override
+    public long getLong(int columnIndex) {
+        Object result = columns.get(columnIndex)._4.get(pointer);
+        if (result instanceof Integer) {
+            wasNull = false;
+            return ((Integer) result).longValue();
+        }
+        if (result instanceof Long) {
+            wasNull = false;
+            return (Long) result;
+        }
+        wasNull = true;
+        return 0L;
+    }
+
+    @Override
+    public String getString(int columnIndex) {
+        Object result = columns.get(columnIndex)._4.get(pointer);
+        if (result instanceof byte[]) {
+            wasNull = false;
+            return new String((byte[]) result);
+        }
+        if (result instanceof String) {
+            wasNull = false;
+            return (String) result;
+        }
+        wasNull = true;
+        return StringUtils.EMPTY;
+    }
+
+    @Override
+    public byte[] getBytes(int columnIndex) {
+        Object result = columns.get(columnIndex)._4.get(pointer);
+        if (result instanceof byte[]) {
+            wasNull = false;
+            return (byte[]) result;
+        }
+        wasNull = true;
+        return new byte[0];
+    }
+
+    @Override
     public boolean next() {
         if (!columns.isEmpty()) {
-            if (pointer + 1 > 0 && pointer + 1 < columns.get(0)._4.size()) {
+            if (pointer + 1 >= 0 && pointer + 1 < columns.get(0)._4.size()) {
                 pointer = pointer + 1;
+                return true;
             }
         }
 

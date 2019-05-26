@@ -160,6 +160,20 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.15</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- avoid warning in error log about SLF4J nop -->
         <dependency>
             <groupId>org.slf4j</groupId>

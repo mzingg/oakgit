@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class UpdateSet implements ContainerEntry<UpdateSet> {
@@ -16,8 +17,43 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
         return this;
     }
 
+    public <T> UpdateSet whenHasValue(@NonNull String name, Class<T> targetType, Consumer<T> consumer) {
+        if (updatedValues.containsKey(name)) {
+            Object value = updatedValues.get(name);
+            if (value == null || targetType.isAssignableFrom(value.getClass())) {
+                consumer.accept((T) value);
+            } else {
+                System.out.println("value " + name + " of type " + targetType.getName() + " not accepted: value has type " + value.getClass().getName());
+            }
+        } else {
+            System.out.println("value " + name + " of type " + targetType.getName() + " does not exist");
+        }
+        return this;
+    }
+
+    public <T> Optional<T> getValue(@NonNull String name, Class<T> targetType) {
+        if (updatedValues.containsKey(name)) {
+            Object value = updatedValues.get(name);
+            if (value != null && targetType.isAssignableFrom(value.getClass())) {
+                return Optional.of((T) value);
+            }
+        }
+
+        throw new IllegalArgumentException("value " + name + " of type " + targetType.getName() + " not found");
+    }
+
     @Override
     public String getId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Long getModCount() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Consumer<OakGitResultSet> getResultSetTypeModifier() {
         throw new UnsupportedOperationException();
     }
 

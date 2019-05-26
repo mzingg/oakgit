@@ -91,7 +91,7 @@ public class CommandFactory {
                     .withValue("newDeletedOnce", placeholderData.get(4))
                     .withValue("newModCount", placeholderData.get(5))
                     .withValue("newCModCount", placeholderData.get(6))
-                    .withValue("dsizeAddition", placeholderData.get(7))
+                    .withValue("dsizeAddition", new Long((Integer)placeholderData.get(7)))
                     .withValue("newData", placeholderData.get(8))
                     .withValue("newVersion", 2);
 

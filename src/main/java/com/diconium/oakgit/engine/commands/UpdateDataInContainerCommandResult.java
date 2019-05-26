@@ -1,21 +1,21 @@
 package com.diconium.oakgit.engine.commands;
 
 import com.diconium.oakgit.engine.CommandResult;
-import com.diconium.oakgit.jdbc.OakGitResultSet;
 import com.diconium.oakgit.engine.model.ContainerEntry;
+import com.diconium.oakgit.jdbc.OakGitResultSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.ResultSet;
 
-import static com.diconium.oakgit.engine.model.ContainerEntry.*;
+import static com.diconium.oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
-public class SelectFromContainerByIdCommandResult<T extends ContainerEntry<T>> implements CommandResult {
+public class UpdateDataInContainerCommandResult<T extends ContainerEntry<T>> implements CommandResult {
 
     @NonNull
-    private final SelectFromContainerByIdCommand command;
+    private final UpdatDataInContainerCommand command;
 
     @NonNull
     @Getter
@@ -25,7 +25,7 @@ public class SelectFromContainerByIdCommandResult<T extends ContainerEntry<T>> i
     public ResultSet toResultSet() {
         OakGitResultSet result = new OakGitResultSet(command.getContainerName());
         foundEntry.getResultSetTypeModifier().accept(result);
-        if (wasSuccessfull()) {
+        if (isValidAndNotEmpty(foundEntry)) {
             foundEntry.getResultSetModifier().accept(result);
         }
         return result;

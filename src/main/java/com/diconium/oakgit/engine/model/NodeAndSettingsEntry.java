@@ -18,27 +18,27 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
     @NonNull
     private String id = StringUtils.EMPTY;
 
-    private long modified = 0L;
+    private Long modified;
 
-    private int hasBinary = 0;
+    private Integer hasBinary;
 
-    private int deletedOnce = 0;
+    private Integer deletedOnce;
 
-    private long modcount = 0L;
+    private Long modCount;
 
-    private long cmodcount = 0L;
+    private Long cModCount;
 
-    private long dsize = 0L;
+    private Long dSize;
 
-    private int version = 0;
+    private Integer version;
 
-    private int sdtype = 0;
+    private Integer sdType;
 
-    private long sdmaxrevtime = 0L;
+    private Long sdMaxRevTime;
 
-    private byte[] data = new byte[0];
+    private byte[] data;
 
-    private byte[] bdata = new byte[0];
+    private byte[] bdata;
 
     @Override
     public String toString() {
@@ -47,32 +47,49 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
                 ", modified=" + modified +
                 ", hasBinary=" + hasBinary +
                 ", deletedOnce=" + deletedOnce +
-                ", modcount=" + modcount +
-                ", cmodcount=" + cmodcount +
-                ", dsize=" + dsize +
+                ", modCount=" + modCount +
+                ", cModCount=" + cModCount +
+                ", dSize=" + dSize +
                 ", version=" + version +
-                ", sdtype=" + sdtype +
-                ", sdmaxrevtime=" + sdmaxrevtime +
+                ", sdType=" + sdType +
+                ", sdMaxRevTime=" + sdMaxRevTime +
                 ", data=" + new String(data) +
                 ", bdata=" + new String(bdata) +
                 '}';
+    }
+    @Override
+    public Consumer<OakGitResultSet> getResultSetTypeModifier() {
+        return result -> {
+            result.addColumn("MODIFIED", SqlType.BIGINT.id, 0);
+            result.addColumn("MODCOUNT", SqlType.BIGINT.id, 0);
+            result.addColumn("CMODCOUNT", SqlType.BIGINT.id, 0);
+            result.addColumn("HASBINARY", SqlType.SMALLINT.id, 0);
+            result.addColumn("DELETEDONCE", SqlType.SMALLINT.id, 0);
+            result.addColumn("VERSION", SqlType.SMALLINT.id, 0);
+            result.addColumn("SDTYPE", SqlType.SMALLINT.id, 0);
+            result.addColumn("DSIZE", SqlType.BIGINT.id, 0);
+            result.addColumn("SDMAXREVTIME", SqlType.BIGINT.id, 0);
+            result.addColumn("DATA", SqlType.VARCHAR.id, 16384);
+            result.addColumn("BDATA", SqlType.BLOB.id, 1073741824);
+            result.addColumn("ID", SqlType.VARCHAR.id, 512);
+        };
     }
 
     @Override
     public Consumer<OakGitResultSet> getResultSetModifier() {
         return result -> {
-            result.add("ID", SqlType.VARCHAR.id, 512, id);
-            result.add("MODIFIED", SqlType.BIGINT.id, 0, modified);
-            result.add("HASBINARY", SqlType.SMALLINT.id, 0, hasBinary);
-            result.add("DELETEDONCE", SqlType.SMALLINT.id, 0, deletedOnce);
-            result.add("MODCOUNT", SqlType.BIGINT.id, 0, modcount);
-            result.add("CMODCOUNT", SqlType.BIGINT.id, 0, cmodcount);
-            result.add("DSIZE", SqlType.BIGINT.id, 0, dsize);
-            result.add("VERSION", SqlType.SMALLINT.id, 0, version);
-            result.add("SDTYPE", SqlType.SMALLINT.id, 0, sdtype);
-            result.add("SDMAXREVTIME", SqlType.BIGINT.id, 0, sdmaxrevtime);
-            result.add("DATA", SqlType.VARCHAR.id, 16384, data);
-            result.add("BDATA", SqlType.BLOB.id, 1073741824, bdata);
+            result.addValue("MODIFIED", modified);
+            result.addValue("MODCOUNT", modCount);
+            result.addValue("CMODCOUNT", cModCount);
+            result.addValue("HASBINARY", hasBinary);
+            result.addValue("DELETEDONCE", deletedOnce);
+            result.addValue("VERSION", version);
+            result.addValue("SDTYPE", sdType);
+            result.addValue("DSIZE", dSize);
+            result.addValue("SDMAXREVTIME", sdMaxRevTime);
+            result.addValue("DATA", data);
+            result.addValue("BDATA", bdata);
+            result.addValue("ID", id);
         };
     }
 
@@ -90,22 +107,22 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
                 .ifPresent(data::setDeletedOnce);
         queryParserResult
                 .getInsertDataField("MODCOUNT", Long.class, placeholderData)
-                .ifPresent(data::setModcount);
+                .ifPresent(data::setModCount);
         queryParserResult
                 .getInsertDataField("CMODCOUNT", Long.class, placeholderData)
-                .ifPresent(data::setCmodcount);
+                .ifPresent(data::setCModCount);
         queryParserResult
                 .getInsertDataField("DSIZE", Long.class, placeholderData)
-                .ifPresent(data::setDsize);
+                .ifPresent(data::setDSize);
         queryParserResult
                 .getInsertDataField("VERSION", Integer.class, placeholderData)
                 .ifPresent(data::setVersion);
         queryParserResult
                 .getInsertDataField("SDTYPE", Integer.class, placeholderData)
-                .ifPresent(data::setSdtype);
+                .ifPresent(data::setSdType);
         queryParserResult
                 .getInsertDataField("SDMAXREVTIME", Long.class, placeholderData)
-                .ifPresent(data::setSdmaxrevtime);
+                .ifPresent(data::setSdMaxRevTime);
         queryParserResult
                 .getInsertDataField("DATA", String.class, placeholderData)
                 .ifPresent(f -> data.setData(f.getBytes()));
@@ -114,4 +131,6 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
                 .ifPresent(f -> data.setBdata(f.getBytes()));
         return data;
     }
+
+
 }

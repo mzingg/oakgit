@@ -10,15 +10,6 @@ import java.util.Map;
 
 public abstract class UnsupportedResultSet implements ResultSet, ResultSetMetaData {
 
-    @Override
-    public boolean wasNull() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getString(int columnIndex) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public boolean getBoolean(int columnIndex) {
@@ -40,10 +31,6 @@ public abstract class UnsupportedResultSet implements ResultSet, ResultSetMetaDa
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public long getLong(int columnIndex) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public float getFloat(int columnIndex) {
@@ -57,11 +44,6 @@ public abstract class UnsupportedResultSet implements ResultSet, ResultSetMetaDa
 
     @Override
     public BigDecimal getBigDecimal(int columnIndex, int scale) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public byte[] getBytes(int columnIndex) {
         throw new UnsupportedOperationException();
     }
 

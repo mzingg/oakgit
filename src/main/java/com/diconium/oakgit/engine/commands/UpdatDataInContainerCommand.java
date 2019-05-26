@@ -1,7 +1,9 @@
 package com.diconium.oakgit.engine.commands;
 
 import com.diconium.oakgit.engine.Command;
+import com.diconium.oakgit.engine.CommandResult;
 import com.diconium.oakgit.engine.model.ContainerEntry;
+import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
 import com.diconium.oakgit.engine.model.UpdateSet;
 import lombok.Getter;
 import lombok.NonNull;
@@ -32,5 +34,9 @@ public class UpdatDataInContainerCommand implements Command {
                 ", modCount=" + modCount +
                 ", data=" + data +
                 '}';
+    }
+
+    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull ContainerEntry<T> foundEntry) {
+        return new UpdateDataInContainerCommandResult(this, foundEntry);
     }
 }

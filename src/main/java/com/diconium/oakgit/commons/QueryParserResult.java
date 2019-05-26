@@ -75,6 +75,8 @@ public class QueryParserResult {
                     sRight = ((StringValue) right).getValue();
                 } else if (right instanceof LongValue) {
                     sRight = ((LongValue) right).getStringValue();
+                } else if (right instanceof JdbcParameter) {
+                    sRight = placeholderData.getOrDefault(1, "#?1").toString();
                 }
                 if (left instanceof Column && ((Column) left).getColumnName().equals(COLUMN_NAME_ID) && StringUtils.isNotEmpty(sRight)) {
                     id = sRight;

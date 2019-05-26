@@ -25,9 +25,15 @@ public class SelectFromContainerByIdRangeCommandResult<T extends ContainerEntry<
     @Override
     public ResultSet toResultSet() {
         OakGitResultSet result = new OakGitResultSet(command.getContainerName());
-        foundEntries.stream()
-                .filter(ContainerEntry::isValidAndNotEmpty)
-                .forEach(e -> e.getResultSetModifier().accept(result));
+        if (foundEntries.size() > 0) {
+            foundEntries.get(0).getResultSetTypeModifier().accept(result);
+        }
+        if (wasSuccessfull()) {
+            foundEntries.stream()
+                    .filter(ContainerEntry::isValidAndNotEmpty)
+                    .forEach(e -> e.getResultSetModifier().accept(result));
+        }
+
         return result;
     }
 
