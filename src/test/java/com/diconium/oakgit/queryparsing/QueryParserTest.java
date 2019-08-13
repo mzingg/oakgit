@@ -1,10 +1,11 @@
-package com.diconium.oakgit.commons;
+package com.diconium.oakgit.queryparsing;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static com.diconium.oakgit.queryparsing.QueryAnalyzer.INVALID_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -15,14 +16,14 @@ class QueryParserTest {
     void parseWithEmptySqlQueryReturnsErrorResult(){
     	QueryParserResult actual = new QueryParser().parse(StringUtils.EMPTY);
 
-    	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));
+    	assertThat(actual.isValid(), is(false));
     }
 
     @Test
     void parseWithNullSqlQueryReturnsErrorResult(){
     	QueryParserResult actual = new QueryParser().parse(null);
 
-    	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));
+    	assertThat(actual.isValid(), is(false));
     }
 
     @Test
@@ -78,7 +79,7 @@ class QueryParserTest {
     void parseWithInvalidSelectQueryReturnsException() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
 
-    	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));
+    	assertThat(actual.isValid(), is(false));
     }
 
     @Test
@@ -117,7 +118,7 @@ class QueryParserTest {
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data,)\n" +
         "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
 
-    	assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));
+        assertThat(actual.isValid(), is(false));
     }
 
     @Test
@@ -144,17 +145,17 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithSelectQueryAndEmptyIdReturnsEmptyId(){
+    public void parseWithSelectQueryAndEmptyIdReturnsInvalidId(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ''");
 
-        assertThat(actual.getId(Collections.emptyMap()), is(StringUtils.EMPTY));
+        assertThat(actual.getId(Collections.emptyMap()), is(sameInstance(INVALID_ID)));
     }
 
     @Test
     public void parseWithSelectQueryAndNoIdReturnsError(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ");
 
-        assertThat(actual, is(sameInstance(QueryParserResult.ERROR_RESULT)));
+        assertThat(actual.isValid(), is(false));
     }
 
     @Test
@@ -179,16 +180,16 @@ class QueryParserTest {
     }
 
     @Test
-    public void parseWithDeleteQueryReturnsUnknownObject(){
+    public void parseWithDeleteQueryReturnsDeleteType(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = '0'");
 
-        assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.UNKNOWN)));
+        assertThat(actual.getType(), is(sameInstance(QueryParserResult.ResultType.DELETE)));
     }
 
     @Test
     public void parseWithDeleteQueryAndNoIdReturnsEmptyId(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = ''");
 
-        assertThat(actual.getId(Collections.emptyMap()), is(StringUtils.EMPTY));
+        assertThat(actual.getId(Collections.emptyMap()), is(sameInstance(INVALID_ID)));
     }
 }

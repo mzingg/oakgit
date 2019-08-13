@@ -1,6 +1,6 @@
 package com.diconium.oakgit.engine.model;
 
-import com.diconium.oakgit.commons.QueryParserResult;
+import com.diconium.oakgit.queryparsing.QueryParserResult;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import lombok.Getter;
 import lombok.NonNull;

@@ -1,7 +1,7 @@
 package com.diconium.oakgit.engine;
 
-import com.diconium.oakgit.commons.QueryParser;
-import com.diconium.oakgit.commons.QueryParserResult;
+import com.diconium.oakgit.queryparsing.QueryParser;
+import com.diconium.oakgit.queryparsing.QueryParserResult;
 import com.diconium.oakgit.engine.commands.*;
 import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
 import com.diconium.oakgit.engine.model.MetaDataEntry;
@@ -35,10 +35,8 @@ public class CommandFactory {
 
         QueryParserResult queryParserResult = new QueryParser().parse(sqlCommand);
 
-        if (queryParserResult == QueryParserResult.ERROR_RESULT) {
-
+        if (!queryParserResult.isValid()) {
             return new ErrorCommand("Error while parsing the query " + sqlCommand);
-
         }
 
         if (queryParserResult.getType() == QueryParserResult.ResultType.CREATE) {
