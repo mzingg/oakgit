@@ -16,20 +16,21 @@ public class CreateAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        if (interestedIn(statement)) {
-            CreateTable createTableStatement = (CreateTable) statement;
-            QueryParserResult result = new QueryParserResult(this, createTableStatement);
+        return queryParserFor(statement, CreateTable.class);
+    }
 
-            result.setTableName(createTableStatement.getTable().getName());
-
-            return result;
-        }
-        return QueryParserResult.Error(this, CreateTable.class, "statement must be of type CreateTable");
+    @Override
+    public String getTableName(Statement statement) {
+        return whileInterestedOrThrow(statement, CreateTable.class,
+                stm -> stm.getTable().getName()
+        );
     }
 
     @Override
     public String getId(Statement statement, Map<Integer, Object> placeholderData) {
-        return null;
+        return whileInterestedOrThrow(statement, CreateTable.class,
+                stm -> null
+        );
     }
 
     @Override
@@ -37,7 +38,4 @@ public class CreateAnalyzer implements QueryAnalyzer {
         return QueryParserResult.ResultType.CREATE;
     }
 
-    public String getTableName(CreateTable createTableStatement) {
-        return createTableStatement.getTable().getName();
-    }
 }

@@ -4,17 +4,19 @@ import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
+import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.insert.Insert;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class InsertAnalyzer implements QueryAnalyzer {
 
@@ -25,22 +27,19 @@ public class InsertAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return whileInterested(statement, Insert.class, insertStatement -> {
-            QueryParserResult result = new QueryParserResult(this, insertStatement);
+        return queryParserFor(statement, Insert.class);
+    }
 
-            result.setTableName(insertStatement.getTable().getName());
-            result.setInsertColumns(insertStatement.getColumns());
-            result.setInsertExpressions(((ExpressionList) insertStatement.getItemsList()).getExpressions());
-
-            return result;
-        }, () -> QueryParserResult.Error(this, Insert.class, "statement must be of type Insert"));
+    //            result.setInsertColumns(insertStatement.getColumns());
+//            result.setInsertExpressions(((ExpressionList) insertStatement.getItemsList()).getExpressions());
+    @Override
+    public String getId(Statement statement, Map<Integer, Object> placeholderData) {
+        return whileInterestedOrThrow(statement, Insert.class, stm -> INVALID_ID);
     }
 
     @Override
-    public String getId(Statement statement, Map<Integer, Object> placeholderData) {
-        return whileInterested(statement, Insert.class, insertStatement -> {
-            return INVALID_ID;
-        }, () -> INVALID_ID);
+    public String getTableName(Statement statement) {
+        return whileInterestedOrThrow(statement, Insert.class, stm -> stm.getTable().getName());
     }
 
     @Override
@@ -87,34 +86,29 @@ public class InsertAnalyzer implements QueryAnalyzer {
         return Tuple.of("0", "0");
     }
 
-    public Map<String, Object> getInsertData(Map<Integer, Object> placeholderData) {
-        Map<String, Object> result = new LinkedHashMap<>();
+    @Override
+    public Map<Object, Object> getData(Statement statement, Map<Integer, Object> placeholderData) {
+        return whileInterestedOrThrow(statement, Insert.class, stm -> {
+            Map<Object, Object> result = new LinkedHashMap<>();
 
-//        for (int i = 0; i < insertColumns.size() && i < insertExpressions.size(); i++) {
-//            String columnName = insertColumns.get(i).getColumnName();
-//            Object columnValue = StringUtils.EMPTY;
-//            if (insertExpressions.get(i) instanceof StringValue) {
-//                StringValue value = (StringValue) insertExpressions.get(i);
-//                columnValue = value.getValue();
-//            } else if (insertExpressions.get(i) instanceof JdbcParameter) {
-//                JdbcParameter value = (JdbcParameter) insertExpressions.get(i);
-//                columnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
-//            }
-//
-//            result.put(columnName, columnValue);
-//        }
+            List<Expression> insertExpressions = ((ExpressionList) stm.getItemsList()).getExpressions();
+            List<Column> insertColumns = stm.getColumns();
 
-        return result;
+            for (int i = 0; i < insertColumns.size() && i < insertExpressions.size(); i++) {
+                String columnName = insertColumns.get(i).getColumnName();
+                Object columnValue = StringUtils.EMPTY;
+                if (insertExpressions.get(i) instanceof StringValue) {
+                    StringValue value = (StringValue) insertExpressions.get(i);
+                    columnValue = value.getValue();
+                } else if (insertExpressions.get(i) instanceof JdbcParameter) {
+                    JdbcParameter value = (JdbcParameter) insertExpressions.get(i);
+                    columnValue = placeholderData.getOrDefault(value.getIndex(), "?#" + value.getIndex());
+                }
+
+                result.put(columnName, columnValue);
+            }
+
+            return result;
+        });
     }
-
-    @SuppressWarnings("unchecked")
-    public <T> Optional<T> getInsertDataField(String fieldName, Class<T> targetType, Map<Integer, Object> placeholderData) {
-        Object fieldValue = getInsertData(placeholderData).getOrDefault(fieldName, null);
-        if (fieldValue != null && targetType.isAssignableFrom(fieldValue.getClass())) {
-            return Optional.of((T) fieldValue);
-        }
-
-        return Optional.empty();
-    }
-
 }

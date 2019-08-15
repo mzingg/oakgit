@@ -23,6 +23,11 @@ public class EmptyAnalyzer implements QueryAnalyzer {
     }
 
     @Override
+    public String getTableName(Statement statement) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getId(Statement statement, Map<Integer, Object> placeholderData) {
         throw new UnsupportedOperationException();
     }

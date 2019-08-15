@@ -73,11 +73,11 @@ public class CommandFactory {
 
             } else {
 
-                Tuple2<String, String> selectIdRange = queryParserResult.getSelectIdRange(placeholderData);
-                return new SelectFromContainerByIdRangeCommand()
-                        .setContainerName(queryParserResult.getTableName())
-                        .setIdMin(selectIdRange._1)
-                        .setIdMax(selectIdRange._2);
+//                Tuple2<String, String> selectIdRange = queryParserResult.getSelectIdRange(placeholderData);
+//                return new SelectFromContainerByIdRangeCommand()
+//                        .setContainerName(queryParserResult.getTableName())
+//                        .setIdMin(selectIdRange._1)
+//                        .setIdMax(selectIdRange._2);
 
             }
 

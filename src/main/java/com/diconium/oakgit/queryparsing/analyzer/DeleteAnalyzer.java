@@ -4,7 +4,6 @@ import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.delete.Delete;
-import net.sf.jsqlparser.statement.update.Update;
 
 import java.util.Map;
 
@@ -17,16 +16,21 @@ public class DeleteAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return whileInterested(statement, Delete.class, deleteStatement -> {
-            QueryParserResult result = new QueryParserResult(this, deleteStatement);
+        return queryParserFor(statement, Delete.class);
+    }
 
-            return result;
-        }, () -> QueryParserResult.Error(this, Delete.class, "statement must be of type Delete"));
+    @Override
+    public String getTableName(Statement statement) {
+        return whileInterestedOrThrow(statement, Delete.class,
+                stm -> stm.getTable().getName()
+        );
     }
 
     @Override
     public String getId(Statement statement, Map<Integer, Object> placeholderData) {
-        return INVALID_ID;
+        return whileInterestedOrThrow(statement, Delete.class,
+                stm -> INVALID_ID
+        );
     }
 
     @Override

@@ -97,37 +97,37 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
         NodeAndSettingsEntry data = new NodeAndSettingsEntry()
                 .setId(queryParserResult.getId(placeholderData));
         queryParserResult
-                .getInsertDataField("MODIFIED", Long.class, placeholderData)
+                .getDataField("MODIFIED", Long.class, placeholderData)
                 .ifPresent(data::setModified);
         queryParserResult
-                .getInsertDataField("HASBINARY", Integer.class, placeholderData)
+                .getDataField("HASBINARY", Integer.class, placeholderData)
                 .ifPresent(data::setHasBinary);
         queryParserResult
-                .getInsertDataField("DELETEDONCE", Integer.class, placeholderData)
+                .getDataField("DELETEDONCE", Integer.class, placeholderData)
                 .ifPresent(data::setDeletedOnce);
         queryParserResult
-                .getInsertDataField("MODCOUNT", Long.class, placeholderData)
+                .getDataField("MODCOUNT", Long.class, placeholderData)
                 .ifPresent(data::setModCount);
         queryParserResult
-                .getInsertDataField("CMODCOUNT", Long.class, placeholderData)
+                .getDataField("CMODCOUNT", Long.class, placeholderData)
                 .ifPresent(data::setCModCount);
         queryParserResult
-                .getInsertDataField("DSIZE", Long.class, placeholderData)
+                .getDataField("DSIZE", Long.class, placeholderData)
                 .ifPresent(data::setDSize);
         queryParserResult
-                .getInsertDataField("VERSION", Integer.class, placeholderData)
+                .getDataField("VERSION", Integer.class, placeholderData)
                 .ifPresent(data::setVersion);
         queryParserResult
-                .getInsertDataField("SDTYPE", Integer.class, placeholderData)
+                .getDataField("SDTYPE", Integer.class, placeholderData)
                 .ifPresent(data::setSdType);
         queryParserResult
-                .getInsertDataField("SDMAXREVTIME", Long.class, placeholderData)
+                .getDataField("SDMAXREVTIME", Long.class, placeholderData)
                 .ifPresent(data::setSdMaxRevTime);
         queryParserResult
-                .getInsertDataField("DATA", String.class, placeholderData)
+                .getDataField("DATA", String.class, placeholderData)
                 .ifPresent(f -> data.setData(f.getBytes()));
         queryParserResult
-                .getInsertDataField("BDATA", String.class, placeholderData)
+                .getDataField("BDATA", String.class, placeholderData)
                 .ifPresent(f -> data.setBdata(f.getBytes()));
         return data;
     }

@@ -29,23 +29,23 @@ public class PlainSelectAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return whileInterested(statement, Select.class, selectStatement -> {
-            PlainSelect selectBody = ((PlainSelect) selectStatement.getSelectBody());
-            QueryParserResult result = new QueryParserResult(this, selectStatement);
+        return queryParserFor(statement, Select.class);
+    }
 
-            result.setTableName(((Table) selectBody.getFromItem()).getName());
-//            result.setSelectItems(selectBody.getSelectItems());
-
-            return result;
-        }, () -> QueryParserResult.Error(this, Select.class, "statement must be of type Select and its body must be of type PlainSelect"));
+    @Override
+    public String getTableName(Statement statement) {
+        return whileInterestedOrThrow(statement, Select.class, stm -> {
+            PlainSelect selectBody = ((PlainSelect) stm.getSelectBody());
+            return ((Table) selectBody.getFromItem()).getName();
+        });
     }
 
     @Override
     public String getId(Statement statement, Map<Integer, Object> placeholderData) {
-        return whileInterested(statement, Select.class, selectStatement -> {
+        return whileInterestedOrThrow(statement, Select.class, selectStatement -> {
             PlainSelect selectBody = ((PlainSelect) selectStatement.getSelectBody());
             return extractIdFromWhere(selectBody.getWhere(), placeholderData).orElse(QueryAnalyzer.INVALID_ID);
-        }, () -> QueryAnalyzer.INVALID_ID);
+        });
     }
 
     @Override

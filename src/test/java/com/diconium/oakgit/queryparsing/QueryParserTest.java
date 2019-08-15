@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.*;
 
 class QueryParserTest {
 
-
     @Test
     void parseWithEmptySqlQueryReturnsErrorResult(){
     	QueryParserResult actual = new QueryParser().parse(StringUtils.EMPTY);
@@ -69,10 +68,10 @@ class QueryParserTest {
     }
 
     @Test
-    void parseWithInvalidSelectQueryReturnsEmptyTableName() {
+    void parseWithInvalidSelectQueryReturnsInvalid() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
 
-    	assertThat(actual.getTableName(), is(StringUtils.EMPTY));
+    	assertThat(actual.isValid(), is(false));
     }
 
     @Test
@@ -82,35 +81,6 @@ class QueryParserTest {
     	assertThat(actual.isValid(), is(false));
     }
 
-    @Test
-    public void parseWithInsertSQLQueryWithValuesReturnsDataWithColumnAndValues(){
-        QueryParserResult actual = new QueryParser().parse(
-                "insert into SETTINGS(ID, MODIFIED, HASBINARY) values ('anId', 'vModified', 'vhasBinary')");
-
-        assertThat(actual.getInsertData(Collections.emptyMap()).size(), is(3));
-        assertThat(actual.getInsertData(Collections.emptyMap()).get("ID"), is("anId"));
-        assertThat(actual.getInsertData(Collections.emptyMap()).get("MODIFIED"), is("vModified"));
-        assertThat(actual.getInsertData(Collections.emptyMap()).get("HASBINARY"), is("vhasBinary"));
-    }
-
-    @Test
-    public void parseWithInsertSQLQueryWithQuestionmarksInDataReturnsQuestionmarks(){
-        QueryParserResult actual = new QueryParser().parse(
-        		"insert into SETTINGS(ID, MODIFIED, HASBINARY) values (?, ?, ?)");
-
-        assertThat(actual.getInsertData(Collections.emptyMap()).size(), is(3));
-        assertThat(actual.getInsertData(Collections.emptyMap()).get("ID"), is("?#1"));
-        assertThat(actual.getInsertData(Collections.emptyMap()).get("MODIFIED"), is("?#2"));
-        assertThat(actual.getInsertData(Collections.emptyMap()).get("HASBINARY"), is("?#3"));
-    }
-
-    @Test
-    public void parseWithCreateSQLQueryWithValuesReturnsNoData(){
-    	QueryParserResult actual = new QueryParser().parse(
-    			"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint)");
-
-        assertThat(actual.getInsertData(Collections.emptyMap()).size(), is(0));
-    }
 
     @Test
     public void parseWithInValidInsertQueryReturnsException() {
