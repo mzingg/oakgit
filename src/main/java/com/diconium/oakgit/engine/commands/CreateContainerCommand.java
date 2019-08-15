@@ -3,6 +3,7 @@ package com.diconium.oakgit.engine.commands;
 import com.diconium.oakgit.engine.Command;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -10,14 +11,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Getter
 @Setter
+@ToString
 public class CreateContainerCommand implements Command {
 
     private String containerName = StringUtils.EMPTY;
 
-    @Override
-    public String toString() {
-        return "CreateContainerCommand{" +
-                "containerName='" + containerName + '\'' +
-                '}';
-    }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Getter
 @Setter
+@ToString
 public class InsertIntoContainerCommand<T extends ContainerEntry> implements Command {
 
     @NonNull
@@ -31,11 +33,4 @@ public class InsertIntoContainerCommand<T extends ContainerEntry> implements Com
         }
     }
 
-    @Override
-    public String toString() {
-        return "InsertIntoContainerCommand{" +
-                "containerName='" + containerName + '\'' +
-                ", data=" + data +
-                '}';
-    }
 }

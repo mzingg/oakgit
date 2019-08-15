@@ -6,10 +6,12 @@ import com.diconium.oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
+@ToString
 public class SelectFromContainerByIdCommand implements Command {
 	
 	private String containerName = StringUtils.EMPTY;
@@ -20,11 +22,4 @@ public class SelectFromContainerByIdCommand implements Command {
 		return new SelectFromContainerByIdCommandResult<T>(this, foundEntry);
 	}
 
-	@Override
-	public String toString() {
-		return "SelectFromContainerByIdCommand{" +
-				"containerName='" + containerName + '\'' +
-				", id='" + id + '\'' +
-				'}';
-	}
 }

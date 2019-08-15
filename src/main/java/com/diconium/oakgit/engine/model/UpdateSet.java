@@ -2,12 +2,14 @@ package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import lombok.NonNull;
+import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+@ToString
 public class UpdateSet implements ContainerEntry<UpdateSet> {
 
     private Map<String, Object> updatedValues = new HashMap<>();
@@ -62,10 +64,4 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public String toString() {
-        return "UpdateSet{" +
-                "updatedValues=" + updatedValues +
-                '}';
-    }
 }

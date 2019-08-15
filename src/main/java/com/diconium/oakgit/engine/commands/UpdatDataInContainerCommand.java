@@ -8,10 +8,12 @@ import com.diconium.oakgit.engine.model.UpdateSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
+@ToString
 public class UpdatDataInContainerCommand implements Command {
 
     @NonNull
@@ -25,16 +27,6 @@ public class UpdatDataInContainerCommand implements Command {
 
     @NonNull
     private UpdateSet data = new UpdateSet();
-
-    @Override
-    public String toString() {
-        return "UpdatDataInContainerCommand{" +
-                "containerName='" + containerName + '\'' +
-                ", id='" + id + '\'' +
-                ", modCount=" + modCount +
-                ", data=" + data +
-                '}';
-    }
 
     public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull ContainerEntry<T> foundEntry) {
         return new UpdateDataInContainerCommandResult(this, foundEntry);

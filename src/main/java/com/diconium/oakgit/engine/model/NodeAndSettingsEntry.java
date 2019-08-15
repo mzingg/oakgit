@@ -5,6 +5,7 @@ import com.diconium.oakgit.jdbc.OakGitResultSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.calcite.avatica.SqlType;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,6 +14,7 @@ import java.util.function.Consumer;
 
 @Getter
 @Setter
+@ToString
 public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry> {
 
     @NonNull
@@ -40,23 +42,6 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
 
     private byte[] bdata;
 
-    @Override
-    public String toString() {
-        return "NodeAndSettingsEntry{" +
-                "id='" + id + '\'' +
-                ", modified=" + modified +
-                ", hasBinary=" + hasBinary +
-                ", deletedOnce=" + deletedOnce +
-                ", modCount=" + modCount +
-                ", cModCount=" + cModCount +
-                ", dSize=" + dSize +
-                ", version=" + version +
-                ", sdType=" + sdType +
-                ", sdMaxRevTime=" + sdMaxRevTime +
-                ", data=" + new String(data) +
-                ", bdata=" + new String(bdata) +
-                '}';
-    }
     @Override
     public Consumer<OakGitResultSet> getResultSetTypeModifier() {
         return result -> {

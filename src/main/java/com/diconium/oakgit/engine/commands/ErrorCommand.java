@@ -1,7 +1,9 @@
 package com.diconium.oakgit.engine.commands;
 
 import com.diconium.oakgit.engine.Command;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 
 /**
@@ -11,6 +13,7 @@ import lombok.Getter;
  */
 
 @Getter
+@ToString
 public class ErrorCommand implements Command {
     private String errorMessage;
 

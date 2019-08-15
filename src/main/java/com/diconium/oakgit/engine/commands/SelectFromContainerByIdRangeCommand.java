@@ -5,12 +5,14 @@ import com.diconium.oakgit.engine.CommandResult;
 import com.diconium.oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class SelectFromContainerByIdRangeCommand implements Command {
 	
 	private String containerName = StringUtils.EMPTY;
@@ -22,12 +24,4 @@ public class SelectFromContainerByIdRangeCommand implements Command {
 		return new SelectFromContainerByIdRangeCommandResult<T>(this, foundEntries);
 	}
 
-	@Override
-	public String toString() {
-		return "SelectFromContainerByIdRangeCommand{" +
-				"containerName='" + containerName + '\'' +
-				", idMin='" + idMin + '\'' +
-				", idMax='" + idMax + '\'' +
-				'}';
-	}
 }
