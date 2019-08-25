@@ -37,23 +37,23 @@ runIntegrationTests:
 createRelease:
   stage: release
   script:
-  - echo 'Creating Release'
+    - echo 'Creating Release'
   only:
-  - release/*
+    - release/*
 
 tagRelease:
   stage: release
   script:
-  - echo 'Tagging release with new version'
+    - echo 'Tagging release with new version'
   only:
-  - master
+    - master
 
 deployRelease:
   stage: deploy
   script:
-  - echo 'Storing Release Artefact in Nexus'
+    - echo 'Storing Release Artefact in Nexus'
   only:
-  - master
+    - master
 
 deploySnapshot:
   stage: deploy
