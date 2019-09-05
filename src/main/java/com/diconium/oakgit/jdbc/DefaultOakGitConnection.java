@@ -13,6 +13,11 @@ public abstract class DefaultOakGitConnection extends UnsupportedConnection {
     }
 
     @Override
+    public void setReadOnly(boolean readOnly) {
+        // readOnly has no effect and cannot be set
+    }
+
+    @Override
     public int getTransactionIsolation() {
         return TRANSACTION_READ_COMMITTED;
     }

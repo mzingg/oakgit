@@ -33,11 +33,6 @@ public abstract class UnsupportedConnection implements Connection {
     }
 
     @Override
-    public void setReadOnly(boolean readOnly) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setCatalog(String catalog) {
         throw new UnsupportedOperationException();
     }

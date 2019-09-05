@@ -2,8 +2,8 @@ package com.diconium.oakgit.jdbc;
 
 import com.diconium.oakgit.engine.CommandFactory;
 import com.diconium.oakgit.engine.CommandProcessor;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jackrabbit.oak.commons.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,6 +64,16 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     }
 
     @Override
+    public void setLong(int parameterIndex, long x) {
+        placeholderData.put(parameterIndex, x);
+    }
+
+    @Override
+    public void setBytes(int parameterIndex, byte[] x) {
+        placeholderData.put(parameterIndex, x);
+    }
+
+    @Override
     public void setObject(int parameterIndex, Object x) {
         placeholderData.put(parameterIndex, x);
     }
@@ -77,7 +87,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     public void setBinaryStream(int parameterIndex, InputStream stream, int length) {
         if (stream != null) {
             try {
-                placeholderData.put(parameterIndex, IOUtils.readBytes(stream));
+                placeholderData.put(parameterIndex, IOUtils.readFully(stream, length));
             } catch (IOException e) {
                 throw new IllegalArgumentException(e);
             }
