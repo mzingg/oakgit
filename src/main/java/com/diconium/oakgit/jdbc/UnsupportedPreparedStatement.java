@@ -53,11 +53,6 @@ public abstract class UnsupportedPreparedStatement implements PreparedStatement 
     }
 
     @Override
-    public void setLong(int parameterIndex, long x) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setFloat(int parameterIndex, float x) {
         throw new UnsupportedOperationException();
     }
@@ -69,11 +64,6 @@ public abstract class UnsupportedPreparedStatement implements PreparedStatement 
 
     @Override
     public void setBigDecimal(int parameterIndex, BigDecimal x) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setBytes(int parameterIndex, byte[] x) {
         throw new UnsupportedOperationException();
     }
 

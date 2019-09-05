@@ -29,7 +29,8 @@ public class OakGitDriver implements Driver {
     }
 
     private static Version readMavenVersion() {
-        return Version.valueOf(StringUtils.substringBefore(readMavenModel().getVersion(), "-"));
+        return Version.valueOf("0.0.1-SNAPSHOT");
+//        return Version.valueOf(StringUtils.substringBefore(readMavenModel().getVersion(), "-"));
     }
 
     private static Model readMavenModel() {
@@ -56,7 +57,8 @@ public class OakGitDriver implements Driver {
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
-        OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
+        OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), "oak-git");
+//        OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
         if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
 
             return new OakGitConnection(configuration, PROCESSOR, new CommandFactory());
@@ -67,7 +69,8 @@ public class OakGitDriver implements Driver {
 
     @Override
     public boolean acceptsURL(String url) {
-        return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId()) != OakGitDriverConfiguration.INVALID_CONFIGURATION;
+        return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), "oak-git") != OakGitDriverConfiguration.INVALID_CONFIGURATION;
+//        return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId()) != OakGitDriverConfiguration.INVALID_CONFIGURATION;
     }
 
     @Override

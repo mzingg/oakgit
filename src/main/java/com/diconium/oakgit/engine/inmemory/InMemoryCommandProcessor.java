@@ -3,11 +3,17 @@ package com.diconium.oakgit.engine.inmemory;
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.CommandProcessor;
 import com.diconium.oakgit.engine.CommandResult;
-import com.diconium.oakgit.engine.commands.*;
+import com.diconium.oakgit.engine.commands.CreateContainerCommand;
+import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
+import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
+import com.diconium.oakgit.engine.commands.SelectFromContainerByIdRangeCommand;
+import com.diconium.oakgit.engine.commands.UpdatDataInContainerCommand;
 import com.diconium.oakgit.engine.model.Container;
 import com.diconium.oakgit.engine.model.ContainerEntry;
 import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
+import com.diconium.oakgit.engine.model.QueriedSettingsEntry;
 import com.diconium.oakgit.engine.model.UpdateSet;
+//import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,15 +22,15 @@ import java.util.Optional;
 
 import static com.diconium.oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
+//@Slf4j
 public class InMemoryCommandProcessor implements CommandProcessor {
 
     private static final Container NULL_CONTAINER = new Container("null container");
     private Map<String, Container> containerMap = new HashMap<>();
 
-
     @Override
     public synchronized CommandResult execute(Command command) {
-        System.out.println("Executing " + command);
+//        log.info("Executing {}", command);
         if (command instanceof CreateContainerCommand) {
 
             String containerName = ((CreateContainerCommand) command).getContainerName();
@@ -55,8 +61,8 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             SelectFromContainerByIdRangeCommand selectCommand = (SelectFromContainerByIdRangeCommand) command;
 
-            List<ContainerEntry<NodeAndSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
-                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), NodeAndSettingsEntry.class);
+            List<ContainerEntry<QueriedSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
+                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), QueriedSettingsEntry.class);
 
             return selectCommand.buildResult(foundEntries);
         } else if (command instanceof UpdatDataInContainerCommand) {
