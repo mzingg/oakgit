@@ -72,3 +72,4 @@ hs_err_pid*
 
 /src/test/resources
 /.idea/sonarlint/
+/sqlCommand.log

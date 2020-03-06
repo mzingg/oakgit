@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import static com.diconium.oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
-public class SelectFromContainerByIdCommandResult<T extends ContainerEntry<T>> implements CommandResult {
+public class SingleEntityCommandResult<T extends ContainerEntry<T>> implements CommandResult {
 
     @NonNull
     private final SelectFromContainerByIdCommand command;

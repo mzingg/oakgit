@@ -15,8 +15,9 @@ public class QueryParser {
     static {
         DEFAULT_ANALYZERS.add(new InsertAnalyzer());
         DEFAULT_ANALYZERS.add(new CreateAnalyzer());
-        DEFAULT_ANALYZERS.add(new ExactIdSelectAnalyzer());
-        DEFAULT_ANALYZERS.add(new IdRangeSelectAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectInAnalyzer());
         DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
         DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
     }

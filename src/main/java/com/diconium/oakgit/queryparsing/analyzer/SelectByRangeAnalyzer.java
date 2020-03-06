@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Map;
 import java.util.Optional;
 
-public class IdRangeSelectAnalyzer implements QueryAnalyzer {
+public class SelectByRangeAnalyzer implements QueryAnalyzer {
 
     private static final String COLUMN_NAME_ID = "ID";
 
