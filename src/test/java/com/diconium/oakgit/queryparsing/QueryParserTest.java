@@ -3,7 +3,7 @@ package com.diconium.oakgit.queryparsing;
 import com.diconium.oakgit.UnitTest;
 import com.diconium.oakgit.queryparsing.analyzer.CreateAnalyzer;
 import com.diconium.oakgit.queryparsing.analyzer.DeleteAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.ExactIdSelectAnalyzer;
+import com.diconium.oakgit.queryparsing.analyzer.SelectByIdAnalyzer;
 import com.diconium.oakgit.queryparsing.analyzer.InsertAnalyzer;
 import org.apache.commons.lang3.StringUtils;
 
@@ -91,7 +91,7 @@ class QueryParserTest {
     public void parseWithSelectQueryReturnsSelectObject() {
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
 
-        assertThat(actual.getAnalyzer(), isA(ExactIdSelectAnalyzer.class));
+        assertThat(actual.getAnalyzer(), isA(SelectByIdAnalyzer.class));
     }
 
     @UnitTest

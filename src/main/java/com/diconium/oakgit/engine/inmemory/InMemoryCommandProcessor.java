@@ -7,30 +7,76 @@ import com.diconium.oakgit.engine.commands.CreateContainerCommand;
 import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
 import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
 import com.diconium.oakgit.engine.commands.SelectFromContainerByIdRangeCommand;
+import com.diconium.oakgit.engine.commands.SelectFromContainerByMultipleIdsCommand;
 import com.diconium.oakgit.engine.commands.UpdatDataInContainerCommand;
 import com.diconium.oakgit.engine.model.Container;
 import com.diconium.oakgit.engine.model.ContainerEntry;
 import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
 import com.diconium.oakgit.engine.model.QueriedSettingsEntry;
 import com.diconium.oakgit.engine.model.UpdateSet;
-//import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
 
 import static com.diconium.oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
-//@Slf4j
+@Slf4j
 public class InMemoryCommandProcessor implements CommandProcessor {
 
     private static final Container NULL_CONTAINER = new Container("null container");
     private Map<String, Container> containerMap = new HashMap<>();
 
+    private ConcurrentLinkedQueue<String> logBuffer = new ConcurrentLinkedQueue<>();
+
+    public InMemoryCommandProcessor() {
+        this(StringUtils.EMPTY);
+    }
+
+    public InMemoryCommandProcessor(String sqlCommandLogfileName) {
+        if (StringUtils.isNotEmpty(sqlCommandLogfileName)) {
+            Executors.newSingleThreadExecutor().submit(() -> {
+                Path sqlLogPath = Paths.get(sqlCommandLogfileName);
+                try (BufferedWriter sqlLog = new BufferedWriter(new FileWriter(sqlLogPath.toFile(), true))) {
+                    while (true) {
+                        if (!logBuffer.isEmpty()) {
+                            sqlLog.write(logBuffer.poll());
+                            sqlLog.newLine();
+                            sqlLog.flush();
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+        }
+    }
+
     @Override
     public synchronized CommandResult execute(Command command) {
-//        log.info("Executing {}", command);
+        if (!(command instanceof SelectFromContainerByIdCommand)) {
+            logBuffer.add(command.toString());
+        }
+        return _internalExecute(command);
+    }
+
+    private CommandResult _internalExecute(Command command) {
         if (command instanceof CreateContainerCommand) {
 
             String containerName = ((CreateContainerCommand) command).getContainerName();
@@ -42,7 +88,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             InsertIntoContainerCommand<?> insertCommand = (InsertIntoContainerCommand) command;
 
-            getContainer(insertCommand.getContainerName())
+            getOrCreateContainer(insertCommand.getContainerName())
                     .setEntry(insertCommand.getData());
 
             return SUCCESSFULL_RESULT_WITHOUT_DATA;
@@ -63,13 +109,23 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             List<ContainerEntry<QueriedSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
                     .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), QueriedSettingsEntry.class);
+            logBuffer.add(String.format("Found %d entries", foundEntries.size()));
+
+            return selectCommand.buildResult(foundEntries);
+        } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {
+
+            SelectFromContainerByMultipleIdsCommand selectCommand = (SelectFromContainerByMultipleIdsCommand) command;
+
+            List<ContainerEntry<QueriedSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
+                    .findByIds(selectCommand.getIds(), QueriedSettingsEntry.class);
+            logBuffer.add(String.format("Found %d entries", foundEntries.size()));
 
             return selectCommand.buildResult(foundEntries);
         } else if (command instanceof UpdatDataInContainerCommand) {
 
             UpdatDataInContainerCommand updateCommand = (UpdatDataInContainerCommand) command;
 
-            Container container = getContainer(updateCommand.getContainerName());
+            Container container = getOrCreateContainer(updateCommand.getContainerName());
             Optional<ContainerEntry<NodeAndSettingsEntry>> existingEntry = container
                     .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), NodeAndSettingsEntry.class);
 
@@ -110,6 +166,11 @@ public class InMemoryCommandProcessor implements CommandProcessor {
         }
 
         return CommandResult.NO_RESULT;
+    }
+
+    private Container getOrCreateContainer(String containerName) {
+        containerMap.putIfAbsent(containerName, new Container(containerName));
+        return getContainer(containerName);
     }
 
     private Container getContainer(String name) {

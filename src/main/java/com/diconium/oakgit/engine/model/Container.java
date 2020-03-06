@@ -65,4 +65,20 @@ public class Container {
 
         return result;
     }
+
+    @SuppressWarnings("unchecked")
+    public <T extends ContainerEntry<T>> List<ContainerEntry<T>> findByIds(List<String> ids, Class<T> resultType) {
+        ArrayList<ContainerEntry<T>> result = new ArrayList<>();
+
+        for (String id : ids) {
+            if (entries.containsKey(id)) {
+                ContainerEntry<?> containerEntry = entries.get(id);
+                if (resultType.isAssignableFrom(containerEntry.getClass())) {
+                    result.add((T) containerEntry);
+                }
+            }
+        }
+
+        return result;
+    }
 }

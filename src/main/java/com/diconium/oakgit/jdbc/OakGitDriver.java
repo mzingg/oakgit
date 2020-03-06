@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 public class OakGitDriver implements Driver {
 
-    private final static InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor();
+    private final static InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor("./sqlCommand.log");
 
     static {
         try {

@@ -20,7 +20,7 @@ public class SelectFromContainerByIdCommand extends AbstractCommand<SelectFromCo
     private String id = StringUtils.EMPTY;
 
     public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull ContainerEntry<T> foundEntry) {
-        return new SelectFromContainerByIdCommandResult<>(this, foundEntry);
+        return new SingleEntityCommandResult<>(this, foundEntry);
     }
 
 }

@@ -13,10 +13,10 @@ import java.util.List;
 import static com.diconium.oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
-public class SelectFromContainerByIdRangeCommandResult<T extends ContainerEntry<T>> implements CommandResult {
+public class MultipleEntitiesCommandResult<T extends ContainerEntry<T>> implements CommandResult {
 
     @NonNull
-    private final SelectFromContainerByIdRangeCommand command;
+    private final MultipleEntitiesCommandResultProvider command;
 
     @NonNull
     @Getter
