@@ -1,10 +1,6 @@
 package com.diconium.oakgit.queryparsing;
 
-import com.diconium.oakgit.queryparsing.analyzer.CreateAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.DeleteAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.InsertAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.PlainSelectAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.UpdateAnalyzer;
+import com.diconium.oakgit.queryparsing.analyzer.*;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -16,11 +12,14 @@ public class QueryParser {
 
     private static final List<QueryAnalyzer> DEFAULT_ANALYZERS = new ArrayList<>();
     static {
-        DEFAULT_ANALYZERS.add(new InsertAnalyzer());
         DEFAULT_ANALYZERS.add(new CreateAnalyzer());
-        DEFAULT_ANALYZERS.add(new PlainSelectAnalyzer());
-        DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
         DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
+        DEFAULT_ANALYZERS.add(new MetaDataInsertAnalyzer());
+        DEFAULT_ANALYZERS.add(new NodeAndSettingsInsertAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectInAnalyzer());
+        DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
     }
 
     private final List<QueryAnalyzer> analyzers;

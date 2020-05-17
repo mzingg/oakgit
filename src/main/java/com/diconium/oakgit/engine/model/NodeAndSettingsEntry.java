@@ -2,19 +2,16 @@ package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import com.diconium.oakgit.jdbc.util.SqlType;
-import com.diconium.oakgit.queryparsing.QueryParserResult;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 @Getter
 @Setter
-@ToString
 public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry> {
 
     @NonNull
@@ -78,44 +75,21 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
         };
     }
 
-    public static NodeAndSettingsEntry buildNodeSettingsDataForInsert(@NonNull Map<Integer, Object> placeholderData, @NonNull QueryParserResult queryParserResult) {
-        NodeAndSettingsEntry data = new NodeAndSettingsEntry()
-            .setId(queryParserResult.getId(placeholderData));
-        queryParserResult
-            .getDataField("MODIFIED", Long.class, placeholderData)
-            .ifPresent(data::setModified);
-        queryParserResult
-            .getDataField("HASBINARY", Integer.class, placeholderData)
-            .ifPresent(data::setHasBinary);
-        queryParserResult
-            .getDataField("DELETEDONCE", Integer.class, placeholderData)
-            .ifPresent(data::setDeletedOnce);
-        queryParserResult
-            .getDataField("MODCOUNT", Long.class, placeholderData)
-            .ifPresent(data::setModCount);
-        queryParserResult
-            .getDataField("CMODCOUNT", Long.class, placeholderData)
-            .ifPresent(data::setCModCount);
-        queryParserResult
-            .getDataField("DSIZE", Long.class, placeholderData)
-            .ifPresent(data::setDSize);
-        queryParserResult
-            .getDataField("VERSION", Integer.class, placeholderData)
-            .ifPresent(data::setVersion);
-        queryParserResult
-            .getDataField("SDTYPE", Integer.class, placeholderData)
-            .ifPresent(data::setSdType);
-        queryParserResult
-            .getDataField("SDMAXREVTIME", Long.class, placeholderData)
-            .ifPresent(data::setSdMaxRevTime);
-        queryParserResult
-            .getDataField("DATA", String.class, placeholderData)
-            .ifPresent(f -> data.setData(f.getBytes()));
-        queryParserResult
-            .getDataField("BDATA", String.class, placeholderData)
-            .ifPresent(f -> data.setBdata(f.getBytes()));
-        return data;
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("id", id)
+            .append("modified", modified)
+            .append("hasBinary", hasBinary)
+            .append("deletedOnce", deletedOnce)
+            .append("modCount", modCount)
+            .append("cModCount", cModCount)
+            .append("dSize", dSize)
+            .append("version", version)
+            .append("sdType", sdType)
+            .append("sdMaxRevTime", sdMaxRevTime)
+            .append("data", new String(data))
+            .append("bdata", new String(bdata))
+            .toString();
     }
-
-
 }

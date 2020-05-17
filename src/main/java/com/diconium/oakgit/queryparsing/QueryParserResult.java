@@ -1,5 +1,6 @@
 package com.diconium.oakgit.queryparsing;
 
+import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.queryparsing.analyzer.EmptyAnalyzer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -91,6 +92,10 @@ public class QueryParserResult {
 
     public <T> Optional<T> getDataField(String fieldName, Class<T> targetType, Map<Integer, Object> placeholderData) {
         return analyzer.getDataField(statement, fieldName, targetType, placeholderData);
+    }
+
+    public Command createCommand(Map<Integer, Object> placeholderData) {
+        return analyzer.createCommand(statement, placeholderData);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
+import com.diconium.oakgit.engine.Command;
+import com.diconium.oakgit.engine.commands.SelectFromContainerByMultipleIdsCommand;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
@@ -12,6 +14,7 @@ import net.sf.jsqlparser.statement.select.Select;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SelectInAnalyzer implements QueryAnalyzer {
 
@@ -41,11 +44,10 @@ public class SelectInAnalyzer implements QueryAnalyzer {
         throw new UnsupportedOperationException();
     }
 
-//    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
-//        return new SelectFromContainerByMultipleIdsCommand()
-//            .setOriginSql(statement.toString())
-//            .setPlaceholderData(placeholderData)
-//            .setContainerName(getTableName(statement))
-//            .setIds(placeholderData.values().stream().map(o -> (String) o).collect(Collectors.toList()));
-//    }
+    @Override
+    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+        return new SelectFromContainerByMultipleIdsCommand()
+            .setContainerName(getTableName(statement))
+            .setIds(placeholderData.values().stream().map(o -> (String) o).collect(Collectors.toList()));
+    }
 }

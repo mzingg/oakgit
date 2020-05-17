@@ -10,13 +10,13 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class InsertAnalyzerTest {
+class MetaDataInsertAnalyzerTest {
 
     @Test
     public void parseWithInsertSQLQueryWithValuesReturnsDataWithColumnAndValues() throws Exception {
         Statement statement = CCJSqlParserUtil.parse("insert into SETTINGS(ID, MODIFIED, HASBINARY) values ('anId', 'vModified', 'vhasBinary')");
 
-        Map<Object, Object> actual = new InsertAnalyzer().getData(statement, Collections.emptyMap());
+        Map<Object, Object> actual = new MetaDataInsertAnalyzer().getData(statement, Collections.emptyMap());
 
         assertThat(actual.size(), is(3));
         assertThat(actual.get("ID"), is("anId"));
@@ -28,7 +28,7 @@ class InsertAnalyzerTest {
     public void parseWithInsertSQLQueryWithQuestionmarksInDataReturnsQuestionmarks() throws Exception {
         Statement statement = CCJSqlParserUtil.parse("insert into SETTINGS(ID, MODIFIED, HASBINARY) values (?, ?, ?)");
 
-        Map<Object, Object> actual = new InsertAnalyzer().getData(statement, Collections.emptyMap());
+        Map<Object, Object> actual = new MetaDataInsertAnalyzer().getData(statement, Collections.emptyMap());
 
         assertThat(actual.size(), is(3));
         assertThat(actual.get("ID"), is("?#1"));

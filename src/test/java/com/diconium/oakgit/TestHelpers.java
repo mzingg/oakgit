@@ -6,6 +6,9 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class TestHelpers {
 
@@ -48,5 +52,20 @@ public class TestHelpers {
         }
 
         return result;
+    }
+
+    public static <T> Matcher<Optional<T>> isEmptyOptional() {
+        return new BaseMatcher<>() {
+            @Override
+            public boolean matches(Object o) {
+                return o instanceof Optional<?> && ((Optional<?>) o).isEmpty();
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("empty Optional");
+            }
+
+        };
     }
 }

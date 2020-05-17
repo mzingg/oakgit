@@ -3,7 +3,6 @@ package com.diconium.oakgit.engine.commands;
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.CommandResult;
 import com.diconium.oakgit.engine.model.ContainerEntry;
-import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
 import com.diconium.oakgit.engine.model.UpdateSet;
 import lombok.Getter;
 import lombok.NonNull;

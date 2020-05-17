@@ -1,5 +1,7 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
+import com.diconium.oakgit.engine.Command;
+import com.diconium.oakgit.engine.commands.CreateContainerCommand;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
@@ -24,15 +26,21 @@ public class CreateAnalyzer implements QueryAnalyzer {
     @Override
     public String getTableName(Statement statement) {
         return whileInterestedOrThrow(statement, CreateTable.class,
-                stm -> stm.getTable().getName()
+            stm -> stm.getTable().getName()
         );
     }
 
     @Override
     public Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData) {
         return whileInterestedOrThrow(statement, CreateTable.class,
-                stm -> Optional.empty()
+            stm -> Optional.empty()
         );
     }
 
+    @Override
+    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+        return whileInterestedOrThrow(statement, CreateTable.class,
+            stm -> new CreateContainerCommand().setContainerName(stm.getTable().getName())
+        );
+    }
 }

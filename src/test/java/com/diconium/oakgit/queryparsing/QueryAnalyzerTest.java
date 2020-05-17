@@ -1,5 +1,6 @@
 package com.diconium.oakgit.queryparsing;
 
+import com.diconium.oakgit.engine.Command;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,11 @@ class QueryAnalyzerTest {
             @Override
             public Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData) {
                 return Optional.empty();
+            }
+
+            @Override
+            public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+                return null;
             }
         };
     }

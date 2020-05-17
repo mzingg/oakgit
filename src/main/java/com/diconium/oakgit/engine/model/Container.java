@@ -39,7 +39,7 @@ public class Container {
     public <T extends ContainerEntry<T>> Optional<ContainerEntry<T>> findByIdAndModCount(String id, long modCount, Class<T> resultType) {
         if (entries.containsKey(id)) {
             ContainerEntry<?> entry = entries.get(id);
-            if (resultType.isAssignableFrom(entry.getClass()) && (entry.getModCount() == null || entry.getModCount() == modCount)) {
+            if (resultType.isAssignableFrom(entry.getClass())) {
                 return Optional.of((T) entry);
             }
         }

@@ -1,7 +1,9 @@
 package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.HashMap;
@@ -11,6 +13,10 @@ import java.util.function.Consumer;
 
 @ToString
 public class UpdateSet implements ContainerEntry<UpdateSet> {
+
+    @Getter
+    @Setter
+    private boolean concatenateDataField = false;
 
     private final Map<String, Object> updatedValues = new HashMap<>();
 

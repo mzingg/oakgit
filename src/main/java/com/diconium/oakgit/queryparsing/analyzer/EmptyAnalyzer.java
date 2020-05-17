@@ -1,5 +1,6 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
+import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
@@ -34,4 +35,8 @@ public class EmptyAnalyzer implements QueryAnalyzer {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+        return null;
+    }
 }

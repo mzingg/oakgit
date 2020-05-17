@@ -1,5 +1,8 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
+import com.diconium.oakgit.engine.Command;
+import com.diconium.oakgit.engine.commands.ErrorCommand;
+import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
@@ -51,22 +54,18 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
         });
     }
 
-//    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
-//        Optional<QueryId> id = getId(statement, placeholderData);
-//
-//        if (id.isPresent()) {
-//            return new SelectFromContainerByIdCommand()
-//                .setOriginSql(statement.toString())
-//                .setPlaceholderData(placeholderData)
-//                .setContainerName(getTableName(statement))
-//                .setId(id.get().value());
-//        }
-//
-//        return new ErrorCommand()
-//            .setOriginSql(statement.toString())
-//            .setPlaceholderData(placeholderData)
-//            .setErrorMessage("Cannot create command with an invalid id");
-//    }
+    @Override
+    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+        Optional<QueryId> id = getId(statement, placeholderData);
+
+        if (id.isPresent()) {
+            return new SelectFromContainerByIdCommand()
+                .setContainerName(getTableName(statement))
+                .setId(id.get().value());
+        }
+
+        return new ErrorCommand("Cannot create command with an invalid id");
+    }
 
     private Optional<QueryId> extractIdFromWhere(Expression whereExpression, Map<Integer, Object> placeholderData) {
         if (whereExpression instanceof EqualsTo) {

@@ -1,5 +1,6 @@
 package com.diconium.oakgit.queryparsing;
 
+import com.diconium.oakgit.engine.Command;
 import net.sf.jsqlparser.statement.Statement;
 
 import java.util.Collections;
@@ -20,6 +21,7 @@ public interface QueryAnalyzer {
 
     Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData);
 
+    Command createCommand(Statement statement, Map<Integer, Object> placeholderData);
 
     default Map<Object, Object> getData(Statement statement, Map<Integer, Object> placeholderData) {
         return Collections.emptyMap();

@@ -1,8 +1,12 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
+import com.diconium.oakgit.engine.Command;
+import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
+import com.diconium.oakgit.engine.model.MetaDataEntry;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
+import com.diconium.oakgit.queryparsing.SingleValueId;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import net.sf.jsqlparser.expression.Expression;
@@ -19,11 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class InsertAnalyzer implements QueryAnalyzer {
+public class MetaDataInsertAnalyzer implements QueryAnalyzer {
+
+    public static final String METADATA_TABLE_NAME = "DATASTORE_META";
 
     @Override
     public boolean interestedIn(Statement statement) {
-        return statement instanceof Insert;
+        return statement instanceof Insert && ((Insert)statement).getTable().getName().equals(METADATA_TABLE_NAME);
     }
 
     @Override
@@ -36,7 +42,14 @@ public class InsertAnalyzer implements QueryAnalyzer {
 //            result.setInsertExpressions(((ExpressionList) insertStatement.getItemsList()).getExpressions());
     @Override
     public Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData) {
-        return whileInterestedOrThrow(statement, Insert.class, stm -> Optional.empty());
+        return whileInterestedOrThrow(statement, Insert.class, stm -> {
+            String id = (String) getData(statement, placeholderData).getOrDefault("ID", null);
+            if (id != null) {
+                return Optional.of(new SingleValueId(id));
+            } else {
+                return Optional.empty();
+            }
+        });
     }
 
     @Override
@@ -108,4 +121,19 @@ public class InsertAnalyzer implements QueryAnalyzer {
             return result;
         });
     }
+
+    @Override
+    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+        return whileInterestedOrThrow(statement, Insert.class,
+            stm -> {
+                MetaDataEntry data = new MetaDataEntry()
+                    .setId(getId(statement, placeholderData).orElseThrow(IllegalStateException::new).value());
+
+                return new InsertIntoContainerCommand<>(MetaDataEntry.class)
+                    .setContainerName(stm.getTable().getName())
+                    .setData(data);
+            }
+        );
+    }
+
 }

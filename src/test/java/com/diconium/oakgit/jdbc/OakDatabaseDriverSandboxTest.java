@@ -1,17 +1,21 @@
 package com.diconium.oakgit.jdbc;
 
+import com.diconium.oakgit.SandboxTest;
 import com.diconium.oakgit.TestHelpers;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
+import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
 import org.apache.jackrabbit.oak.plugins.document.rdb.*;
 import org.apache.jackrabbit.oak.spi.security.OpenSecurityProvider;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
+import javax.jcr.Node;
+import javax.jcr.Repository;
+import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.sql.DataSource;
 import java.nio.file.Path;
@@ -21,7 +25,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static com.diconium.oakgit.TestHelpers.aCleanTestDirectory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -42,7 +45,7 @@ public class OakDatabaseDriverSandboxTest {
         }
     }
 
-    @Test
+    @SandboxTest
     void createContentRepositoryWithMySqlDriverInstantiatesOakSession() throws Exception {
         DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:mysql://localhost:3306/oak", "root", "example");
 
@@ -52,7 +55,7 @@ public class OakDatabaseDriverSandboxTest {
         assertThat(session, is(instanceOf(ContentSession.class)));
     }
 
-    @Test
+    @SandboxTest
     void createContentRepositoryWithPostgresDriverInstantiatesOakSession() throws Exception {
         DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:postgresql:oak", "postgres", "example");
 
@@ -62,7 +65,7 @@ public class OakDatabaseDriverSandboxTest {
         assertThat(session, is(instanceOf(ContentSession.class)));
     }
 
-    @Test
+    @SandboxTest
     void createContentRepositoryWithDerbyDriverInstantiatesOakSession() throws Exception {
         DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:derby:memory:derby-oak-connection-test;create=true", "SA", "");
 
@@ -72,7 +75,7 @@ public class OakDatabaseDriverSandboxTest {
         assertThat(session, is(instanceOf(ContentSession.class)));
     }
 
-    @Test
+    @SandboxTest
     void createContentRepositoryWithOakGitDriverInstantiatesOakSession() throws Exception {
         Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
         Git.init().setDirectory(gitDirectory.toFile()).call();
@@ -82,6 +85,22 @@ public class OakDatabaseDriverSandboxTest {
         ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
        assertThat(session, is(instanceOf(ContentSession.class)));
+    }
+
+    @SandboxTest
+    void oakWithOakGitDriverCanInstantiateJcr() throws Exception {
+        Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
+        Git.init().setDirectory(gitDirectory.toFile()).call();
+        DriverManager.registerDriver(new OakGitDriver());
+        DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
+        Repository contentRepository = new Jcr(new Oak(aNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY)).with(new OpenSecurityProvider())).createRepository();
+        Session session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()));
+
+        Node hello = session.getRootNode().addNode("hello");
+        hello.setProperty("velo", "velo");
+        session.save();
+
+        assertThat(session, is(instanceOf(Session.class)));
     }
 
     private DocumentNodeStore aNodeStore(DataSource dataSource, RDBDocumentStoreDB ddb, RDBBlobStoreDB bdb) throws SQLException {

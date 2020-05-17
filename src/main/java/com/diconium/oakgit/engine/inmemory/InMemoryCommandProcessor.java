@@ -3,11 +3,7 @@ package com.diconium.oakgit.engine.inmemory;
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.CommandProcessor;
 import com.diconium.oakgit.engine.CommandResult;
-import com.diconium.oakgit.engine.commands.CreateContainerCommand;
-import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
-import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
-import com.diconium.oakgit.engine.commands.SelectFromContainerByIdRangeCommand;
-import com.diconium.oakgit.engine.commands.UpdatDataInContainerCommand;
+import com.diconium.oakgit.engine.commands.*;
 import com.diconium.oakgit.engine.model.Container;
 import com.diconium.oakgit.engine.model.ContainerEntry;
 import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
@@ -63,6 +59,14 @@ public class InMemoryCommandProcessor implements CommandProcessor {
                     .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), NodeAndSettingsEntry.class);
 
             return selectCommand.buildResult(foundEntries);
+        } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {
+
+            SelectFromContainerByMultipleIdsCommand selectCommand = (SelectFromContainerByMultipleIdsCommand) command;
+
+            List<ContainerEntry<NodeAndSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
+                .findByIds(selectCommand.getIds(), NodeAndSettingsEntry.class);
+
+            return selectCommand.buildResult(foundEntries);
         } else if (command instanceof UpdatDataInContainerCommand) {
 
             UpdatDataInContainerCommand updateCommand = (UpdatDataInContainerCommand) command;
@@ -95,10 +99,21 @@ public class InMemoryCommandProcessor implements CommandProcessor {
                             }
                         })
                         .whenHasValue("newData", String.class, v -> {
-                            if (v != null) {
-                                entityToUpdate.setData(v.getBytes());
+                            if (data.isConcatenateDataField()) {
+                                if (v != null) {
+                                    byte[] oldData = entityToUpdate.getData();
+                                    byte[] newData = v.getBytes();
+                                    byte[] combined = new byte[oldData.length + newData.length];
+                                    System.arraycopy(oldData, 0, combined, 0, oldData.length);
+                                    System.arraycopy(newData, 0, combined, oldData.length, newData.length);
+                                    entityToUpdate.setData(combined);
+                                }
                             } else {
-                                entityToUpdate.setData(null);
+                                if (v != null) {
+                                    entityToUpdate.setData(v.getBytes());
+                                } else {
+                                    entityToUpdate.setData(null);
+                                }
                             }
                         })
                         .whenHasValue("newVersion", Integer.class, entityToUpdate::setVersion);
