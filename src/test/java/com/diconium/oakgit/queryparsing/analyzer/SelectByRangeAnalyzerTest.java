@@ -20,7 +20,8 @@ class SelectByRangeAnalyzerTest {
         Statement statement = CCJSqlParserUtil.parse("select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from CLUSTERNODES where ID > ? and ID < ? order by ID");
         Map<Integer, Object> placeholderData = placeholderData("0", "a");
 
-        QueryId actual = new SelectByRangeAnalyzer().getId(statement, placeholderData).get();
+        QueryId actual = new SelectByRangeAnalyzer().getId(statement, placeholderData)
+            .orElseThrow(IllegalStateException::new);
 
         assertThat(actual, instanceOf(RangeQueryId.class));
         assertThat(((RangeQueryId) actual).leftValue(), is("0"));

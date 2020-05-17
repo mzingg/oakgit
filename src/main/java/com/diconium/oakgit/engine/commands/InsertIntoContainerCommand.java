@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * This class {@link InsertIntoContainerCommand} offers to insert data in a container.
  */
@@ -23,8 +25,8 @@ public class InsertIntoContainerCommand<T extends ContainerEntry<T>> extends Abs
 
     public InsertIntoContainerCommand(@NonNull Class<T> dataClass) {
         try {
-            this.data = dataClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            this.data = dataClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new IllegalArgumentException(e);
         }
     }

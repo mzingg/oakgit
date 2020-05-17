@@ -35,8 +35,8 @@ public class EmptyAnalyzer implements QueryAnalyzer {
     @Override
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
         return new NoOperationCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData);
+            .setOriginSql(statement.toString())
+            .setPlaceholderData(placeholderData);
     }
 
 }

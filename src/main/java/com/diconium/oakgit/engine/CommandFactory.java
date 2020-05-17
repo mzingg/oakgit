@@ -32,9 +32,9 @@ public class CommandFactory {
         QueryParserResult queryParserResult = new QueryParser().parse(sqlCommand);
         if (!queryParserResult.isValid()) {
             return new ErrorCommand()
-                    .setOriginSql(sqlCommand)
-                    .setPlaceholderData(placeholderData)
-                    .setErrorMessage("Error while parsing the query " + sqlCommand);
+                .setOriginSql(sqlCommand)
+                .setPlaceholderData(placeholderData)
+                .setErrorMessage("Error while parsing the query " + sqlCommand);
         }
 
         return queryParserResult.asCommand(placeholderData);

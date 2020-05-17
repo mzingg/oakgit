@@ -21,8 +21,8 @@ public class SelectInAnalyzer implements QueryAnalyzer {
     @Override
     public boolean interestedIn(Statement statement) {
         return statement instanceof Select &&
-                ((Select) statement).getSelectBody() instanceof PlainSelect &&
-                (((PlainSelect) ((Select) statement).getSelectBody()).getWhere() instanceof Parenthesis ||
+            ((Select) statement).getSelectBody() instanceof PlainSelect &&
+            (((PlainSelect) ((Select) statement).getSelectBody()).getWhere() instanceof Parenthesis ||
                 ((PlainSelect) ((Select) statement).getSelectBody()).getWhere() instanceof InExpression);
     }
 
@@ -47,9 +47,9 @@ public class SelectInAnalyzer implements QueryAnalyzer {
     @Override
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
         return new SelectFromContainerByMultipleIdsCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData)
-                .setContainerName(getTableName(statement))
-                .setIds(placeholderData.values().stream().map(o -> (String) o).collect(Collectors.toList()));
+            .setOriginSql(statement.toString())
+            .setPlaceholderData(placeholderData)
+            .setContainerName(getTableName(statement))
+            .setIds(placeholderData.values().stream().map(o -> (String) o).collect(Collectors.toList()));
     }
 }

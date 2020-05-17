@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 @ToString
 public class UpdateSet implements ContainerEntry<UpdateSet> {
 
-    private Map<String, Object> updatedValues = new HashMap<>();
+    private final Map<String, Object> updatedValues = new HashMap<>();
 
     public UpdateSet withValue(@NonNull String name, Object value) {
         updatedValues.put(name, value);

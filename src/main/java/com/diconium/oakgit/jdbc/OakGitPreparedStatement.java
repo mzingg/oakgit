@@ -16,8 +16,8 @@ import java.util.Map;
 
 public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
-    private List<String> commandList = new ArrayList<>();
-    private Map<Integer, Object> placeholderData = new LinkedHashMap<>();
+    private final List<String> commandList = new ArrayList<>();
+    private final Map<Integer, Object> placeholderData = new LinkedHashMap<>();
 
     protected OakGitPreparedStatement(OakGitConnection connection, String sql) {
         super(connection, sql);

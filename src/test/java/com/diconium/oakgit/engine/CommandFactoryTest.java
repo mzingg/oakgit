@@ -16,13 +16,13 @@ class CommandFactoryTest {
     public static final String CREATE_TABLE_PATTERN_TEST = "create table CLUSTERNODES";
 
     public static final String CREATE_TABLE_COLUMNS_PATTERN_TEST =
-            "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
-                    "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
-                    "SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))";
+        "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
+            "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
+            "SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))";
 
     public static final String INSERT_INTO_TABLE_PATTERN_TEST = "insert into SETTINGS(ID, MODIFIED, HASBINARY, " +
-            "DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) " +
-            "values (?, ?, ?, ?, ?, ?, ?, 2, ?, ?, ?, ?)";
+        "DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) " +
+        "values (?, ?, ?, ?, ?, ?, ?, 2, ?, ?, ?, ?)";
 
     public static final String GET_BY_ID_FROM_TABLE_PATTERN_TEST = "select * from CLUSTERNODES where ID = '0'";
 

@@ -3,30 +3,16 @@ package com.diconium.oakgit.engine.inmemory;
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.CommandProcessor;
 import com.diconium.oakgit.engine.CommandResult;
-import com.diconium.oakgit.engine.commands.CreateContainerCommand;
-import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
-import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
-import com.diconium.oakgit.engine.commands.SelectFromContainerByIdRangeCommand;
-import com.diconium.oakgit.engine.commands.SelectFromContainerByMultipleIdsCommand;
-import com.diconium.oakgit.engine.commands.UpdatDataInContainerCommand;
-import com.diconium.oakgit.engine.model.Container;
-import com.diconium.oakgit.engine.model.ContainerEntry;
-import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
-import com.diconium.oakgit.engine.model.QueriedSettingsEntry;
-import com.diconium.oakgit.engine.model.UpdateSet;
+import com.diconium.oakgit.engine.commands.*;
+import com.diconium.oakgit.engine.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +26,9 @@ import static com.diconium.oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOU
 public class InMemoryCommandProcessor implements CommandProcessor {
 
     private static final Container NULL_CONTAINER = new Container("null container");
-    private Map<String, Container> containerMap = new HashMap<>();
+    private final Map<String, Container> containerMap = new HashMap<>();
 
-    private ConcurrentLinkedQueue<String> logBuffer = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<String> logBuffer = new ConcurrentLinkedQueue<>();
 
     public InMemoryCommandProcessor() {
         this(StringUtils.EMPTY);
@@ -86,10 +72,10 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
         } else if (command instanceof InsertIntoContainerCommand) {
 
-            InsertIntoContainerCommand<?> insertCommand = (InsertIntoContainerCommand) command;
+            InsertIntoContainerCommand<?> insertCommand = (InsertIntoContainerCommand<?>) command;
 
             getOrCreateContainer(insertCommand.getContainerName())
-                    .setEntry(insertCommand.getData());
+                .setEntry(insertCommand.getData());
 
             return SUCCESSFULL_RESULT_WITHOUT_DATA;
 
@@ -98,8 +84,8 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             SelectFromContainerByIdCommand selectCommand = (SelectFromContainerByIdCommand) command;
 
             ContainerEntry<NodeAndSettingsEntry> foundEntry = getContainer(selectCommand.getContainerName())
-                    .findById(selectCommand.getId(), NodeAndSettingsEntry.class)
-                    .orElse(ContainerEntry.emptyOf(NodeAndSettingsEntry.class));
+                .findById(selectCommand.getId(), NodeAndSettingsEntry.class)
+                .orElse(ContainerEntry.emptyOf(NodeAndSettingsEntry.class));
 
             return selectCommand.buildResult(foundEntry);
 
@@ -108,7 +94,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             SelectFromContainerByIdRangeCommand selectCommand = (SelectFromContainerByIdRangeCommand) command;
 
             List<ContainerEntry<QueriedSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
-                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), QueriedSettingsEntry.class);
+                .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), QueriedSettingsEntry.class);
             logBuffer.add(String.format("Found %d entries", foundEntries.size()));
 
             return selectCommand.buildResult(foundEntries);
@@ -117,7 +103,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             SelectFromContainerByMultipleIdsCommand selectCommand = (SelectFromContainerByMultipleIdsCommand) command;
 
             List<ContainerEntry<QueriedSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
-                    .findByIds(selectCommand.getIds(), QueriedSettingsEntry.class);
+                .findByIds(selectCommand.getIds(), QueriedSettingsEntry.class);
             logBuffer.add(String.format("Found %d entries", foundEntries.size()));
 
             return selectCommand.buildResult(foundEntries);
@@ -127,7 +113,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             Container container = getOrCreateContainer(updateCommand.getContainerName());
             Optional<ContainerEntry<NodeAndSettingsEntry>> existingEntry = container
-                    .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), NodeAndSettingsEntry.class);
+                .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), NodeAndSettingsEntry.class);
 
             if (existingEntry.isPresent()) {
 
@@ -135,31 +121,31 @@ public class InMemoryCommandProcessor implements CommandProcessor {
                 final NodeAndSettingsEntry entityToUpdate = (NodeAndSettingsEntry) existingEntry.get();
 
                 data
-                        .whenHasValue("newModCount", Long.class, entityToUpdate::setModCount)
-                        .whenHasValue("newModified", Long.class, v -> {
-                            if (v != null && (entityToUpdate.getModified() == null || v > entityToUpdate.getModified())) {
-                                entityToUpdate.setModified(v);
-                            }
-                        })
-                        .whenHasValue("newHasBinary", Integer.class, entityToUpdate::setHasBinary)
-                        .whenHasValue("newDeletedOnce", Integer.class, entityToUpdate::setDeletedOnce)
-                        .whenHasValue("newCModCount", Long.class, entityToUpdate::setCModCount)
-                        .whenHasValue("dsizeAddition", Long.class, v -> {
-                            if (v != null) {
-                                Long existingSize = entityToUpdate.getDSize() != null ? entityToUpdate.getDSize() : 0L;
-                                entityToUpdate.setDSize(existingSize + v);
-                            } else {
-                                entityToUpdate.setDSize(null);
-                            }
-                        })
-                        .whenHasValue("newData", String.class, v -> {
-                            if (v != null) {
-                                entityToUpdate.appendData(v.getBytes());
-                            } else {
-                                entityToUpdate.setData(null);
-                            }
-                        })
-                        .whenHasValue("newVersion", Integer.class, entityToUpdate::setVersion);
+                    .whenHasValue("newModCount", Long.class, entityToUpdate::setModCount)
+                    .whenHasValue("newModified", Long.class, v -> {
+                        if (v != null && (entityToUpdate.getModified() == null || v > entityToUpdate.getModified())) {
+                            entityToUpdate.setModified(v);
+                        }
+                    })
+                    .whenHasValue("newHasBinary", Integer.class, entityToUpdate::setHasBinary)
+                    .whenHasValue("newDeletedOnce", Integer.class, entityToUpdate::setDeletedOnce)
+                    .whenHasValue("newCModCount", Long.class, entityToUpdate::setCModCount)
+                    .whenHasValue("dsizeAddition", Long.class, v -> {
+                        if (v != null) {
+                            Long existingSize = entityToUpdate.getDSize() != null ? entityToUpdate.getDSize() : 0L;
+                            entityToUpdate.setDSize(existingSize + v);
+                        } else {
+                            entityToUpdate.setDSize(null);
+                        }
+                    })
+                    .whenHasValue("newData", String.class, v -> {
+                        if (v != null) {
+                            entityToUpdate.appendData(v.getBytes());
+                        } else {
+                            entityToUpdate.setData(null);
+                        }
+                    })
+                    .whenHasValue("newVersion", Integer.class, entityToUpdate::setVersion);
 
                 return updateCommand.buildResult(entityToUpdate);
             }

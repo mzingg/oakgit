@@ -55,29 +55,29 @@ public class InsertAnalyzer implements QueryAnalyzer {
             if (getTableName(statement).equals("DATASTORE_META")) {
 
                 MetaDataEntry data = new MetaDataEntry()
-                        .setId(id.get().value());
+                    .setId(id.get().value());
                 return new InsertIntoContainerCommand<>(MetaDataEntry.class)
-                        .setOriginSql(statement.toString())
-                        .setPlaceholderData(placeholderData)
-                        .setContainerName(getTableName(statement))
-                        .setData(data);
+                    .setOriginSql(statement.toString())
+                    .setPlaceholderData(placeholderData)
+                    .setContainerName(getTableName(statement))
+                    .setData(data);
 
             } else {
 
                 NodeAndSettingsEntry data = NodeAndSettingsEntry.buildNodeSettingsDataForInsert(statement, placeholderData, this);
                 return new InsertIntoContainerCommand<>(NodeAndSettingsEntry.class)
-                        .setOriginSql(statement.toString())
-                        .setPlaceholderData(placeholderData)
-                        .setContainerName(getTableName(statement))
-                        .setData(data);
+                    .setOriginSql(statement.toString())
+                    .setPlaceholderData(placeholderData)
+                    .setContainerName(getTableName(statement))
+                    .setData(data);
 
             }
         }
 
         return new ErrorCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData)
-                .setErrorMessage("Cannot create command with an invalid id");
+            .setOriginSql(statement.toString())
+            .setPlaceholderData(placeholderData)
+            .setErrorMessage("Cannot create command with an invalid id");
     }
 
     @Override

@@ -1,12 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AllUnitTests" type="JUnit" factoryName="JUnit" activateToolWindowBeforeRun="false" singleton="true">
-    <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
-    <option name="PACKAGE_NAME" value="com.diconium.oakgit" />
+  <configuration default="false" name="All Unit Tests" type="JUnit" factoryName="JUnit">
+    <useClassPathOnly />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="tags" />
     <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <option name="TEST_SEARCH_SCOPE">
       <value defaultName="wholeProject" />
     </option>

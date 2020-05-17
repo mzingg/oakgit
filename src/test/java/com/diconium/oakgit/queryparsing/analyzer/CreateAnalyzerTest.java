@@ -43,8 +43,8 @@ class CreateAnalyzerTest {
     @UnitTest
     void getTableNameWithReturnsExpectedValue() throws Exception {
         Statement statement = CCJSqlParserUtil.parse("create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
-                "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
-                "SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
+            "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
+            "SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
 
         assertThat(new CreateAnalyzer().getTableName(statement), is("CLUSTERNODES"));
     }

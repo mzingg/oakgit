@@ -26,14 +26,14 @@ public class DeleteAnalyzer implements QueryAnalyzer {
     @Override
     public String getTableName(Statement statement) {
         return whileInterestedOrThrow(statement, Delete.class,
-                stm -> stm.getTable().getName()
+            stm -> stm.getTable().getName()
         );
     }
 
     @Override
     public Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData) {
         return whileInterestedOrThrow(statement, Delete.class,
-                stm -> Optional.empty()
+            stm -> Optional.empty()
         );
     }
 

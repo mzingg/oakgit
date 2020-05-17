@@ -3,23 +3,23 @@ package com.diconium.oakgit.engine.model;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Consumer;
 
-public interface ContainerEntry<T extends ContainerEntry> {
+public interface ContainerEntry<T extends ContainerEntry<T>> {
 
     /**
      * Returns an instance of an empty container typed to the given class.
      * Always returns a new object instance. Calls the ctor(String) of the given type class.
      * Use {@link ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is empty.
      *
-     * @param entryClass
-     * @param <T>
+     * @param entryClass {@link Class}&lt;T&gt;
      * @return ContainerEntry
      */
     static <T extends ContainerEntry<T>> ContainerEntry<T> emptyOf(Class<T> entryClass) {
         try {
-            return entryClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return entryClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new IllegalArgumentException("no empty ctor found for ContainerEntry implementation");
         }
     }
@@ -27,7 +27,7 @@ public interface ContainerEntry<T extends ContainerEntry> {
     /**
      * Tests if a given containerEntry object is of the empty type.
      *
-     * @param containerEntry
+     * @param containerEntry {@link ContainerEntry}&lt;T&gt;
      * @return boolean
      */
     static boolean isEmpty(ContainerEntry<?> containerEntry) {
@@ -39,18 +39,17 @@ public interface ContainerEntry<T extends ContainerEntry> {
      * Always returns a new object instance. Use {@link ContainerEntry#isInvalid(ContainerEntry)}
      * to test if a given object is invalid.
      *
-     * @param entryClass
-     * @param <T>
+     * @param entryClass {@link Class}&lt;T&gt;
      * @return ContainerEntry
      */
     static <T extends ContainerEntry<T>> ContainerEntry<T> invalidOf(Class<T> entryClass) {
-        return new InvalidContainerEntry<T>();
+        return new InvalidContainerEntry<>();
     }
 
     /**
      * Tests if a given containerEntry object is of the invalid type.
      *
-     * @param containerEntry
+     * @param containerEntry {@link ContainerEntry}&lt;T&gt;
      * @return boolean
      */
     static boolean isInvalid(ContainerEntry<?> containerEntry) {
@@ -60,8 +59,8 @@ public interface ContainerEntry<T extends ContainerEntry> {
     /**
      * Combines !{@link ContainerEntry#isEmpty(ContainerEntry)} and !{@link ContainerEntry#isInvalid(ContainerEntry)}
      *
-     * @param containerEntry
-     * @return
+     * @param containerEntry {@link ContainerEntry}&lt;T&gt;
+     * @return boolean
      */
     static boolean isValidAndNotEmpty(ContainerEntry<?> containerEntry) {
         return !isInvalid(containerEntry) && !isEmpty(containerEntry);

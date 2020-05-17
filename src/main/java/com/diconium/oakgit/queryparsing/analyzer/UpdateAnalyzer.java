@@ -52,28 +52,28 @@ public class UpdateAnalyzer implements QueryAnalyzer {
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
         if (isValidPlacholderData(placeholderData)) {
             UpdateSet data = new UpdateSet()
-                    .withValue("newModified", placeholderData.get(1)) // placeholder 2 is the same as 1
-                    .withValue("newHasBinary", placeholderData.get(3))
-                    .withValue("newDeletedOnce", placeholderData.get(4))
-                    .withValue("newModCount", placeholderData.get(5))
-                    .withValue("newCModCount", placeholderData.get(6))
-                    .withValue("dsizeAddition", new Long((Integer) placeholderData.get(7)))
-                    .withValue("newData", placeholderData.get(8))
-                    .withValue("newVersion", 2);
+                .withValue("newModified", placeholderData.get(1)) // placeholder 2 is the same as 1
+                .withValue("newHasBinary", placeholderData.get(3))
+                .withValue("newDeletedOnce", placeholderData.get(4))
+                .withValue("newModCount", placeholderData.get(5))
+                .withValue("newCModCount", placeholderData.get(6))
+                .withValue("dsizeAddition", Long.valueOf((Integer) placeholderData.get(7)))
+                .withValue("newData", placeholderData.get(8))
+                .withValue("newVersion", 2);
 
             return new UpdatDataInContainerCommand()
-                    .setOriginSql(statement.toString())
-                    .setPlaceholderData(placeholderData)
-                    .setId((String) placeholderData.get(9))
-                    .setModCount((Long) placeholderData.get(10))
-                    .setContainerName(getTableName(statement))
-                    .setData(data);
+                .setOriginSql(statement.toString())
+                .setPlaceholderData(placeholderData)
+                .setId((String) placeholderData.get(9))
+                .setModCount((Long) placeholderData.get(10))
+                .setContainerName(getTableName(statement))
+                .setData(data);
         }
 
         return new ErrorCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData)
-                .setErrorMessage("Cannot create command with invalid placeholder data");
+            .setOriginSql(statement.toString())
+            .setPlaceholderData(placeholderData)
+            .setErrorMessage("Cannot create command with invalid placeholder data");
     }
 
     private boolean isValidPlacholderData(Map<Integer, Object> placeholderData) {

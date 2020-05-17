@@ -30,8 +30,8 @@ public class MultipleEntitiesCommandResult<T extends ContainerEntry<T>> implemen
         }
         if (wasSuccessfull()) {
             foundEntries.stream()
-                    .filter(ContainerEntry::isValidAndNotEmpty)
-                    .forEach(e -> e.getResultSetModifier().accept(result));
+                .filter(ContainerEntry::isValidAndNotEmpty)
+                .forEach(e -> e.getResultSetModifier().accept(result));
         }
 
         return result;
@@ -45,8 +45,8 @@ public class MultipleEntitiesCommandResult<T extends ContainerEntry<T>> implemen
     @Override
     public int affectedCount() {
         return foundEntries.stream()
-                .mapToInt(e -> isValidAndNotEmpty(e) ? 1 : 0)
-                .sum();
+            .mapToInt(e -> isValidAndNotEmpty(e) ? 1 : 0)
+            .sum();
     }
 
 }

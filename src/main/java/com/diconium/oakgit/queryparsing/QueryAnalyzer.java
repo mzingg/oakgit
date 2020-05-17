@@ -42,7 +42,7 @@ public interface QueryAnalyzer {
         }
 
         if (targetType.equals(Long.class) && value.getClass().equals(Integer.class)) {
-            return (T) new Long(((Integer) value).longValue());
+            return (T) Long.valueOf(((Integer) value).longValue());
         }
 
         return null;
@@ -60,8 +60,8 @@ public interface QueryAnalyzer {
 
     default <T extends Statement> QueryParserResult queryParserFor(Statement statement, Class<T> statementType) {
         return whileInterested(statement, statementType,
-                typedStatement -> new QueryParserResult(this, typedStatement),
-                () -> QueryParserResult.Error(this, statementType, "statement must be of type {}", statementType.getName()));
+            typedStatement -> new QueryParserResult(this, typedStatement),
+            () -> QueryParserResult.Error(this, statementType, "statement must be of type {}", statementType.getName()));
     }
 
     default <T extends Statement, R> R whileInterestedOrThrow(Statement statement, Class<T> statementType, Function<T, R> interestedCallback, RuntimeException exception) {

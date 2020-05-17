@@ -40,26 +40,26 @@ public class QueryParserResult {
     @SuppressWarnings("unused")
     public static <T extends Statement> QueryParserResult Error(QueryAnalyzer queryAnalyzer, Class<T> statementClass, String message, Object... messageParameters) {
         return new QueryParserResult(queryAnalyzer, null)
-                .setErrorState(true)
-                .setMessage(String.format(message, messageParameters));
+            .setErrorState(true)
+            .setMessage(String.format(message, messageParameters));
     }
 
     public static QueryParserResult Unknown(QueryAnalyzer queryAnalyzer, Statement statement, String message, Object... messageParameters) {
         return new QueryParserResult(queryAnalyzer, statement)
-                .setUnknownState(true)
-                .setMessage(String.format(message, messageParameters));
+            .setUnknownState(true)
+            .setMessage(String.format(message, messageParameters));
     }
 
     public static QueryParserResult Error(String message, Object... messageParameters) {
         return new QueryParserResult(new EmptyAnalyzer())
-                .setErrorState(true)
-                .setMessage(String.format(message, messageParameters));
+            .setErrorState(true)
+            .setMessage(String.format(message, messageParameters));
     }
 
     public static QueryParserResult Unknown(String message, Object... messageParameters) {
         return new QueryParserResult(new EmptyAnalyzer())
-                .setUnknownState(true)
-                .setMessage(String.format(message, messageParameters));
+            .setUnknownState(true)
+            .setMessage(String.format(message, messageParameters));
     }
 
     public boolean isValid() {

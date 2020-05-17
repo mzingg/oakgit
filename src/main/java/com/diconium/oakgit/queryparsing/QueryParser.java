@@ -34,10 +34,10 @@ public class QueryParser {
                 Statement statement = CCJSqlParserUtil.parse(sqlQuery);
 
                 return analyzers.stream()
-                        .filter(queryAnalyzer -> queryAnalyzer.interestedIn(statement))
-                        .findFirst()
-                        .map(firstFoundQueryAnalyzer -> firstFoundQueryAnalyzer.getParserResult(statement))
-                        .orElse(QueryParserResult.Unknown("No analyzer for query [%s] found", sqlQuery));
+                    .filter(queryAnalyzer -> queryAnalyzer.interestedIn(statement))
+                    .findFirst()
+                    .map(firstFoundQueryAnalyzer -> firstFoundQueryAnalyzer.getParserResult(statement))
+                    .orElse(QueryParserResult.Unknown("No analyzer for query [%s] found", sqlQuery));
 
             } catch (JSQLParserException e) {
                 QueryParserResult.Error("Error while parsing sqlQuery: %s", e.getMessage());

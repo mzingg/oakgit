@@ -17,7 +17,7 @@ public class GitFilesystem {
 
     private final Git git;
     private final Path workspacePath;
-    private PersonIdent committer;
+    private final PersonIdent committer;
 
     public GitFilesystem(Git git, PersonIdent committer) {
         this.git = git;
@@ -58,14 +58,14 @@ public class GitFilesystem {
             Files.write(gitIgnoreFile, new byte[0]);
 
             _git.add()
-                    .addFilepattern(relativeDirectoryPath)
-                    .addFilepattern(relativeGitIgnorePath)
-                    .call();
+                .addFilepattern(relativeDirectoryPath)
+                .addFilepattern(relativeGitIgnorePath)
+                .call();
 
             _git.commit()
-                    .setCommitter(getCommitter())
-                    .setMessage(String.format("GitFilesystem: create directory '%s'", relativeDirectoryPath))
-                    .call();
+                .setCommitter(getCommitter())
+                .setMessage(String.format("GitFilesystem: create directory '%s'", relativeDirectoryPath))
+                .call();
 
             return createdDirectoryPath;
         } catch (IOException | GitAPIException e) {

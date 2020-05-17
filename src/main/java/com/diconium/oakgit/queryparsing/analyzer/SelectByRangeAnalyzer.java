@@ -30,8 +30,8 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
     @Override
     public boolean interestedIn(Statement statement) {
         return statement instanceof Select &&
-                ((Select) statement).getSelectBody() instanceof PlainSelect &&
-                ((PlainSelect) ((Select) statement).getSelectBody()).getWhere() instanceof AndExpression;
+            ((Select) statement).getSelectBody() instanceof PlainSelect &&
+            ((PlainSelect) ((Select) statement).getSelectBody()).getWhere() instanceof AndExpression;
     }
 
     @Override
@@ -62,17 +62,17 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
         if (id.isPresent()) {
             RangeQueryId rangeQueryId = id.get();
             return new SelectFromContainerByIdRangeCommand()
-                    .setOriginSql(statement.toString())
-                    .setPlaceholderData(placeholderData)
-                    .setContainerName(getTableName(statement))
-                    .setIdMin(rangeQueryId.leftValue())
-                    .setIdMax(rangeQueryId.rightValue());
+                .setOriginSql(statement.toString())
+                .setPlaceholderData(placeholderData)
+                .setContainerName(getTableName(statement))
+                .setIdMin(rangeQueryId.leftValue())
+                .setIdMax(rangeQueryId.rightValue());
         }
 
         return new ErrorCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData)
-                .setErrorMessage("Cannot create command with an invalid id");
+            .setOriginSql(statement.toString())
+            .setPlaceholderData(placeholderData)
+            .setErrorMessage("Cannot create command with an invalid id");
     }
 
     private Optional<QueryId> extractIdFromWhere(Expression whereExpression, Map<Integer, Object> placeholderData) {

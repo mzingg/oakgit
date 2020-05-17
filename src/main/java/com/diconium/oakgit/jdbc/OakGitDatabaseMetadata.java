@@ -16,10 +16,10 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
     private final String url;
 
     @NonNull
-    private String artifactId;
+    private final String artifactId;
 
     @NonNull
-    private Version version;
+    private final Version version;
 
     @Override
     public String getURL() {

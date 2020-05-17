@@ -26,7 +26,7 @@ public class CreateAnalyzer implements QueryAnalyzer {
     @Override
     public String getTableName(Statement statement) {
         return whileInterestedOrThrow(statement, CreateTable.class,
-                stm -> stm.getTable().getName()
+            stm -> stm.getTable().getName()
         );
     }
 
@@ -38,9 +38,9 @@ public class CreateAnalyzer implements QueryAnalyzer {
     @Override
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
         return new CreateContainerCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData)
-                .setContainerName(getTableName(statement));
+            .setOriginSql(statement.toString())
+            .setPlaceholderData(placeholderData)
+            .setContainerName(getTableName(statement));
     }
 
 }

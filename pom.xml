@@ -16,9 +16,10 @@
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 
-        <test.oak.version>1.8.3</test.oak.version>
-        <jgit.version>5.4.2.201908231537-r</jgit.version>
-        <aem.version>6.4.0.0000</aem.version>
+        <aem.version>6.5.4.0001</aem.version>
+        <!-- has to correspond to aem.version - version taken from Felix bundles list -->
+        <test.oak.version>1.10.2</test.oak.version>
+        <test.junit.version>5.6.2</test.junit.version>
     </properties>
 
     <build>
@@ -30,27 +31,14 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>{local-packages}</Export-Package>
+                        <Export-Package>com.diconium.oakgit.jdbc</Export-Package>
                         <Import-Package>
-                            !com.google.protobuf,
-                            !com.googlecode.javaewah,
-                            !com.jcraft.jsch,
-                            !org.bouncycastle.bcpg,
-                            !org.bouncycastle.gpg,
-                            !org.bouncycastle.gpg.keybox,
-                            !org.bouncycastle.gpg.keybox.jcajce,
-                            !org.bouncycastle.jce.provider,
-                            !org.bouncycastle.openpgp,
-                            !org.bouncycastle.openpgp.operator,
-                            !org.bouncycastle.openpgp.operator.jcajce,
-                            !org.bouncycastle.util.encoders,
-                            !sun.net.www.protocol.http,
-                            !sun.security.jgss,
+                            !javax.net.ssl
                             *
                         </Import-Package>
                         <Private-Package>
+                            com.diconium.oakgit.*,
                             io.vavr.*,
-                            org.apache.calcite.avatica.*,
                             net.sf.jsqlparser.*,
                             com.github.zafarkhaja.semver.*,
                             org.apache.maven.model.*,
@@ -58,7 +46,6 @@
                         </Private-Package>
                         <Embed-Dependency>
                             vavr,
-                            avatica-core,
                             sqlparser,
                             java-semver,
                             maven-model,
@@ -76,11 +63,24 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
                     <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
+                        <release>11</release>
                     </configuration>
                 </plugin>
-                <!-- Maven Surefire Plugin is required to run the test cases -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
@@ -88,33 +88,39 @@
                         <properties>
                             <groups>unit</groups>
                         </properties>
+                        <argLine>
+                            --illegal-access=permit
+                        </argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.22.2</version>
+                    <configuration>
+                        <argLine>
+                            --illegal-access=permit
+                        </argLine>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
-    <dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Import Maven dependencies from AEM -->
+            <dependency>
+                <groupId>io.wcm.maven</groupId>
+                <artifactId>io.wcm.maven.aem-dependencies</artifactId>
+                <version>${aem.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-        <dependency>
-            <groupId>org.apache.calcite.avatica</groupId>
-            <artifactId>avatica-core</artifactId>
-            <version>1.15.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+    <dependencies>
 
         <dependency>
             <groupId>io.vavr</groupId>
@@ -125,13 +131,13 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
+            <version>1.18.12</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>${jgit.version}</version>
+            <version>5.7.0.202003110725-r</version>
         </dependency>
 
         <dependency>
@@ -140,6 +146,7 @@
             <version>2.1</version>
         </dependency>
 
+        <!-- needed to read the project version form the pom file in META-INF -->
         <dependency>
             <groupId>com.github.zafarkhaja</groupId>
             <artifactId>java-semver</artifactId>
@@ -149,29 +156,16 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-model</artifactId>
-            <version>3.6.1</version>
+            <version>3.6.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>${jgit.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.github.jsqlparser/jsqlparser -->
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>2.1</version>
-        </dependency>
-
-        <!-- Transitive dependencies -->
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.0</version>
         </dependency>
 
+        <!-- Transitive dependencies -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
@@ -188,6 +182,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-core</artifactId>
             <version>${test.oak.version}</version>
@@ -202,23 +202,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>oak-store-document</artifactId>
-            <version>${test.oak.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.5.1</version>
+            <version>${test.junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.5.1</version>
+            <version>${test.junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -233,77 +226,59 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.5.1</version>
+            <version>1.6.2</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.0.0</version>
+            <version>3.3.3</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
-            <version>9.0.24</version>
+            <version>9.0.35</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>10.15.1.3</version>
+            <version>10.15.2.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.6</version>
+            <version>42.2.12</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.17</version>
+            <version>8.0.20</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.30</version>
             <scope>test</scope>
         </dependency>
 
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- Import Maven dependencies from AEM -->
-            <dependency>
-                <groupId>io.wcm.maven</groupId>
-                <artifactId>io.wcm.maven.aem-dependencies</artifactId>
-                <version>${aem.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 </project>

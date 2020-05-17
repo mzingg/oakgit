@@ -3,8 +3,8 @@ package com.diconium.oakgit.queryparsing;
 import com.diconium.oakgit.UnitTest;
 import com.diconium.oakgit.queryparsing.analyzer.CreateAnalyzer;
 import com.diconium.oakgit.queryparsing.analyzer.DeleteAnalyzer;
-import com.diconium.oakgit.queryparsing.analyzer.SelectByIdAnalyzer;
 import com.diconium.oakgit.queryparsing.analyzer.InsertAnalyzer;
+import com.diconium.oakgit.queryparsing.analyzer.SelectByIdAnalyzer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -33,8 +33,8 @@ class QueryParserTest {
     @UnitTest
     void parseWithInsertQueryReturnTestTableName() {
         QueryParserResult actual = new QueryParser().parse(
-                "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
-                        "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
+            "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
+                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'Germany')");
 
         assertThat(actual.getTableName(), is("PRODUCTS"));
     }
@@ -65,8 +65,8 @@ class QueryParserTest {
     @UnitTest
     public void parseWithInValidInsertQueryReturnsException() {
         QueryParserResult actual = new QueryParser().parse(
-                "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data,)\n" +
-                        "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
+            "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data,)\n" +
+                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, '')");
 
         assertThat(actual.isValid(), is(false));
     }
@@ -74,8 +74,8 @@ class QueryParserTest {
     @UnitTest
     public void parseWithInsertQueryReturnsInsertObject() {
         QueryParserResult actual = new QueryParser().parse(
-                "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
-                        "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
+            "INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
+                "VALUES ('Tom B. Erichsen', 'Skagen 21', 'Stavanger', 200.350, 'sample Data')");
 
         assertThat(actual.getAnalyzer(), isA(InsertAnalyzer.class));
     }
