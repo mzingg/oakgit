@@ -36,7 +36,7 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return queryParserFor(statement, Select.class);
+        return queryParserFor(statement, Select.class, QueryParserResult.ResultType.SELECT);
     }
 
     @Override
@@ -62,17 +62,12 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
         if (id.isPresent()) {
             RangeQueryId rangeQueryId = id.get();
             return new SelectFromContainerByIdRangeCommand()
-                .setOriginSql(statement.toString())
-                .setPlaceholderData(placeholderData)
                 .setContainerName(getTableName(statement))
                 .setIdMin(rangeQueryId.leftValue())
                 .setIdMax(rangeQueryId.rightValue());
         }
 
-        return new ErrorCommand()
-            .setOriginSql(statement.toString())
-            .setPlaceholderData(placeholderData)
-            .setErrorMessage("Cannot create command with an invalid id");
+        return new ErrorCommand("Cannot create command with an invalid id");
     }
 
     private Optional<QueryId> extractIdFromWhere(Expression whereExpression, Map<Integer, Object> placeholderData) {

@@ -11,6 +11,8 @@ import java.util.function.Supplier;
 
 public interface QueryAnalyzer {
 
+    String INVALID_ID = "INVAILD";
+
     boolean interestedIn(Statement statement);
 
     QueryParserResult getParserResult(Statement statement);
@@ -25,27 +27,14 @@ public interface QueryAnalyzer {
         return Collections.emptyMap();
     }
 
-
+    @SuppressWarnings("unchecked")
     default <T> Optional<T> getDataField(Statement statement, String fieldName, Class<T> targetType, Map<Integer, Object> placeholderData) {
-        Object fieldValue = getData(statement, placeholderData).getOrDefault(fieldName.toLowerCase(), null);
-        if (fieldValue != null) {
-            return Optional.ofNullable(convertToTargetTypeOrNull(fieldValue, targetType));
+        Object fieldValue = getData(statement, placeholderData).getOrDefault(fieldName, null);
+        if (fieldValue != null && targetType.isAssignableFrom(fieldValue.getClass())) {
+            return Optional.of((T) fieldValue);
         }
 
         return Optional.empty();
-    }
-
-    @SuppressWarnings("unchecked")
-    default <T> T convertToTargetTypeOrNull(Object value, Class<T> targetType) {
-        if (targetType.isAssignableFrom(value.getClass())) {
-            return (T) value;
-        }
-
-        if (targetType.equals(Long.class) && value.getClass().equals(Integer.class)) {
-            return (T) Long.valueOf(((Integer) value).longValue());
-        }
-
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -58,20 +47,20 @@ public interface QueryAnalyzer {
         return fallback.get();
     }
 
-    default <T extends Statement> QueryParserResult queryParserFor(Statement statement, Class<T> statementType) {
+    default <T extends Statement> QueryParserResult queryParserFor(Statement statement, Class<T> statementType, QueryParserResult.ResultType resultType) {
         return whileInterested(statement, statementType,
-            typedStatement -> new QueryParserResult(this, typedStatement),
-            () -> QueryParserResult.Error(this, statementType, "statement must be of type {}", statementType.getName()));
+                typedStatement -> new QueryParserResult(this, typedStatement, resultType),
+                () -> QueryParserResult.Error(this, statementType, "statement must be of type {}", statementType.getName()));
     }
 
     default <T extends Statement, R> R whileInterestedOrThrow(Statement statement, Class<T> statementType, Function<T, R> interestedCallback, RuntimeException exception) {
-        return whileInterested(statement, statementType, interestedCallback, () -> {
-            throw exception;
-        });
+       return whileInterested(statement, statementType, interestedCallback, () -> {
+           throw exception;
+       });
     }
 
     default <T extends Statement, R> R whileInterestedOrThrow(Statement statement, Class<T> statementType, Function<T, R> interestedCallback) {
-        return whileInterestedOrThrow(statement, statementType, interestedCallback, new IllegalStateException());
+       return whileInterestedOrThrow(statement, statementType, interestedCallback, new IllegalStateException());
     }
 
 }

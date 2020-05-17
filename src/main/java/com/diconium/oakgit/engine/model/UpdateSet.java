@@ -1,7 +1,9 @@
 package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.HashMap;
@@ -12,6 +14,10 @@ import java.util.function.Consumer;
 @ToString
 public class UpdateSet implements ContainerEntry<UpdateSet> {
 
+    @Getter
+    @Setter
+    private boolean concatenateDataField = false;
+
     private final Map<String, Object> updatedValues = new HashMap<>();
 
     public UpdateSet withValue(@NonNull String name, Object value) {
@@ -19,7 +25,6 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> UpdateSet whenHasValue(@NonNull String name, Class<T> targetType, Consumer<T> consumer) {
         if (updatedValues.containsKey(name)) {
             Object value = updatedValues.get(name);
@@ -34,7 +39,6 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> Optional<T> getValue(@NonNull String name, Class<T> targetType) {
         if (updatedValues.containsKey(name)) {
             Object value = updatedValues.get(name);

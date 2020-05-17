@@ -3,31 +3,29 @@ package com.diconium.oakgit.engine.model;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.function.Consumer;
 
-public interface ContainerEntry<T extends ContainerEntry<T>> {
+public interface ContainerEntry<T extends ContainerEntry>  {
 
     /**
      * Returns an instance of an empty container typed to the given class.
      * Always returns a new object instance. Calls the ctor(String) of the given type class.
      * Use {@link ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is empty.
-     *
-     * @param entryClass {@link Class}&lt;T&gt;
+     * @param entryClass
+     * @param <T>
      * @return ContainerEntry
      */
     static <T extends ContainerEntry<T>> ContainerEntry<T> emptyOf(Class<T> entryClass) {
         try {
-            return entryClass.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            return entryClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException("no empty ctor found for ContainerEntry implementation");
         }
     }
 
     /**
      * Tests if a given containerEntry object is of the empty type.
-     *
-     * @param containerEntry {@link ContainerEntry}&lt;T&gt;
+     * @param containerEntry
      * @return boolean
      */
     static boolean isEmpty(ContainerEntry<?> containerEntry) {
@@ -38,18 +36,17 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
      * Returns an instance of an invalid container typed to the given class.
      * Always returns a new object instance. Use {@link ContainerEntry#isInvalid(ContainerEntry)}
      * to test if a given object is invalid.
-     *
-     * @param entryClass {@link Class}&lt;T&gt;
+     * @param entryClass
+     * @param <T>
      * @return ContainerEntry
      */
     static <T extends ContainerEntry<T>> ContainerEntry<T> invalidOf(Class<T> entryClass) {
-        return new InvalidContainerEntry<>();
+        return new InvalidContainerEntry<T>();
     }
 
     /**
      * Tests if a given containerEntry object is of the invalid type.
-     *
-     * @param containerEntry {@link ContainerEntry}&lt;T&gt;
+     * @param containerEntry
      * @return boolean
      */
     static boolean isInvalid(ContainerEntry<?> containerEntry) {
@@ -58,9 +55,8 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
 
     /**
      * Combines !{@link ContainerEntry#isEmpty(ContainerEntry)} and !{@link ContainerEntry#isInvalid(ContainerEntry)}
-     *
-     * @param containerEntry {@link ContainerEntry}&lt;T&gt;
-     * @return boolean
+     * @param containerEntry
+     * @return
      */
     static boolean isValidAndNotEmpty(ContainerEntry<?> containerEntry) {
         return !isInvalid(containerEntry) && !isEmpty(containerEntry);
@@ -81,10 +77,9 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
 
     /**
      * NULL object type to indicate an empty entry.
-     *
      * @param <T>
      */
-    class EmptyContainerEntry<T extends ContainerEntry<T>> implements ContainerEntry<T> {
+    class EmptyContainerEntry<T extends ContainerEntry<T>>  implements ContainerEntry<T> {
 
         @Override
         public String getId() {
@@ -98,24 +93,21 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
 
         @Override
         public Consumer<OakGitResultSet> getResultSetTypeModifier() {
-            return (resultSet) -> {
-            };
+            return (resultSet) -> {};
         }
 
         @Override
         public Consumer<OakGitResultSet> getResultSetModifier() {
-            return (resultSet) -> {
-            };
+            return (resultSet) -> {};
         }
 
     }
 
     /**
      * NULL object type to indicate an invalid entry.
-     *
      * @param <T>
      */
-    class InvalidContainerEntry<T extends ContainerEntry<T>> implements ContainerEntry<T> {
+    class InvalidContainerEntry<T extends ContainerEntry<T>>  implements ContainerEntry<T> {
 
         @Override
         public String getId() {

@@ -1,8 +1,6 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
 import com.diconium.oakgit.engine.Command;
-import com.diconium.oakgit.engine.commands.ErrorCommand;
-import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
@@ -22,15 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Map;
 import java.util.Optional;
 
-public class SelectByIdAnalyzer implements QueryAnalyzer {
+public class PlainSelectAnalyzer implements QueryAnalyzer {
 
     private static final String COLUMN_NAME_ID = "ID";
 
     @Override
     public boolean interestedIn(Statement statement) {
-        return statement instanceof Select &&
-            ((Select) statement).getSelectBody() instanceof PlainSelect &&
-            ((PlainSelect) ((Select) statement).getSelectBody()).getWhere() instanceof EqualsTo;
+        return statement instanceof Select && ((Select) statement).getSelectBody() instanceof PlainSelect;
     }
 
     @Override
@@ -54,19 +50,6 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
         });
     }
 
-    @Override
-    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
-        Optional<QueryId> id = getId(statement, placeholderData);
-
-        if (id.isPresent()) {
-            return new SelectFromContainerByIdCommand()
-                .setContainerName(getTableName(statement))
-                .setId(id.get().value());
-        }
-
-        return new ErrorCommand("Cannot create command with an invalid id");
-    }
-
     private Optional<QueryId> extractIdFromWhere(Expression whereExpression, Map<Integer, Object> placeholderData) {
         if (whereExpression instanceof EqualsTo) {
             Expression left = ((EqualsTo) whereExpression).getLeftExpression();
@@ -85,5 +68,10 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
+        return null;
     }
 }

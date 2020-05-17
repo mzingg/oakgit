@@ -23,7 +23,7 @@ public class SelectFromContainerByMultipleIdsCommand extends AbstractCommand<Sel
     private List<String> ids = Collections.emptyList();
 
     public <T extends ContainerEntry<T>> CommandResult buildResult(List<ContainerEntry<T>> foundEntries) {
-        return new MultipleEntitiesCommandResult<>(this, foundEntries);
+        return new MultipleEntitiesCommandResult<T>(this, foundEntries);
     }
 
 }

@@ -20,7 +20,7 @@ public class CreateAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return queryParserFor(statement, CreateTable.class);
+        return queryParserFor(statement, CreateTable.class, QueryParserResult.ResultType.CREATE);
     }
 
     @Override
@@ -32,15 +32,15 @@ public class CreateAnalyzer implements QueryAnalyzer {
 
     @Override
     public Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData) {
-        throw new UnsupportedOperationException();
+        return whileInterestedOrThrow(statement, CreateTable.class,
+            stm -> Optional.empty()
+        );
     }
 
     @Override
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
-        return new CreateContainerCommand()
-            .setOriginSql(statement.toString())
-            .setPlaceholderData(placeholderData)
-            .setContainerName(getTableName(statement));
+        return whileInterestedOrThrow(statement, CreateTable.class,
+            stm -> new CreateContainerCommand().setContainerName(stm.getTable().getName())
+        );
     }
-
 }

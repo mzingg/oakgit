@@ -9,7 +9,6 @@ import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CommandFactoryTest {
 
@@ -31,39 +30,43 @@ class CommandFactoryTest {
     @UnitTest
     void getCommandForSqlWithCreateContainerPatternReturnsInstanceOfCreateTableCommand() {
         Command commandObj = new CommandFactory().getCommandForSql(CREATE_TABLE_PATTERN_TEST);
+
         assertThat(commandObj, is(instanceOf(CreateContainerCommand.class)));
     }
 
     @UnitTest
     void getCommandForSqlWithCreateContainerColumnsPatternReturnsInstanceOfCreateTableCommand() {
         Command commandObj = new CommandFactory().getCommandForSql(CREATE_TABLE_COLUMNS_PATTERN_TEST);
-        assertThat(commandObj, is(instanceOf(CreateContainerCommand.class)));
 
+        assertThat(commandObj, is(instanceOf(CreateContainerCommand.class)));
     }
 
     @UnitTest
     void getCommandForSqlWithInsertContainerPatternReturnInstanceOfInsertTableCommand() {
         Command commandObj = new CommandFactory().getCommandForSql(INSERT_INTO_TABLE_PATTERN_TEST);
+
         assertThat(commandObj, is(instanceOf(InsertIntoContainerCommand.class)));
-
     }
-
 
     @UnitTest
     void getUpdateCommandWithoutPlaceholderDataReturnsErrorCommand() {
         Command commandObj = new CommandFactory().getCommandForSql(UNAVAILABLE_PATTERN_TEST);
+
         assertThat(commandObj, is(instanceOf(ErrorCommand.class)));
     }
 
     @UnitTest
     void getCommandForSqlWithSelectIdFromContainerPatternReturnInstanceOfSelectFromContainerByIdCommand() {
         Command commandObj = new CommandFactory().getCommandForSql(GET_BY_ID_FROM_TABLE_PATTERN_TEST);
+
         assertThat(commandObj, is(instanceOf(SelectFromContainerByIdCommand.class)));
     }
 
     @UnitTest
-    void getCommandForSqlWithNullThrowsNPE() {
-        assertThrows(NullPointerException.class, () -> new CommandFactory().getCommandForSql(null));
+    void getCommandForSqlWithNullReturnErrorCommand() {
+        Command commandObj = new CommandFactory().getCommandForSql(null);
+
+        assertThat(commandObj, is(instanceOf(ErrorCommand.class)));
     }
 
 }

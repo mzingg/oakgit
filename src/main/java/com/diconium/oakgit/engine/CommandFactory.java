@@ -28,16 +28,13 @@ public class CommandFactory {
      * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recognized as a command.
      */
     public Command getCommandForSql(String sqlCommand, Map<Integer, Object> placeholderData) {
-
+        System.out.println("sqlCommand = " + sqlCommand);
+        System.out.println("placeholderData = " + placeholderData);
         QueryParserResult queryParserResult = new QueryParser().parse(sqlCommand);
         if (!queryParserResult.isValid()) {
-            return new ErrorCommand()
-                .setOriginSql(sqlCommand)
-                .setPlaceholderData(placeholderData)
-                .setErrorMessage("Error while parsing the query " + sqlCommand);
+            return new ErrorCommand("Error while parsing the query " + sqlCommand);
         }
-
-        return queryParserResult.asCommand(placeholderData);
+        return queryParserResult.createCommand(placeholderData);
     }
 
 }

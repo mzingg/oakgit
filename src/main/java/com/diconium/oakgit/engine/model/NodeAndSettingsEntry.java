@@ -2,21 +2,16 @@ package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import com.diconium.oakgit.jdbc.util.SqlType;
-import com.diconium.oakgit.queryparsing.QueryAnalyzer;
-import com.diconium.oakgit.queryparsing.SingleValueId;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.ToString;
-import net.sf.jsqlparser.statement.Statement;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 @Getter
 @Setter
-@ToString
 public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry> {
 
     @NonNull
@@ -43,54 +38,6 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
     private byte[] data;
 
     private byte[] bdata;
-
-    public static NodeAndSettingsEntry buildNodeSettingsDataForInsert(@NonNull Statement statement, @NonNull Map<Integer, Object> placeholderData, @NonNull QueryAnalyzer analyzer) {
-        NodeAndSettingsEntry data = new NodeAndSettingsEntry()
-            .setId(analyzer.getId(statement, placeholderData).orElse(SingleValueId.INVALID_ID).value());
-        analyzer
-            .getDataField(statement, "MODIFIED", Long.class, placeholderData)
-            .ifPresent(data::setModified);
-        analyzer
-            .getDataField(statement, "HASBINARY", Integer.class, placeholderData)
-            .ifPresent(data::setHasBinary);
-        analyzer
-            .getDataField(statement, "DELETEDONCE", Integer.class, placeholderData)
-            .ifPresent(data::setDeletedOnce);
-        analyzer
-            .getDataField(statement, "MODCOUNT", Long.class, placeholderData)
-            .ifPresent(data::setModCount);
-        analyzer
-            .getDataField(statement, "CMODCOUNT", Long.class, placeholderData)
-            .ifPresent(data::setCModCount);
-        analyzer
-            .getDataField(statement, "DSIZE", Long.class, placeholderData)
-            .ifPresent(data::setDSize);
-        analyzer
-            .getDataField(statement, "VERSION", Integer.class, placeholderData)
-            .ifPresent(data::setVersion);
-        analyzer
-            .getDataField(statement, "SDTYPE", Integer.class, placeholderData)
-            .ifPresent(data::setSdType);
-        analyzer
-            .getDataField(statement, "SDMAXREVTIME", Long.class, placeholderData)
-            .ifPresent(data::setSdMaxRevTime);
-        analyzer
-            .getDataField(statement, "DATA", String.class, placeholderData)
-            .ifPresent(f -> data.setData(f.getBytes()));
-        analyzer
-            .getDataField(statement, "BDATA", String.class, placeholderData)
-            .ifPresent(f -> data.setBdata(f.getBytes()));
-        return data;
-    }
-
-    public NodeAndSettingsEntry appendData(byte[] addedData) {
-        byte[] appendedData = new byte[data.length + addedData.length];
-        System.arraycopy(data, 0, appendedData, 0, data.length);
-        System.arraycopy(addedData, 0, appendedData, data.length, addedData.length);
-
-        this.data = appendedData;
-        return this;
-    }
 
     @Override
     public Consumer<OakGitResultSet> getResultSetTypeModifier() {
@@ -128,5 +75,21 @@ public class NodeAndSettingsEntry implements ContainerEntry<NodeAndSettingsEntry
         };
     }
 
-
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("id", id)
+            .append("modified", modified)
+            .append("hasBinary", hasBinary)
+            .append("deletedOnce", deletedOnce)
+            .append("modCount", modCount)
+            .append("cModCount", cModCount)
+            .append("dSize", dSize)
+            .append("version", version)
+            .append("sdType", sdType)
+            .append("sdMaxRevTime", sdMaxRevTime)
+            .append("data", new String(data))
+            .append("bdata", new String(bdata))
+            .toString();
+    }
 }

@@ -28,7 +28,7 @@ public class SelectInAnalyzer implements QueryAnalyzer {
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
-        return queryParserFor(statement, Select.class);
+        return queryParserFor(statement, Select.class, QueryParserResult.ResultType.SELECT);
     }
 
     @Override
@@ -47,8 +47,6 @@ public class SelectInAnalyzer implements QueryAnalyzer {
     @Override
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
         return new SelectFromContainerByMultipleIdsCommand()
-            .setOriginSql(statement.toString())
-            .setPlaceholderData(placeholderData)
             .setContainerName(getTableName(statement))
             .setIds(placeholderData.values().stream().map(o -> (String) o).collect(Collectors.toList()));
     }

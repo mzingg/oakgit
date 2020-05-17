@@ -11,15 +11,15 @@ import java.util.List;
 public class QueryParser {
 
     private static final List<QueryAnalyzer> DEFAULT_ANALYZERS = new ArrayList<>();
-
     static {
-        DEFAULT_ANALYZERS.add(new InsertAnalyzer());
         DEFAULT_ANALYZERS.add(new CreateAnalyzer());
+        DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
+        DEFAULT_ANALYZERS.add(new MetaDataInsertAnalyzer());
+        DEFAULT_ANALYZERS.add(new NodeAndSettingsInsertAnalyzer());
         DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
         DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
         DEFAULT_ANALYZERS.add(new SelectInAnalyzer());
         DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
-        DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
     }
 
     private final List<QueryAnalyzer> analyzers;
@@ -44,7 +44,7 @@ public class QueryParser {
             }
         }
 
-        return QueryParserResult.Error("sqlQuery must not be null");
+        return  QueryParserResult.Error("sqlQuery must not be null");
     }
 
 }

@@ -1,20 +1,23 @@
 package com.diconium.oakgit.engine.commands;
 
+import com.diconium.oakgit.engine.Command;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
+
 
 /**
- * {@link ErrorCommand} saves an errorMessage.
+ * 
+ * {@link ErrorCommand} saves an errorMessage. 
+ * 
  */
+
 @Getter
-@Setter
-@ToString(callSuper = true)
-public class ErrorCommand extends AbstractCommand<ErrorCommand> {
+@ToString
+public class ErrorCommand implements Command {
+    private String errorMessage;
 
-    @NonNull
-    private String errorMessage = StringUtils.EMPTY;
-
+    public ErrorCommand(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

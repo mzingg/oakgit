@@ -5,6 +5,7 @@ import com.diconium.oakgit.TestHelpers;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
+import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
 import org.apache.jackrabbit.oak.plugins.document.rdb.*;
 import org.apache.jackrabbit.oak.spi.security.OpenSecurityProvider;
@@ -12,6 +13,9 @@ import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
+import javax.jcr.Node;
+import javax.jcr.Repository;
+import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.sql.DataSource;
 import java.nio.file.Path;
@@ -34,7 +38,7 @@ public class OakDatabaseDriverSandboxTest {
 
     @AfterEach
     void cleanupDrivers() throws Exception {
-        for (Driver driver : Collections.list(DriverManager.getDrivers())) {
+        for (Driver driver: Collections.list(DriverManager.getDrivers())) {
             if (driver instanceof OakGitDriver) {
                 DriverManager.deregisterDriver(driver);
             }
@@ -80,7 +84,23 @@ public class OakDatabaseDriverSandboxTest {
         ContentRepository contentRepository = new Oak(aNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY)).with(new OpenSecurityProvider()).createContentRepository();
         ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
-        assertThat(session, is(instanceOf(ContentSession.class)));
+       assertThat(session, is(instanceOf(ContentSession.class)));
+    }
+
+    @SandboxTest
+    void oakWithOakGitDriverCanInstantiateJcr() throws Exception {
+        Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
+        Git.init().setDirectory(gitDirectory.toFile()).call();
+        DriverManager.registerDriver(new OakGitDriver());
+        DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
+        Repository contentRepository = new Jcr(new Oak(aNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY)).with(new OpenSecurityProvider())).createRepository();
+        Session session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()));
+
+        Node hello = session.getRootNode().addNode("hello");
+        hello.setProperty("velo", "velo");
+        session.save();
+
+        assertThat(session, is(instanceOf(Session.class)));
     }
 
     private DocumentNodeStore aNodeStore(DataSource dataSource, RDBDocumentStoreDB ddb, RDBBlobStoreDB bdb) throws SQLException {
