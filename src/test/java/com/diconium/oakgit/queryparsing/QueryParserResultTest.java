@@ -1,13 +1,13 @@
 package com.diconium.oakgit.queryparsing;
 
-import org.junit.jupiter.api.Test;
+import com.diconium.oakgit.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 public class QueryParserResultTest {
 
-    @Test
+    @UnitTest
     void ErrorWithoutAnalyzerReturnsQueryParserResultWithErrorStateSet() {
         QueryParserResult actual = QueryParserResult.Error("aMessage");
 

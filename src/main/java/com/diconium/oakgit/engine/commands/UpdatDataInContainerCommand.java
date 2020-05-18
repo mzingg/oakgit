@@ -21,7 +21,6 @@ public class UpdatDataInContainerCommand implements Command {
     @NonNull
     private String id = StringUtils.EMPTY;
 
-    @NonNull
     private long modCount = 0L;
 
     @NonNull

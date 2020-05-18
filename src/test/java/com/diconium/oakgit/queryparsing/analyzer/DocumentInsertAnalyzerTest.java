@@ -1,8 +1,8 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
+import com.diconium.oakgit.UnitTest;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
@@ -10,13 +10,13 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class MetaDataInsertAnalyzerTest {
+class DocumentInsertAnalyzerTest {
 
-    @Test
+    @UnitTest
     public void parseWithInsertSQLQueryWithValuesReturnsDataWithColumnAndValues() throws Exception {
         Statement statement = CCJSqlParserUtil.parse("insert into SETTINGS(ID, MODIFIED, HASBINARY) values ('anId', 'vModified', 'vhasBinary')");
 
-        Map<Object, Object> actual = new MetaDataInsertAnalyzer().getData(statement, Collections.emptyMap());
+        Map<Object, Object> actual = new DocumentInsertAnalyzer().getData(statement, Collections.emptyMap());
 
         assertThat(actual.size(), is(3));
         assertThat(actual.get("ID"), is("anId"));
@@ -24,11 +24,11 @@ class MetaDataInsertAnalyzerTest {
         assertThat(actual.get("HASBINARY"), is("vhasBinary"));
     }
 
-    @Test
+    @UnitTest
     public void parseWithInsertSQLQueryWithQuestionmarksInDataReturnsQuestionmarks() throws Exception {
         Statement statement = CCJSqlParserUtil.parse("insert into SETTINGS(ID, MODIFIED, HASBINARY) values (?, ?, ?)");
 
-        Map<Object, Object> actual = new MetaDataInsertAnalyzer().getData(statement, Collections.emptyMap());
+        Map<Object, Object> actual = new DocumentInsertAnalyzer().getData(statement, Collections.emptyMap());
 
         assertThat(actual.size(), is(3));
         assertThat(actual.get("ID"), is("?#1"));

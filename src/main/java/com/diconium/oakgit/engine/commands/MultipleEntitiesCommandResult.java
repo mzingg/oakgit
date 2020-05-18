@@ -1,18 +1,21 @@
 package com.diconium.oakgit.engine.commands;
 
 import com.diconium.oakgit.engine.CommandResult;
-import com.diconium.oakgit.jdbc.OakGitResultSet;
 import com.diconium.oakgit.engine.model.ContainerEntry;
+import com.diconium.oakgit.jdbc.OakGitResultSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.sql.ResultSet;
+import java.util.Collections;
 import java.util.List;
 
 import static com.diconium.oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
+@ToString
 public class MultipleEntitiesCommandResult<T extends ContainerEntry<T>> implements CommandResult {
 
     @NonNull
@@ -31,7 +34,7 @@ public class MultipleEntitiesCommandResult<T extends ContainerEntry<T>> implemen
         if (wasSuccessfull()) {
             foundEntries.stream()
                     .filter(ContainerEntry::isValidAndNotEmpty)
-                    .forEach(e -> e.getResultSetModifier().accept(result));
+                    .forEach(e -> e.getResultSetModifier(Collections.emptyList()).accept(result));
         }
 
         return result;

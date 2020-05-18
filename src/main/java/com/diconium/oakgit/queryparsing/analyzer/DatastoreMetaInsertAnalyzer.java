@@ -2,14 +2,13 @@ package com.diconium.oakgit.queryparsing.analyzer;
 
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
-import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
+import com.diconium.oakgit.engine.model.DatastoreMetaEntry;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
 import com.diconium.oakgit.queryparsing.SingleValueId;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import lombok.NonNull;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.StringValue;
@@ -24,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.diconium.oakgit.queryparsing.analyzer.MetaDataInsertAnalyzer.METADATA_TABLE_NAME;
+public class DatastoreMetaInsertAnalyzer implements QueryAnalyzer {
 
-public class NodeAndSettingsInsertAnalyzer implements QueryAnalyzer {
+    public static final String METADATA_TABLE_NAME = "DATASTORE_META";
 
     @Override
     public boolean interestedIn(Statement statement) {
-        return statement instanceof Insert && !((Insert) statement).getTable().getName().equals(METADATA_TABLE_NAME);
+        return statement instanceof Insert && ((Insert)statement).getTable().getName().equals(METADATA_TABLE_NAME);
     }
 
     @Override
@@ -126,40 +125,15 @@ public class NodeAndSettingsInsertAnalyzer implements QueryAnalyzer {
     @Override
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
         return whileInterestedOrThrow(statement, Insert.class,
-            stm -> new InsertIntoContainerCommand<>(NodeAndSettingsEntry.class)
-                .setContainerName(stm.getTable().getName())
-                .setData(buildNodeSettingsDataForInsert(statement, placeholderData))
+            stm -> {
+                DatastoreMetaEntry data = new DatastoreMetaEntry()
+                    .setId(getId(statement, placeholderData).orElseThrow(IllegalStateException::new).value());
+
+                return new InsertIntoContainerCommand<>(DatastoreMetaEntry.class)
+                    .setContainerName(stm.getTable().getName())
+                    .setData(data);
+            }
         );
-    }
-
-    private NodeAndSettingsEntry buildNodeSettingsDataForInsert(Statement statement, @NonNull Map<Integer, Object> placeholderData) {
-        NodeAndSettingsEntry data = new NodeAndSettingsEntry()
-            .setId(getId(statement, placeholderData).orElseThrow(IllegalStateException::new).value());
-
-        getDataField(statement, "MODIFIED", Long.class, placeholderData)
-            .ifPresent(data::setModified);
-        getDataField(statement, "HASBINARY", Integer.class, placeholderData)
-            .ifPresent(data::setHasBinary);
-        getDataField(statement, "DELETEDONCE", Integer.class, placeholderData)
-            .ifPresent(data::setDeletedOnce);
-        getDataField(statement, "MODCOUNT", Long.class, placeholderData)
-            .ifPresent(data::setModCount);
-        getDataField(statement, "CMODCOUNT", Long.class, placeholderData)
-            .ifPresent(data::setCModCount);
-        getDataField(statement, "DSIZE", Long.class, placeholderData)
-            .ifPresent(data::setDSize);
-        getDataField(statement, "VERSION", Integer.class, placeholderData)
-            .ifPresent(data::setVersion);
-        getDataField(statement, "SDTYPE", Integer.class, placeholderData)
-            .ifPresent(data::setSdType);
-        getDataField(statement, "SDMAXREVTIME", Long.class, placeholderData)
-            .ifPresent(data::setSdMaxRevTime);
-        getDataField(statement, "DATA", String.class, placeholderData)
-            .ifPresent(f -> data.setData(f.getBytes()));
-        getDataField(statement, "BDATA", String.class, placeholderData)
-            .ifPresent(f -> data.setBdata(f.getBytes()));
-
-        return data;
     }
 
 }

@@ -3,17 +3,18 @@ package com.diconium.oakgit.jdbc;
 import io.vavr.Tuple4;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Getter
 @Setter
+@ToString
 public class OakGitResultSet extends UnsupportedResultSet {
 
     public static final OakGitResultSet EMPTY_RESULT_SET = new OakGitResultSet(StringUtils.EMPTY);
@@ -27,6 +28,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
         this.tableName = tableName;
         columns = new ArrayList<>();
         pointer = -1;
+        wasNull = true;
     }
 
     public OakGitResultSet addColumn(String columnName, int type, int precision) {

@@ -2,13 +2,14 @@ package com.diconium.oakgit.queryparsing.analyzer;
 
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
-import com.diconium.oakgit.engine.model.MetaDataEntry;
+import com.diconium.oakgit.engine.model.DocumentEntry;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
 import com.diconium.oakgit.queryparsing.SingleValueId;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import lombok.NonNull;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.StringValue;
@@ -18,22 +19,26 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.insert.Insert;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
-public class MetaDataInsertAnalyzer implements QueryAnalyzer {
+import static com.diconium.oakgit.queryparsing.analyzer.DatastoreMetaInsertAnalyzer.METADATA_TABLE_NAME;
 
-    public static final String METADATA_TABLE_NAME = "DATASTORE_META";
+public class DocumentInsertAnalyzer implements QueryAnalyzer {
 
     @Override
     public boolean interestedIn(Statement statement) {
-        return statement instanceof Insert && ((Insert)statement).getTable().getName().equals(METADATA_TABLE_NAME);
+        return statement instanceof Insert && !((Insert) statement).getTable().getName().equals(METADATA_TABLE_NAME);
     }
 
     @Override
     public QueryParserResult getParserResult(Statement statement) {
+        List<String> exclude = new ArrayList<>();
+        if (!((Insert) statement).isReturningAllColumns()) {
+            List<Column> columns = ((Insert) statement).getColumns();
+            if (columns.get(0).getName(false).equals("ID")) {
+                exclude.add("DSIZE");
+            }
+        }
         return queryParserFor(statement, Insert.class, QueryParserResult.ResultType.INSERT);
     }
 
@@ -125,15 +130,40 @@ public class MetaDataInsertAnalyzer implements QueryAnalyzer {
     @Override
     public Command createCommand(Statement statement, Map<Integer, Object> placeholderData) {
         return whileInterestedOrThrow(statement, Insert.class,
-            stm -> {
-                MetaDataEntry data = new MetaDataEntry()
-                    .setId(getId(statement, placeholderData).orElseThrow(IllegalStateException::new).value());
-
-                return new InsertIntoContainerCommand<>(MetaDataEntry.class)
-                    .setContainerName(stm.getTable().getName())
-                    .setData(data);
-            }
+            stm -> new InsertIntoContainerCommand<>(DocumentEntry.class)
+                .setContainerName(stm.getTable().getName())
+                .setData(buildNodeSettingsDataForInsert(statement, placeholderData))
         );
+    }
+
+    private DocumentEntry buildNodeSettingsDataForInsert(Statement statement, @NonNull Map<Integer, Object> placeholderData) {
+        DocumentEntry data = new DocumentEntry()
+            .setId(getId(statement, placeholderData).orElseThrow(IllegalStateException::new).value());
+
+        getDataField(statement, "MODIFIED", Long.class, placeholderData)
+            .ifPresent(data::setModified);
+        getDataField(statement, "HASBINARY", Integer.class, placeholderData)
+            .ifPresent(data::setHasBinary);
+        getDataField(statement, "DELETEDONCE", Integer.class, placeholderData)
+            .ifPresent(data::setDeletedOnce);
+        getDataField(statement, "MODCOUNT", Long.class, placeholderData)
+            .ifPresent(data::setModCount);
+        getDataField(statement, "CMODCOUNT", Long.class, placeholderData)
+            .ifPresent(data::setCModCount);
+        getDataField(statement, "DSIZE", Long.class, placeholderData)
+            .ifPresent(data::setDSize);
+        getDataField(statement, "VERSION", Integer.class, placeholderData)
+            .ifPresent(data::setVersion);
+        getDataField(statement, "SDTYPE", Integer.class, placeholderData)
+            .ifPresent(data::setSdType);
+        getDataField(statement, "SDMAXREVTIME", Long.class, placeholderData)
+            .ifPresent(data::setSdMaxRevTime);
+        getDataField(statement, "DATA", String.class, placeholderData)
+            .ifPresent(f -> data.setData(f.getBytes()));
+        getDataField(statement, "BDATA", String.class, placeholderData)
+            .ifPresent(f -> data.setBdata(f.getBytes()));
+
+        return data;
     }
 
 }

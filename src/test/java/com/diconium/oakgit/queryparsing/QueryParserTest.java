@@ -1,38 +1,39 @@
 package com.diconium.oakgit.queryparsing;
 
+import com.diconium.oakgit.UnitTest;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static com.diconium.oakgit.queryparsing.QueryAnalyzer.INVALID_ID;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 class QueryParserTest {
 
-    @Test
+    @UnitTest
     void parseWithEmptySqlQueryReturnsErrorResult(){
     	QueryParserResult actual = new QueryParser().parse(StringUtils.EMPTY);
 
     	assertThat(actual.isValid(), is(false));
     }
 
-    @Test
+    @UnitTest
     void parseWithNullSqlQueryReturnsErrorResult(){
     	QueryParserResult actual = new QueryParser().parse(null);
 
     	assertThat(actual.isValid(), is(false));
     }
 
-    @Test
+    @UnitTest
     void parseWithCreateTableQueryReturnResultWithExpectedTableName() {
         QueryParserResult actual = new QueryParser().parse("create table SETTINGS");
 
         assertThat(actual.getTableName(), is("SETTINGS"));
     }
 
-    @Test
+    @UnitTest
     void parseWithCreateQueryReturnTestTableName() {
         QueryParserResult actual = new QueryParser().parse(
         		"create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
@@ -42,7 +43,7 @@ class QueryParserTest {
         assertThat(actual.getTableName(), is("CLUSTERNODES"));
     }
 
-    @Test
+    @UnitTest
     void parseWithInsertQueryReturnTestTableName() {
     	QueryParserResult actual = new QueryParser().parse(
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, Country)\n" +
@@ -51,15 +52,7 @@ class QueryParserTest {
     	assertThat(actual.getTableName(), is("PRODUCTS"));
     }
 
-    @Test
-    void parseWithSelectQueryReturnTestTableName() {
-    	QueryParserResult actual = new QueryParser().parse("select * from expected");
-
-    	assertThat(actual.getTableName(), is("expected"));
-
-    }
-
-    @Test
+    @UnitTest
     void parseWithSelectQueryHavingWhereClauseReturnTestTableName() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
 
@@ -67,14 +60,14 @@ class QueryParserTest {
 
     }
 
-    @Test
+    @UnitTest
     void parseWithInvalidSelectQueryReturnsInvalid() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
 
     	assertThat(actual.isValid(), is(false));
     }
 
-    @Test
+    @UnitTest
     void parseWithInvalidSelectQueryReturnsException() {
     	QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0',");
 
@@ -82,7 +75,7 @@ class QueryParserTest {
     }
 
 
-    @Test
+    @UnitTest
     public void parseWithInValidInsertQueryReturnsException() {
     	QueryParserResult actual = new QueryParser().parse(
     			"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data,)\n" +
@@ -91,7 +84,7 @@ class QueryParserTest {
         assertThat(actual.isValid(), is(false));
     }
 
-    @Test
+    @UnitTest
     public void parseWithInsertQueryReturnsInsertObject(){
         QueryParserResult actual = new QueryParser().parse(
         		"INSERT INTO PRODUCTS( ContactName, Address, City, PostalCode, data)\n" +
@@ -100,63 +93,63 @@ class QueryParserTest {
         assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.INSERT)));
     }
 
-    @Test
+    @UnitTest
     public void parseWithCreateQueryReturnsCreateObject(){
         QueryParserResult actual = new QueryParser().parse("create table SETTINGS");
 
         assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.CREATE)));
     }
 
-    @Test
+    @UnitTest
     public void parseWithSelectQueryReturnsSelectObject(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '0'");
 
         assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.SELECT)));
     }
 
-    @Test
+
     public void parseWithSelectQueryAndEmptyIdReturnsInvalidId(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ''");
 
         assertThat(actual.getId(Collections.emptyMap()), is(sameInstance(INVALID_ID)));
     }
 
-    @Test
+    @UnitTest
     public void parseWithSelectQueryAndNoIdReturnsError(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = ");
 
         assertThat(actual.isValid(), is(false));
     }
 
-    @Test
+    @UnitTest
     public void parseWithSelectQueryAndIdStringReturnsString(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = '34'");
 
         assertThat(actual.getId(Collections.emptyMap()), is("34"));
     }
 
-    @Test
+    @UnitTest
     public void parseWithSelectQueryAndIdIntReturnsEmptyString(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 34");
 
         assertThat(actual.getId(Collections.emptyMap()), is("34"));
     }
 
-    @Test
+    @UnitTest
     public void parseWithSelectQueryAndIdNullReturnsEmptyId(){
         QueryParserResult actual = new QueryParser().parse("select ID from DATASTORE_DATA where ID = 'null'");
 
         assertThat(actual.getId(Collections.emptyMap()), is("null"));
     }
 
-    @Test
+    @UnitTest
     public void parseWithDeleteQueryReturnsDeleteType(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = '0'");
 
         assertThat(actual.getResultType(), is(sameInstance(QueryParserResult.ResultType.DELETE)));
     }
 
-    @Test
+
     public void parseWithDeleteQueryAndNoIdReturnsEmptyId(){
         QueryParserResult actual = new QueryParser().parse("delete from DATASTORE_DATA where ID = ''");
 

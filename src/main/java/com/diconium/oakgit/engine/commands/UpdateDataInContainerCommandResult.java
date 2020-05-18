@@ -6,12 +6,15 @@ import com.diconium.oakgit.jdbc.OakGitResultSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.sql.ResultSet;
+import java.util.Collections;
 
 import static com.diconium.oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
+@ToString
 public class UpdateDataInContainerCommandResult<T extends ContainerEntry<T>> implements CommandResult {
 
     @NonNull
@@ -25,8 +28,9 @@ public class UpdateDataInContainerCommandResult<T extends ContainerEntry<T>> imp
     public ResultSet toResultSet() {
         OakGitResultSet result = new OakGitResultSet(command.getContainerName());
         foundEntry.getResultSetTypeModifier().accept(result);
-        if (isValidAndNotEmpty(foundEntry)) {
-            foundEntry.getResultSetModifier().accept(result);
+        if (wasSuccessfull()) {
+            foundEntry.getResultSetModifier(Collections.emptyList()).accept(result);
+            result.setWasNull(false);
         }
         return result;
     }

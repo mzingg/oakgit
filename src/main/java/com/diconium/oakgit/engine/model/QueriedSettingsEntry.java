@@ -11,6 +11,7 @@ import lombok.ToString;
 import net.sf.jsqlparser.statement.Statement;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -110,7 +111,7 @@ public class QueriedSettingsEntry implements ContainerEntry<QueriedSettingsEntry
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier() {
+    public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
         return result -> {
             result.addValue("ID", id);
             result.addValue("MODIFIED", modified);

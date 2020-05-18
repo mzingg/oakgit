@@ -7,11 +7,15 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Used for DATASTORE_META
+ */
 @Getter
 @Setter
-public class MetaDataEntry implements ContainerEntry<MetaDataEntry> {
+public class DatastoreMetaEntry implements ContainerEntry<DatastoreMetaEntry> {
 
     @NonNull
     private String id = StringUtils.EMPTY;
@@ -35,11 +39,9 @@ public class MetaDataEntry implements ContainerEntry<MetaDataEntry> {
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier() {
+    public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
         return result -> {
             result.addValue("ID", id);
-            result.addValue("LASTMOD", lastmod);
-            result.addValue("LVL", lvl);
         };
     }
 

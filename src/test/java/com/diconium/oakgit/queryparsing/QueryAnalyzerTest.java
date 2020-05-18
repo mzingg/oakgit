@@ -1,9 +1,9 @@
 package com.diconium.oakgit.queryparsing;
 
+import com.diconium.oakgit.UnitTest;
 import com.diconium.oakgit.engine.Command;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 
 class QueryAnalyzerTest {
 
-    @Test
+    @UnitTest
     public void parseWithCreateSQLQueryWithValuesReturnsNoData() throws Exception {
         Statement statement = CCJSqlParserUtil.parse("create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint)");
 

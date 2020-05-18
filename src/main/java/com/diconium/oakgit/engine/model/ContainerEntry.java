@@ -3,6 +3,8 @@ package com.diconium.oakgit.engine.model;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface ContainerEntry<T extends ContainerEntry>  {
@@ -17,8 +19,8 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      */
     static <T extends ContainerEntry<T>> ContainerEntry<T> emptyOf(Class<T> entryClass) {
         try {
-            return entryClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return entryClass.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new IllegalArgumentException("no empty ctor found for ContainerEntry implementation");
         }
     }
@@ -73,7 +75,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
     Consumer<OakGitResultSet> getResultSetTypeModifier();
 
-    Consumer<OakGitResultSet> getResultSetModifier();
+    Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude);
 
     /**
      * NULL object type to indicate an empty entry.
@@ -97,7 +99,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
         }
 
         @Override
-        public Consumer<OakGitResultSet> getResultSetModifier() {
+        public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
             return (resultSet) -> {};
         }
 
@@ -125,7 +127,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
         }
 
         @Override
-        public Consumer<OakGitResultSet> getResultSetModifier() {
+        public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
             throw new UnsupportedOperationException("trying to apply invalid entry to a result set");
         }
 

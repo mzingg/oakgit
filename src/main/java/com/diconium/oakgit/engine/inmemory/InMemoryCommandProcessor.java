@@ -6,7 +6,7 @@ import com.diconium.oakgit.engine.CommandResult;
 import com.diconium.oakgit.engine.commands.*;
 import com.diconium.oakgit.engine.model.Container;
 import com.diconium.oakgit.engine.model.ContainerEntry;
-import com.diconium.oakgit.engine.model.NodeAndSettingsEntry;
+import com.diconium.oakgit.engine.model.DocumentEntry;
 import com.diconium.oakgit.engine.model.UpdateSet;
 
 import java.util.HashMap;
@@ -45,40 +45,46 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             SelectFromContainerByIdCommand selectCommand = (SelectFromContainerByIdCommand) command;
 
-            ContainerEntry<NodeAndSettingsEntry> foundEntry = getContainer(selectCommand.getContainerName())
-                    .findById(selectCommand.getId(), NodeAndSettingsEntry.class)
-                    .orElse(ContainerEntry.emptyOf(NodeAndSettingsEntry.class));
+            ContainerEntry<DocumentEntry> foundEntry = getContainer(selectCommand.getContainerName())
+                    .findById(selectCommand.getId(), DocumentEntry.class)
+                    .orElse(ContainerEntry.emptyOf(DocumentEntry.class));
 
-            return selectCommand.buildResult(foundEntry);
+            CommandResult commandResult = selectCommand.buildResult(foundEntry);
+            System.out.println("commandResult = " + commandResult.toResultSet());
+            return commandResult;
 
         } else if (command instanceof SelectFromContainerByIdRangeCommand) {
 
             SelectFromContainerByIdRangeCommand selectCommand = (SelectFromContainerByIdRangeCommand) command;
 
-            List<ContainerEntry<NodeAndSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
-                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), NodeAndSettingsEntry.class);
+            List<ContainerEntry<DocumentEntry>> foundEntries = getContainer(selectCommand.getContainerName())
+                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class);
 
-            return selectCommand.buildResult(foundEntries);
+            CommandResult commandResult = selectCommand.buildResult(foundEntries);
+            System.out.println("commandResult = " + commandResult.toResultSet());
+            return commandResult;
         } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {
 
             SelectFromContainerByMultipleIdsCommand selectCommand = (SelectFromContainerByMultipleIdsCommand) command;
 
-            List<ContainerEntry<NodeAndSettingsEntry>> foundEntries = getContainer(selectCommand.getContainerName())
-                .findByIds(selectCommand.getIds(), NodeAndSettingsEntry.class);
+            List<ContainerEntry<DocumentEntry>> foundEntries = getContainer(selectCommand.getContainerName())
+                .findByIds(selectCommand.getIds(), DocumentEntry.class);
 
-            return selectCommand.buildResult(foundEntries);
+            CommandResult commandResult = selectCommand.buildResult(foundEntries);
+            System.out.println("commandResult = " + commandResult.toResultSet());
+            return commandResult;
         } else if (command instanceof UpdatDataInContainerCommand) {
 
             UpdatDataInContainerCommand updateCommand = (UpdatDataInContainerCommand) command;
 
             Container container = getContainer(updateCommand.getContainerName());
-            Optional<ContainerEntry<NodeAndSettingsEntry>> existingEntry = container
-                    .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), NodeAndSettingsEntry.class);
+            Optional<ContainerEntry<DocumentEntry>> existingEntry = container
+                    .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
 
             if (existingEntry.isPresent()) {
 
                 UpdateSet data = updateCommand.getData();
-                final NodeAndSettingsEntry entityToUpdate = (NodeAndSettingsEntry) existingEntry.get();
+                final DocumentEntry entityToUpdate = (DocumentEntry) existingEntry.get();
 
                 data
                         .whenHasValue("newModCount", Long.class, entityToUpdate::setModCount)
@@ -118,7 +124,10 @@ public class InMemoryCommandProcessor implements CommandProcessor {
                         })
                         .whenHasValue("newVersion", Integer.class, entityToUpdate::setVersion);
 
-                return updateCommand.buildResult(entityToUpdate);
+                System.out.println("entityToUpdate = " + entityToUpdate);
+                CommandResult commandResult = updateCommand.buildResult(entityToUpdate);
+                System.out.println("commandResult = " + commandResult.toResultSet());
+                return commandResult;
             }
         }
 

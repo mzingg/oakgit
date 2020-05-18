@@ -14,8 +14,8 @@ public class QueryParser {
     static {
         DEFAULT_ANALYZERS.add(new CreateAnalyzer());
         DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
-        DEFAULT_ANALYZERS.add(new MetaDataInsertAnalyzer());
-        DEFAULT_ANALYZERS.add(new NodeAndSettingsInsertAnalyzer());
+        DEFAULT_ANALYZERS.add(new DatastoreMetaInsertAnalyzer());
+        DEFAULT_ANALYZERS.add(new DocumentInsertAnalyzer());
         DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
         DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
         DEFAULT_ANALYZERS.add(new SelectInAnalyzer());

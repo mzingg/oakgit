@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -66,7 +67,7 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier() {
+    public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
         throw new UnsupportedOperationException();
     }
 
