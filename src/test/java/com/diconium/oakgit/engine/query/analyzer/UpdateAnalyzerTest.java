@@ -1,4 +1,4 @@
-package com.diconium.oakgit.queryparsing.analyzer;
+package com.diconium.oakgit.engine.query.analyzer;
 
 import com.diconium.oakgit.UnitTest;
 
