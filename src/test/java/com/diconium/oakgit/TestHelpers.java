@@ -1,7 +1,7 @@
 package com.diconium.oakgit;
 
-import com.diconium.oakgit.queryparsing.QueryAnalyzer;
-import com.diconium.oakgit.queryparsing.QueryMatchResult;
+import com.diconium.oakgit.engine.query.QueryAnalyzer;
+import com.diconium.oakgit.engine.query.QueryMatchResult;
 import io.vavr.Tuple;
 import io.vavr.Tuple3;
 import org.apache.commons.io.FileUtils;

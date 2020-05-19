@@ -6,6 +6,9 @@ import com.diconium.oakgit.engine.commands.ErrorCommand;
 import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
 import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -43,7 +46,12 @@ class CommandFactoryTest {
 
     @UnitTest
     void getCommandForSqlWithInsertContainerPatternReturnInstanceOfInsertTableCommand() {
-        Command commandObj = new CommandFactory().getCommandForSql(INSERT_INTO_TABLE_PATTERN_TEST);
+        Map<Integer, Object> placeholderData = new HashMap<>();
+        placeholderData.put(1, "0");
+        Command commandObj = new CommandFactory().getCommandForSql(
+            INSERT_INTO_TABLE_PATTERN_TEST,
+            placeholderData
+        );
 
         assertThat(commandObj, is(instanceOf(InsertIntoContainerCommand.class)));
     }

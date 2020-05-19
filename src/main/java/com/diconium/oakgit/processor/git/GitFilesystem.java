@@ -1,4 +1,4 @@
-package com.diconium.oakgit.git;
+package com.diconium.oakgit.processor.git;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;

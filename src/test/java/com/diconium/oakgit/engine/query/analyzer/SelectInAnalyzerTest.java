@@ -1,4 +1,4 @@
-package com.diconium.oakgit.queryparsing.analyzer;
+package com.diconium.oakgit.engine.query.analyzer;
 
 import com.diconium.oakgit.UnitTest;
 
@@ -21,5 +21,5 @@ class SelectInAnalyzerTest {
             "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where ID in (?,?,?,?,?,?)"
         );
     }
-    
+
 }

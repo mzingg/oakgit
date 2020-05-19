@@ -1,7 +1,7 @@
-package com.diconium.oakgit.queryparsing.analyzer;
+package com.diconium.oakgit.engine.query.analyzer;
 
-import com.diconium.oakgit.queryparsing.QueryAnalyzer;
-import com.diconium.oakgit.queryparsing.QueryMatchResult;
+import com.diconium.oakgit.engine.query.QueryAnalyzer;
+import com.diconium.oakgit.engine.query.QueryMatchResult;
 
 public class DatastoreMetaInsertAnalyzer implements QueryAnalyzer {
 

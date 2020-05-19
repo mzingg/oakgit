@@ -2,12 +2,16 @@ package com.diconium.oakgit.engine;
 
 import com.diconium.oakgit.engine.commands.ErrorCommand;
 import com.diconium.oakgit.engine.commands.NoOperationCommand;
-import com.diconium.oakgit.queryparsing.QueryAnalyzer;
-import com.diconium.oakgit.queryparsing.QueryMatchResult;
-import com.diconium.oakgit.queryparsing.analyzer.*;
+import com.diconium.oakgit.engine.query.QueryAnalyzer;
+import com.diconium.oakgit.engine.query.QueryMatchResult;
+import com.diconium.oakgit.engine.query.analyzer.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 
+@Getter
+@Setter
 public class CommandFactory {
 
     private static final List<QueryAnalyzer> DEFAULT_ANALYZERS = new ArrayList<>();
@@ -23,7 +27,7 @@ public class CommandFactory {
         DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
     }
 
-    private final List<QueryAnalyzer> analyzers;
+    private List<QueryAnalyzer> analyzers;
 
     public CommandFactory() {
         this.analyzers = DEFAULT_ANALYZERS;

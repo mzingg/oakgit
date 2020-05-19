@@ -1,4 +1,4 @@
-package com.diconium.oakgit.git;
+package com.diconium.oakgit.processor.git;
 
 import com.diconium.oakgit.UnitTest;
 import io.vavr.Tuple3;

@@ -1,5 +1,6 @@
-package com.diconium.oakgit.engine.model;
+package com.diconium.oakgit.processor.inmemory;
 
+import com.diconium.oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class Container {
+public class InMemoryContainer {
 
     @NonNull
     @Getter
@@ -19,7 +20,7 @@ public class Container {
 
     private final Map<String, ContainerEntry<?>> entries = new HashMap<>();
 
-    public <T extends ContainerEntry<T>> Container setEntry(@NonNull ContainerEntry<T> entry) {
+    public <T extends ContainerEntry<T>> InMemoryContainer setEntry(@NonNull ContainerEntry<T> entry) {
         entries.put(entry.getId(), entry);
         return this;
     }

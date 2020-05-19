@@ -1,4 +1,4 @@
-package com.diconium.oakgit.git;
+package com.diconium.oakgit.processor.git;
 
 public class GitFilesystemException extends Exception {
 

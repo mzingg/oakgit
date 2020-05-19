@@ -1,7 +1,7 @@
 package com.diconium.oakgit.jdbc;
 
 import com.diconium.oakgit.engine.CommandFactory;
-import com.diconium.oakgit.engine.inmemory.InMemoryCommandProcessor;
+import com.diconium.oakgit.processor.inmemory.InMemoryCommandProcessor;
 import com.github.zafarkhaja.semver.Version;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;

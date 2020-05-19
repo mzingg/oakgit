@@ -1,4 +1,4 @@
-package com.diconium.oakgit.queryparsing;
+package com.diconium.oakgit.engine.query;
 
 import com.diconium.oakgit.engine.Command;
 import lombok.Data;

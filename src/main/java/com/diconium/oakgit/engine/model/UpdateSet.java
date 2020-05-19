@@ -57,11 +57,6 @@ public class UpdateSet implements ContainerEntry<UpdateSet> {
     }
 
     @Override
-    public Long getModCount() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Consumer<OakGitResultSet> getResultSetTypeModifier() {
         throw new UnsupportedOperationException();
     }

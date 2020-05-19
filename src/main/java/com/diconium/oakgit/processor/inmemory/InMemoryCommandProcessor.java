@@ -1,10 +1,9 @@
-package com.diconium.oakgit.engine.inmemory;
+package com.diconium.oakgit.processor.inmemory;
 
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.CommandProcessor;
 import com.diconium.oakgit.engine.CommandResult;
 import com.diconium.oakgit.engine.commands.*;
-import com.diconium.oakgit.engine.model.Container;
 import com.diconium.oakgit.engine.model.ContainerEntry;
 import com.diconium.oakgit.engine.model.DocumentEntry;
 import com.diconium.oakgit.engine.model.UpdateSet;
@@ -18,8 +17,8 @@ import static com.diconium.oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOU
 
 public class InMemoryCommandProcessor implements CommandProcessor {
 
-    private static final Container NULL_CONTAINER = new Container("null container");
-    private Map<String, Container> containerMap = new HashMap<>();
+    private static final InMemoryContainer NULL_CONTAINER = new InMemoryContainer("null container");
+    private Map<String, InMemoryContainer> containerMap = new HashMap<>();
 
 
     @Override
@@ -28,7 +27,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
         if (command instanceof CreateContainerCommand) {
 
             String containerName = ((CreateContainerCommand) command).getContainerName();
-            containerMap.put(containerName, new Container(containerName));
+            containerMap.put(containerName, new InMemoryContainer(containerName));
 
             return SUCCESSFULL_RESULT_WITHOUT_DATA;
 
@@ -77,7 +76,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             UpdatDataInContainerCommand updateCommand = (UpdatDataInContainerCommand) command;
 
-            Container container = getContainer(updateCommand.getContainerName());
+            InMemoryContainer container = getContainer(updateCommand.getContainerName());
             Optional<ContainerEntry<DocumentEntry>> existingEntry = container
                     .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
 
@@ -134,7 +133,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
         return CommandResult.NO_RESULT;
     }
 
-    private Container getContainer(String name) {
+    private InMemoryContainer getContainer(String name) {
         return containerMap.getOrDefault(name, NULL_CONTAINER);
     }
 

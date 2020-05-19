@@ -17,7 +17,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      * @param <T>
      * @return ContainerEntry
      */
-    static <T extends ContainerEntry<T>> ContainerEntry<T> emptyOf(Class<T> entryClass) {
+    static <T extends ContainerEntry<T>> T emptyOf(Class<T> entryClass) {
         try {
             return entryClass.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -71,8 +71,6 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      */
     String getId();
 
-    Long getModCount();
-
     Consumer<OakGitResultSet> getResultSetTypeModifier();
 
     Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude);
@@ -86,11 +84,6 @@ public interface ContainerEntry<T extends ContainerEntry>  {
         @Override
         public String getId() {
             return StringUtils.EMPTY;
-        }
-
-        @Override
-        public Long getModCount() {
-            return 0L;
         }
 
         @Override
@@ -114,11 +107,6 @@ public interface ContainerEntry<T extends ContainerEntry>  {
         @Override
         public String getId() {
             throw new UnsupportedOperationException("trying to get id from an invalid entry");
-        }
-
-        @Override
-        public Long getModCount() {
-            throw new UnsupportedOperationException("trying to get mod count from an invalid entry");
         }
 
         @Override

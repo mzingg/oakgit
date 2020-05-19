@@ -1,7 +1,7 @@
-package com.diconium.oakgit.queryparsing.analyzer;
+package com.diconium.oakgit.engine.query.analyzer;
 
 import com.diconium.oakgit.UnitTest;
-import com.diconium.oakgit.queryparsing.QueryMatchResult;
+import com.diconium.oakgit.engine.query.QueryMatchResult;
 
 import static com.diconium.oakgit.TestHelpers.testValidQueryMatch;
 import static org.hamcrest.MatcherAssert.assertThat;

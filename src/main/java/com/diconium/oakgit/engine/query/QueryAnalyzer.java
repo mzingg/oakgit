@@ -1,4 +1,4 @@
-package com.diconium.oakgit.queryparsing;
+package com.diconium.oakgit.engine.query;
 
 import com.diconium.oakgit.engine.model.ContainerEntry;
 import com.diconium.oakgit.engine.model.DatastoreDataEntry;

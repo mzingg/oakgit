@@ -25,11 +25,6 @@ public class DatastoreMetaEntry implements ContainerEntry<DatastoreMetaEntry> {
     private Integer lvl;
 
     @Override
-    public Long getModCount() {
-        return null;
-    }
-
-    @Override
     public Consumer<OakGitResultSet> getResultSetTypeModifier() {
         return result -> {
             result.addColumn("ID", SqlType.VARCHAR.id, 512);
