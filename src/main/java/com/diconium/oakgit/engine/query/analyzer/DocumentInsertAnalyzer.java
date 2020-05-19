@@ -44,9 +44,9 @@ public class DocumentInsertAnalyzer implements QueryAnalyzer {
     @SuppressWarnings("unchecked")
     private <T> T typedNullsafe(Object object, Class<T> targetClass) {
         if (object != null) {
-            if (targetClass.equals(String.class)) {
+            if (!(object instanceof String) && targetClass.equals(String.class)) {
                 return (T) object.toString();
-            } else if (targetClass.equals(byte[].class)) {
+            } else if (object instanceof String && targetClass.equals(byte[].class)) {
                 return (T) ((String) object).getBytes();
             } else if (targetClass.isAssignableFrom(object.getClass())) {
                 return (T) object;
