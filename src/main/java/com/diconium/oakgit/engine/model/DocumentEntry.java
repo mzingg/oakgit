@@ -3,9 +3,7 @@ package com.diconium.oakgit.engine.model;
 import com.diconium.oakgit.jdbc.OakGitResultSet;
 import com.diconium.oakgit.jdbc.util.SqlType;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -19,8 +17,7 @@ import java.util.function.Consumer;
 @Setter
 public class DocumentEntry implements ContainerEntry<DocumentEntry> {
 
-    @NonNull
-    private String id = StringUtils.EMPTY;
+    private String id;
 
     private Long modified;
 

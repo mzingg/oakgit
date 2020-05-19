@@ -3,10 +3,7 @@ package com.diconium.oakgit.queryparsing.analyzer;
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.commands.ErrorCommand;
 import com.diconium.oakgit.engine.commands.SelectFromContainerByIdCommand;
-import com.diconium.oakgit.queryparsing.QueryAnalyzer;
-import com.diconium.oakgit.queryparsing.QueryId;
-import com.diconium.oakgit.queryparsing.QueryParserResult;
-import com.diconium.oakgit.queryparsing.SingleValueId;
+import com.diconium.oakgit.queryparsing.*;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.JdbcParameter;
 import net.sf.jsqlparser.expression.LongValue;
@@ -21,10 +18,29 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class SelectByIdAnalyzer implements QueryAnalyzer {
 
     private static final String COLUMN_NAME_ID = "ID";
+    private final Pattern SELECT_BY_ID_PATTERN = Pattern.compile("select ([\\w\\s*,?=()]+?) from ([\\w_]+) where ID = (?:'([^?]+)'|\\?)");
+
+    @Override
+    public QueryMatchResult matchAndCollect(String sqlQuery) {
+        return withPatternMatch(sqlQuery, SELECT_BY_ID_PATTERN, (result, matcher) -> {
+            String fieldDeclaration = matcher.group(1);
+            String tableName = matcher.group(2);
+            String idValue = matcher.groupCount() == 3 ? matcher.group(3) : StringUtils.EMPTY;
+            result.setCommandSupplier(placeholderData -> {
+                String replacement = placeholderData.containsKey(1) ? placeholderData.get(1).toString() : "?#1";
+                return new SelectFromContainerByIdCommand()
+                    .setResultFieldList(parseFieldList(fieldDeclaration))
+                    .setContainerName(tableName)
+                    .setId(StringUtils.isNotBlank(idValue) ? idValue : replacement);
+            });
+            return result;
+        });
+    }
 
     @Override
     public boolean interestedIn(Statement statement) {

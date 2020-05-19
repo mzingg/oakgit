@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -19,6 +20,7 @@ public class SelectFromContainerByIdRangeCommand implements Command, MultipleEnt
 
 	private String idMin = StringUtils.EMPTY;
 	private String idMax = StringUtils.EMPTY;
+    private List<String> resultFieldList = Collections.emptyList();
 
 	public <T extends ContainerEntry<T>> CommandResult buildResult(List<ContainerEntry<T>> foundEntries) {
 		return new MultipleEntitiesCommandResult<T>(this, foundEntries);

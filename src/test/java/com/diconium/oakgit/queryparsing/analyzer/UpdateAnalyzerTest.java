@@ -11,6 +11,7 @@ import net.sf.jsqlparser.statement.update.Update;
 import java.util.Map;
 
 import static com.diconium.oakgit.TestHelpers.placeholderData;
+import static com.diconium.oakgit.TestHelpers.testValidQueryMatch;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -18,6 +19,14 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 class UpdateAnalyzerTest {
+
+    @UnitTest
+    void matchAndCollectWithClusternodesAndMultipleInExpressionsReturnsInterestedMatch() {
+        testValidQueryMatch(
+            new UpdateAnalyzer(),
+            "update CLUSTERNODES set MODIFIED = case when ? > MODIFIED then ? else MODIFIED end, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = DSIZE + ?, VERSION = 2, DATA = DATA || CAST(? AS varchar(16384)) where ID = ? and MODCOUNT = ?"
+        );
+    }
 
     @UnitTest
     void getParserResultCallsQueryParserForWitUpdateTableType() throws Exception {

@@ -1,46 +1,96 @@
 package com.diconium.oakgit.queryparsing.analyzer;
 
 import com.diconium.oakgit.UnitTest;
-import com.diconium.oakgit.queryparsing.QueryParserResult;
+import com.diconium.oakgit.engine.Command;
+import com.diconium.oakgit.engine.commands.CreateContainerCommand;
+import com.diconium.oakgit.queryparsing.QueryMatchResult;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.create.table.CreateTable;
 
+import java.util.Collections;
 import java.util.Map;
 
-import static com.diconium.oakgit.TestHelpers.isEmptyOptional;
-import static com.diconium.oakgit.TestHelpers.placeholderData;
+import static com.diconium.oakgit.TestHelpers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 class CreateAnalyzerTest {
 
     @UnitTest
-    void interestedInWithNonCreateQueryReturnsFalse() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse("SELECT * FROM SETTINGS");
-
-        assertThat(new CreateAnalyzer().interestedIn(statement), is(false));
+    void matchAndCollectWithDatastoreDataCreateReturnsInterestedMatch() {
+        testValidQueryMatch(
+            new CreateAnalyzer(), "create table DATASTORE_DATA (ID varchar(64) not null primary key, DATA blob)"
+        );
     }
 
     @UnitTest
-    void interestedInWithCreateQueryReturnsTrue() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse("create table SETTINGS");
-
-        assertThat(new CreateAnalyzer().interestedIn(statement), is(true));
+    void matchAndCollectWithDatastoreMetaCreateReturnsInterestedMatch() {
+        testValidQueryMatch(
+            new CreateAnalyzer(), "create table DATASTORE_META (ID varchar(64) not null primary key, LVL int, LASTMOD bigint)"
+        );
     }
 
     @UnitTest
-    void getParserResultCallsQueryParserForWitCreateTableType() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse("create table SETTINGS");
-        CreateAnalyzer target = spy(new CreateAnalyzer());
-
-        target.getParserResult(statement);
-
-        verify(target).queryParserFor(statement, CreateTable.class, QueryParserResult.ResultType.CREATE);
+    void matchAndCollectWithClusternodesCreateReturnsInterestedMatch() {
+        testValidQueryMatch(
+            new CreateAnalyzer(),
+            "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        );
     }
+
+    @UnitTest
+    void matchAndCollectWithJournalCreateReturnsInterestedMatch() {
+        testValidQueryMatch(
+            new CreateAnalyzer(),
+            "create table JOURNAL (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        );
+    }
+
+    @UnitTest
+    void matchAndCollectWithNodeCreateReturnsInterestedMatch() {
+        testValidQueryMatch(
+            new CreateAnalyzer(),
+            "create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        );
+    }
+
+    @UnitTest
+    void matchAndCollectWithSettingsCreateReturnsInterestedMatch() {
+        testValidQueryMatch(
+            new CreateAnalyzer(),
+            "create table SETTINGS (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        );
+    }
+
+    @UnitTest
+    void matchAndCollectWithNonCreateQueryReturnsNotInterestedMatch() {
+        QueryMatchResult actual = new CreateAnalyzer().matchAndCollect("select * from CLUSTERNODES where ID = '0'");
+
+        assertThat(actual, is(not(nullValue())));
+        assertThat(actual.isInterested(), is(false));
+        assertThat(actual.getCommandSupplier(), is(nullValue()));
+    }
+
+    @UnitTest
+    void matchAndCollectWithNullQueryReturnsNotInterestedMatch() {
+        QueryMatchResult actual = new CreateAnalyzer().matchAndCollect(null);
+
+        assertThat(actual, is(not(nullValue())));
+        assertThat(actual.isInterested(), is(false));
+        assertThat(actual.getCommandSupplier(), is(nullValue()));
+    }
+
+    @UnitTest
+    void matchAndCollectReturnsWithValidQueryReturnCorrectCommand() {
+        QueryMatchResult target = new CreateAnalyzer().matchAndCollect("create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
+
+        Command actual = target.getCommandSupplier().apply(Collections.emptyMap());
+
+        assertThat(actual, is(instanceOf(CreateContainerCommand.class)));
+        assertThat(((CreateContainerCommand)actual).getContainerName(), is("NODES"));
+    }
+
 
     @UnitTest
     void getTableNameWithReturnsExpectedValue() throws Exception {

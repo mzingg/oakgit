@@ -7,10 +7,12 @@ import net.sf.jsqlparser.statement.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class QueryParser {
 
     private static final List<QueryAnalyzer> DEFAULT_ANALYZERS = new ArrayList<>();
+
     static {
         DEFAULT_ANALYZERS.add(new CreateAnalyzer());
         DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
@@ -26,6 +28,17 @@ public class QueryParser {
 
     public QueryParser() {
         this.analyzers = DEFAULT_ANALYZERS;
+    }
+
+    public Optional<QueryMatchResult> match(String sqlQuery) {
+        for (QueryAnalyzer analyzer : analyzers) {
+            var matchResult = analyzer.matchAndCollect(sqlQuery);
+            if (matchResult.isInterested()) {
+                return Optional.of(matchResult);
+            }
+        }
+
+        return Optional.empty();
     }
 
     public QueryParserResult parse(String sqlQuery) {
@@ -44,7 +57,7 @@ public class QueryParser {
             }
         }
 
-        return  QueryParserResult.Error("sqlQuery must not be null");
+        return QueryParserResult.Error("sqlQuery must not be null");
     }
 
 }

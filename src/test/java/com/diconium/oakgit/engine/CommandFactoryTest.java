@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.is;
 
 class CommandFactoryTest {
 
-    public static final String CREATE_TABLE_PATTERN_TEST = "create table CLUSTERNODES";
+    public static final String CREATE_TABLE_PATTERN_TEST = "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))";
 
     public static final String CREATE_TABLE_COLUMNS_PATTERN_TEST =
         "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +

@@ -2,13 +2,32 @@ package com.diconium.oakgit.engine;
 
 import com.diconium.oakgit.engine.commands.ErrorCommand;
 import com.diconium.oakgit.engine.commands.NoOperationCommand;
-import com.diconium.oakgit.queryparsing.QueryParser;
-import com.diconium.oakgit.queryparsing.QueryParserResult;
+import com.diconium.oakgit.queryparsing.QueryAnalyzer;
+import com.diconium.oakgit.queryparsing.QueryMatchResult;
+import com.diconium.oakgit.queryparsing.analyzer.*;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class CommandFactory {
+
+    private static final List<QueryAnalyzer> DEFAULT_ANALYZERS = new ArrayList<>();
+
+    static {
+        DEFAULT_ANALYZERS.add(new CreateAnalyzer());
+        DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
+        DEFAULT_ANALYZERS.add(new DatastoreMetaInsertAnalyzer());
+        DEFAULT_ANALYZERS.add(new DocumentInsertAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
+        DEFAULT_ANALYZERS.add(new SelectInAnalyzer());
+        DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
+    }
+
+    private final List<QueryAnalyzer> analyzers;
+
+    public CommandFactory() {
+        this.analyzers = DEFAULT_ANALYZERS;
+    }
 
     /**
      * Returns a {@link Command} for a given SQL string.
@@ -30,11 +49,21 @@ public class CommandFactory {
     public Command getCommandForSql(String sqlCommand, Map<Integer, Object> placeholderData) {
         System.out.println("sqlCommand = " + sqlCommand);
         System.out.println("placeholderData = " + placeholderData);
-        QueryParserResult queryParserResult = new QueryParser().parse(sqlCommand);
-        if (!queryParserResult.isValid()) {
-            return new ErrorCommand("Error while parsing the query " + sqlCommand);
+
+        return match(sqlCommand)
+            .map(matchResult -> matchResult.getCommandSupplier().apply(placeholderData))
+            .orElse(new ErrorCommand("Error while parsing the query " + sqlCommand));
+    }
+
+    public Optional<QueryMatchResult> match(String sqlQuery) {
+        for (QueryAnalyzer analyzer : analyzers) {
+            var matchResult = analyzer.matchAndCollect(sqlQuery);
+            if (matchResult != null && matchResult.isInterested()) {
+                return Optional.of(matchResult);
+            }
         }
-        return queryParserResult.createCommand(placeholderData);
+
+        return Optional.empty();
     }
 
 }

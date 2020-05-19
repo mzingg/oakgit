@@ -25,6 +25,12 @@ class QueryAnalyzerTest {
 
     private QueryAnalyzer anAnalyzer() {
         return new QueryAnalyzer() {
+
+            @Override
+            public QueryMatchResult matchAndCollect(String sqlQuery) {
+                return null;
+            }
+
             @Override
             public boolean interestedIn(Statement statement) {
                 return false;

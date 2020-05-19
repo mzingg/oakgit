@@ -4,14 +4,27 @@ import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.commands.CreateContainerCommand;
 import com.diconium.oakgit.queryparsing.QueryAnalyzer;
 import com.diconium.oakgit.queryparsing.QueryId;
+import com.diconium.oakgit.queryparsing.QueryMatchResult;
 import com.diconium.oakgit.queryparsing.QueryParserResult;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class CreateAnalyzer implements QueryAnalyzer {
+
+    private final Pattern CREATE_PATTERN = Pattern.compile("create table ([\\w_]+) \\(.+\\)");
+
+    @Override
+    public QueryMatchResult matchAndCollect(String sqlQuery) {
+        return withPatternMatch(sqlQuery, CREATE_PATTERN, (result, matcher) -> {
+            String tableName = matcher.group(1);
+            result.setCommandSupplier(placeholderData -> new CreateContainerCommand().setContainerName(tableName));
+            return result;
+        });
+    }
 
     @Override
     public boolean interestedIn(Statement statement) {

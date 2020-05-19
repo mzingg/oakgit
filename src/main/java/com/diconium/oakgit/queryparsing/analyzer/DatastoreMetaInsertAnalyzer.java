@@ -3,10 +3,7 @@ package com.diconium.oakgit.queryparsing.analyzer;
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.commands.InsertIntoContainerCommand;
 import com.diconium.oakgit.engine.model.DatastoreMetaEntry;
-import com.diconium.oakgit.queryparsing.QueryAnalyzer;
-import com.diconium.oakgit.queryparsing.QueryId;
-import com.diconium.oakgit.queryparsing.QueryParserResult;
-import com.diconium.oakgit.queryparsing.SingleValueId;
+import com.diconium.oakgit.queryparsing.*;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import net.sf.jsqlparser.expression.Expression;
@@ -28,6 +25,11 @@ public class DatastoreMetaInsertAnalyzer implements QueryAnalyzer {
     public static final String METADATA_TABLE_NAME = "DATASTORE_META";
 
     @Override
+    public QueryMatchResult matchAndCollect(String sqlQuery) {
+        return null;
+    }
+
+    @Override
     public boolean interestedIn(Statement statement) {
         return statement instanceof Insert && ((Insert)statement).getTable().getName().equals(METADATA_TABLE_NAME);
     }
@@ -38,8 +40,6 @@ public class DatastoreMetaInsertAnalyzer implements QueryAnalyzer {
     }
 
 
-    //            result.setInsertColumns(insertStatement.getColumns());
-//            result.setInsertExpressions(((ExpressionList) insertStatement.getItemsList()).getExpressions());
     @Override
     public Optional<QueryId> getId(Statement statement, Map<Integer, Object> placeholderData) {
         return whileInterestedOrThrow(statement, Insert.class, stm -> {
