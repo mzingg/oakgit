@@ -39,14 +39,12 @@
                         <Private-Package>
                             com.diconium.oakgit.*,
                             io.vavr.*,
-                            net.sf.jsqlparser.*,
                             com.github.zafarkhaja.semver.*,
                             org.apache.maven.model.*,
                             org.eclipse.jgit.*
                         </Private-Package>
                         <Embed-Dependency>
                             vavr,
-                            sqlparser,
                             java-semver,
                             maven-model,
                             org.eclipse.jgit,
@@ -138,12 +136,6 @@
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
             <version>5.7.0.202003110725-r</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>2.1</version>
         </dependency>
 
         <!-- needed to read the project version form the pom file in META-INF -->

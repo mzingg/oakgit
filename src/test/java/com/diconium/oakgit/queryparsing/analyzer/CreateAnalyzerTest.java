@@ -4,16 +4,12 @@ import com.diconium.oakgit.UnitTest;
 import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.commands.CreateContainerCommand;
 import com.diconium.oakgit.queryparsing.QueryMatchResult;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.statement.Statement;
 
 import java.util.Collections;
-import java.util.Map;
 
-import static com.diconium.oakgit.TestHelpers.*;
+import static com.diconium.oakgit.TestHelpers.testValidQueryMatch;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CreateAnalyzerTest {
 
@@ -89,38 +85,6 @@ class CreateAnalyzerTest {
 
         assertThat(actual, is(instanceOf(CreateContainerCommand.class)));
         assertThat(((CreateContainerCommand)actual).getContainerName(), is("NODES"));
-    }
-
-
-    @UnitTest
-    void getTableNameWithReturnsExpectedValue() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse("create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, " +
-            "DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, " +
-            "SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
-
-        assertThat(new CreateAnalyzer().getTableName(statement), is("CLUSTERNODES"));
-    }
-
-    @UnitTest
-    void getTableNameWithNonCreateQueryThrowsParseException() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse("SELECT * FROM SETTINGS");
-
-        assertThrows(IllegalStateException.class, () -> new CreateAnalyzer().getTableName(statement));
-    }
-
-    @UnitTest
-    void getTableNameWithQueryMissingTableDefinitionReturnTableName() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse("create table SETTINGS");
-
-        assertThat(new CreateAnalyzer().getTableName(statement), is("SETTINGS"));
-    }
-
-    @UnitTest
-    void getIdReturnsEmptyOptional() throws Exception {
-        Statement statement = CCJSqlParserUtil.parse("create table SETTINGS");
-        Map<Integer, Object> placeholderData = placeholderData();
-
-        assertThat(new CreateAnalyzer().getId(statement, placeholderData), isEmptyOptional());
     }
 
 }

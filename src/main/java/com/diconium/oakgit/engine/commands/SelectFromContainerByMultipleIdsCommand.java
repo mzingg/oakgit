@@ -1,5 +1,6 @@
 package com.diconium.oakgit.engine.commands;
 
+import com.diconium.oakgit.engine.Command;
 import com.diconium.oakgit.engine.CommandResult;
 import com.diconium.oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class SelectFromContainerByMultipleIdsCommand extends AbstractCommand<SelectFromContainerByMultipleIdsCommand> implements MultipleEntitiesCommandResultProvider {
+public class SelectFromContainerByMultipleIdsCommand implements Command, MultipleEntitiesCommandResultProvider {
 
     @NonNull
     private String containerName = StringUtils.EMPTY;
