@@ -8,7 +8,7 @@
     <artifactId>oakgit-persistence</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-F
+
     <description>Git persistence layer for OAK</description>
 
     <properties>
