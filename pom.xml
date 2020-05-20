@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.diconium.oak</groupId>
-    <artifactId>oak-git-persistence</artifactId>
+    <groupId>oakgit</groupId>
+    <artifactId>oakgit-persistence</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-
+F
     <description>Git persistence layer for OAK</description>
 
     <properties>
@@ -31,7 +31,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>com.diconium.oakgit.jdbc</Export-Package>
+                        <Export-Package>oakgit.jdbc</Export-Package>
                         <Import-Package>
                             !javax.net.ssl
                             *
