@@ -60,7 +60,7 @@ public class UpdateAnalyzer implements QueryAnalyzer {
                             };
                             break;
                         case "DSIZE + ?":
-                            Long sizeAddendum = (Long) placeholderData.get(placeHolderIndex);
+                            Integer sizeAddendum = (Integer) placeholderData.get(placeHolderIndex);
                             placeHolderIndex++;
                             updateValue = (Function<DocumentEntry, Long>) entry ->
                                 (entry.getDSize() != null ? entry.getDSize() : 0L) +

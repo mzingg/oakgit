@@ -27,7 +27,7 @@ public class SelectFromContainerByMultipleIdsCommand implements Command {
     private List<String> resultFieldList = Collections.emptyList();
 
     public <T extends ContainerEntry<T>> CommandResult buildResult(List<T> foundEntries) {
-        return new MultipleEntriesResult<T>(containerName, foundEntries);
+        return new MultipleEntriesResult<T>(containerName, foundEntries, resultFieldList);
     }
 
 }

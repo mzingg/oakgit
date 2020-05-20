@@ -1,10 +1,10 @@
 package oakgit.engine.model;
 
-import oakgit.jdbc.OakGitResultSet;
-import oakgit.jdbc.util.SqlType;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import oakgit.jdbc.OakGitResultSet;
+import oakgit.jdbc.util.SqlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -62,20 +62,25 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry> {
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
-        return result -> {
-            result.addValue("ID", id);
-            result.addValue("MODIFIED", modified);
-            result.addValue("MODCOUNT", modCount);
-            result.addValue("CMODCOUNT", cModCount);
-            result.addValue("HASBINARY", hasBinary);
-            result.addValue("DELETEDONCE", deletedOnce);
-            result.addValue("VERSION", version);
-            result.addValue("SDTYPE", sdType);
-            result.addValue("SDMAXREVTIME", sdMaxRevTime);
-            result.addValue("DATA", data);
-            result.addValue("BDATA", bdata);
-        };
+    public Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList) {
+        return result -> fillResultSet(result, fieldList, this::columnGetter);
+    }
+
+    private Object columnGetter(String fieldName) {
+        switch (fieldName) {
+            case "ID": return id;
+            case "MODIFIED": return modified;
+            case "MODCOUNT": return modCount;
+            case "CMODCOUNT": return cModCount;
+            case "HASBINARY": return hasBinary;
+            case "DELETEDONCE": return deletedOnce;
+            case "VERSION": return version;
+            case "SDTYPE": return sdType;
+            case "SDMAXREVTIME": return sdMaxRevTime;
+            case "DATA": return data;
+            case "BDATA": return bdata;
+        }
+        return null;
     }
 
     @Override

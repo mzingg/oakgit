@@ -5,6 +5,8 @@ import oakgit.engine.Command;
 import oakgit.engine.CommandResult;
 import oakgit.engine.model.ContainerEntry;
 
+import java.util.Collections;
+
 /**
  * This class offers a {@link Command} to update an entry
  */
@@ -25,6 +27,6 @@ public class UpdatDataInContainerCommand implements Command {
     private final UpdateSet data;
 
     public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull T updatedEntry) {
-        return new SingleEntryResult<>(containerName, updatedEntry);
+        return new SingleEntryResult<>(containerName, updatedEntry, Collections.emptyList());
     }
 }

@@ -6,12 +6,13 @@ import oakgit.engine.model.DatastoreMetaEntry;
 import oakgit.engine.model.DocumentEntry;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public interface QueryAnalyzer {
 
@@ -32,7 +33,9 @@ public interface QueryAnalyzer {
 
     default List<String> parseFieldList(String fieldDeclaration) {
         if (StringUtils.isNotBlank(fieldDeclaration) && !"*".equals(fieldDeclaration)) {
-            return Arrays.asList(StringUtils.split(fieldDeclaration, ","));
+            return Stream.of(StringUtils.split(fieldDeclaration, ","))
+                .map(StringUtils::trim)
+                .collect(Collectors.toList());
         }
 
         // empty list implies all fields

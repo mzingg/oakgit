@@ -30,10 +30,15 @@ public class DatastoreDataEntry implements ContainerEntry<DatastoreDataEntry> {
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
-        return result -> {
-            result.addValue("ID", id);
-        };
+    public Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList) {
+        return result -> fillResultSet(result, fieldList, this::columnGetter);
     }
 
+    private Object columnGetter(String fieldName) {
+        switch (fieldName) {
+            case "ID": return id;
+            case "DATA": return data;
+        }
+        return null;
+    }
 }

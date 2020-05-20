@@ -26,7 +26,7 @@ public class SelectFromContainerByIdCommand implements Command {
     private List<String> resultFieldList = Collections.emptyList();
 
     public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull T foundEntry) {
-		return new SingleEntryResult<T>(containerName, foundEntry);
+		return new SingleEntryResult<T>(containerName, foundEntry, resultFieldList);
 	}
 
 }

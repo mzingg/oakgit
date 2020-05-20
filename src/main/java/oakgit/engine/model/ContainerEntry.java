@@ -3,8 +3,11 @@ package oakgit.engine.model;
 import oakgit.jdbc.OakGitResultSet;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface ContainerEntry<T extends ContainerEntry>  {
 
@@ -72,7 +75,26 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
     Consumer<OakGitResultSet> getResultSetTypeModifier();
 
-    Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude);
+    Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList);
+
+    default void fillResultSet(OakGitResultSet result, List<String> fieldList, Function<String, Object> columnGetter) {
+        List<String> fields = fieldList;
+        if (fields == null || fields.isEmpty()) {
+            fields = new ArrayList<>();
+            OakGitResultSet set = new OakGitResultSet("dummy");
+            getResultSetTypeModifier().accept(set);
+            for (int col = 1; col < set.getColumnCount(); col++) {
+                try {
+                    fields.add(set.getColumnName(col));
+                } catch (SQLException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+        for (String fieldName : fields) {
+            result.addValue(fieldName, columnGetter.apply(fieldName));
+        }
+    }
 
     /**
      * NULL object type to indicate an empty entry.

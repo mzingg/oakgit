@@ -48,6 +48,8 @@ public class DocumentInsertAnalyzer implements QueryAnalyzer {
                 return (T) ((String) object).getBytes();
             } else if (targetClass.isAssignableFrom(object.getClass())) {
                 return (T) object;
+            } else if (targetClass.equals(Long.class) && object instanceof Integer) {
+                return (T) Long.valueOf(((Integer)object).longValue());
             } else {
                 throw new IllegalArgumentException("Object " + object + " is not of type " + targetClass);
             }
