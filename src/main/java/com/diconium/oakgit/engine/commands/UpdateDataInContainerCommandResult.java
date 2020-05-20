@@ -22,7 +22,7 @@ public class UpdateDataInContainerCommandResult<T extends ContainerEntry<T>> imp
 
     @NonNull
     @Getter
-    private final ContainerEntry<T> foundEntry;
+    private final T foundEntry;
 
     @Override
     public ResultSet toResultSet() {

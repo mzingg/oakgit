@@ -26,7 +26,7 @@ public class InMemoryContainer {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ContainerEntry<T>> Optional<ContainerEntry<T>> findById(String id, Class<T> resultType) {
+    public <T extends ContainerEntry<T>> Optional<T> findById(String id, Class<T> resultType) {
         if (entries.containsKey(id)) {
             ContainerEntry<?> entry = entries.get(id);
             if (resultType.isAssignableFrom(entry.getClass())) {
@@ -37,7 +37,7 @@ public class InMemoryContainer {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ContainerEntry<T>> Optional<ContainerEntry<T>> findByIdAndModCount(String id, long modCount, Class<T> resultType) {
+    public <T extends ContainerEntry<T>> Optional<T> findByIdAndModCount(String id, long modCount, Class<T> resultType) {
         if (entries.containsKey(id)) {
             ContainerEntry<?> entry = entries.get(id);
             if (resultType.isAssignableFrom(entry.getClass())) {
@@ -48,8 +48,8 @@ public class InMemoryContainer {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ContainerEntry<T>> List<ContainerEntry<T>> findByIdRange(String idMin, String idMax, Class<T> resultType) {
-        ArrayList<ContainerEntry<T>> result = new ArrayList<>();
+    public <T extends ContainerEntry<T>> List<T> findByIdRange(String idMin, String idMax, Class<T> resultType) {
+        ArrayList<T> result = new ArrayList<>();
 
         try {
             for (String key : entries.keySet()) {
@@ -72,8 +72,8 @@ public class InMemoryContainer {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ContainerEntry<T>> List<ContainerEntry<T>> findByIds(List<String> ids, Class<T> resultType) {
-        ArrayList<ContainerEntry<T>> result = new ArrayList<>();
+    public <T extends ContainerEntry<T>> List<T> findByIds(List<String> ids, Class<T> resultType) {
+        ArrayList<T> result = new ArrayList<>();
 
         for (String id : ids) {
             if (entries.containsKey(id)) {

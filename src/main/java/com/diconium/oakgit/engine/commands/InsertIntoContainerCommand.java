@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class {@link InsertIntoContainerCommand} offers to insert data in a container.
@@ -17,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 public class InsertIntoContainerCommand<T extends ContainerEntry<T>> implements Command {
 
     @NonNull
-    private String containerName = StringUtils.EMPTY;
+    private String containerName = "";
 
     @NonNull
     private T data;

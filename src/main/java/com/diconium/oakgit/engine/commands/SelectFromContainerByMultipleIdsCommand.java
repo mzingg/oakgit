@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,13 +17,13 @@ import java.util.List;
 public class SelectFromContainerByMultipleIdsCommand implements Command, MultipleEntitiesCommandResultProvider {
 
     @NonNull
-    private String containerName = StringUtils.EMPTY;
+    private String containerName = "";
 
     @NonNull
     private List<String> ids = Collections.emptyList();
     private List<String> resultFieldList = Collections.emptyList();
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(List<ContainerEntry<T>> foundEntries) {
+    public <T extends ContainerEntry<T>> CommandResult buildResult(List<T> foundEntries) {
         return new MultipleEntitiesCommandResult<T>(this, foundEntries);
     }
 

@@ -17,9 +17,9 @@
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 
         <aem.version>6.5.4.0001</aem.version>
-        <!-- has to correspond to aem.version - version taken from Felix bundles list -->
-        <test.oak.version>1.10.8</test.oak.version>
-        <test.junit.version>5.6.2</test.junit.version>
+        <!-- has to correspond to aem.version - version taken from wcm.io pom -->
+        <oak.version>1.10.8</oak.version>
+        <junit.version>5.6.2</junit.version>
     </properties>
 
     <build>
@@ -36,15 +36,7 @@
                             !javax.net.ssl
                             *
                         </Import-Package>
-                        <Private-Package>
-                            com.diconium.oakgit.*,
-                            io.vavr.*,
-                            com.github.zafarkhaja.semver.*,
-                            org.apache.maven.model.*,
-                            org.eclipse.jgit.*
-                        </Private-Package>
                         <Embed-Dependency>
-                            vavr,
                             java-semver,
                             maven-model,
                             org.eclipse.jgit,
@@ -121,12 +113,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>0.10.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
@@ -180,9 +166,16 @@
 
         <!-- Test dependencies -->
         <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-core</artifactId>
-            <version>${test.oak.version}</version>
+            <version>${oak.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -195,21 +188,21 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-store-document</artifactId>
-            <version>${test.oak.version}</version>
+            <version>${oak.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${test.junit.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${test.junit.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 

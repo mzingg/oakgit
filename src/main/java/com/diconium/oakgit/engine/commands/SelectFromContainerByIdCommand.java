@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,12 +16,12 @@ import java.util.List;
 @ToString
 public class SelectFromContainerByIdCommand implements Command {
 
-	private String containerName = StringUtils.EMPTY;
+	private String containerName = "";
 
-	private String id = StringUtils.EMPTY;
+	private String id = "";
     private List<String> resultFieldList = Collections.emptyList();
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull ContainerEntry<T> foundEntry) {
+    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull T foundEntry) {
 		return new SingleEntityCommandResult<T>(this, foundEntry);
 	}
 

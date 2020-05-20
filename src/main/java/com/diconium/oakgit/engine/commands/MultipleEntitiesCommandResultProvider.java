@@ -9,6 +9,6 @@ public interface MultipleEntitiesCommandResultProvider {
 
     String getContainerName();
 
-    <T extends ContainerEntry<T>> CommandResult buildResult(List<ContainerEntry<T>> foundEntries);
+    <T extends ContainerEntry<T>> CommandResult buildResult(List<T> foundEntries);
 
 }

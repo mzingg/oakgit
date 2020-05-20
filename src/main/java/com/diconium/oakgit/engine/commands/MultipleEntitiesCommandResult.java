@@ -23,7 +23,7 @@ public class MultipleEntitiesCommandResult<T extends ContainerEntry<T>> implemen
 
     @NonNull
     @Getter
-    private final List<ContainerEntry<T>> foundEntries;
+    private final List<T> foundEntries;
 
     @Override
     public ResultSet toResultSet() {

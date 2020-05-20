@@ -99,7 +99,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
                 throw new IllegalArgumentException(e);
             }
         } else {
-            placeholderData.put(parameterIndex, StringUtils.EMPTY);
+            placeholderData.put(parameterIndex, "");
         }
     }
 

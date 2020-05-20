@@ -22,7 +22,7 @@ public class SingleEntityCommandResult<T extends ContainerEntry<T>> implements C
 
     @NonNull
     @Getter
-    private final ContainerEntry<T> foundEntry;
+    private final T foundEntry;
 
     @Override
     public ResultSet toResultSet() {

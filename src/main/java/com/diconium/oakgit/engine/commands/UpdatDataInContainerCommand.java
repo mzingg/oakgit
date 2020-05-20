@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,10 +18,10 @@ import java.util.List;
 public class UpdatDataInContainerCommand implements Command {
 
     @NonNull
-    private String containerName = StringUtils.EMPTY;
+    private String containerName = "";
 
     @NonNull
-    private String id = StringUtils.EMPTY;
+    private String id = "";
 
     private long modCount = 0L;
 
@@ -31,7 +30,7 @@ public class UpdatDataInContainerCommand implements Command {
 
     private List<String> setExpressions = Collections.emptyList();
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull ContainerEntry<T> foundEntry) {
+    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull T foundEntry) {
         return new UpdateDataInContainerCommandResult(this, foundEntry);
     }
 }

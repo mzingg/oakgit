@@ -5,7 +5,6 @@ import com.diconium.oakgit.jdbc.util.SqlType;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,7 +17,7 @@ import java.util.function.Consumer;
 public class DatastoreMetaEntry implements ContainerEntry<DatastoreMetaEntry> {
 
     @NonNull
-    private String id = StringUtils.EMPTY;
+    private String id = "";
 
     private Long lastmod;
 

@@ -1,7 +1,6 @@
 package com.diconium.oakgit.engine.model;
 
 import com.diconium.oakgit.jdbc.OakGitResultSet;
-import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -31,7 +30,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      * @return boolean
      */
     static boolean isEmpty(ContainerEntry<?> containerEntry) {
-        return containerEntry == null || StringUtils.EMPTY.equals(containerEntry.getId());
+        return containerEntry == null || "".equals(containerEntry.getId());
     }
 
     /**
@@ -83,7 +82,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
         @Override
         public String getId() {
-            return StringUtils.EMPTY;
+            return "";
         }
 
         @Override
