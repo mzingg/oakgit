@@ -73,3 +73,5 @@ hs_err_pid*
 /src/test/resources
 /.idea/sonarlint/
 /sqlCommand.log
+/.idea/dataSources/
+/.idea/dataSources.local.xml
