@@ -33,9 +33,7 @@ public class DocumentInsertAnalyzer implements QueryAnalyzer {
                 data.setData(typedNullsafe(placeholderData.get(10), byte[].class));
                 data.setBdata(typedNullsafe(placeholderData.get(11), byte[].class));
 
-                return new InsertIntoContainerCommand<>(DocumentEntry.class)
-                    .setContainerName(tableName)
-                    .setData(data);
+                return new InsertIntoContainerCommand<>(tableName, data);
             });
             return result;
         });

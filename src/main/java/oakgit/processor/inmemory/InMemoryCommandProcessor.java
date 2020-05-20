@@ -6,7 +6,6 @@ import oakgit.engine.CommandResult;
 import oakgit.engine.commands.*;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.engine.model.DocumentEntry;
-import oakgit.engine.model.UpdateSet;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,65 +80,8 @@ public class InMemoryCommandProcessor implements CommandProcessor {
                 .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
 
             if (existingEntry.isPresent()) {
-
-                UpdateSet data = updateCommand.getData();
                 final DocumentEntry entityToUpdate = existingEntry.get();
-
-                data
-                    .whenHasValue("newModCount", Long.class, entityToUpdate::setModCount)
-                    .whenHasValue("newModified", Long.class, entityToUpdate::setModified)
-                    .whenHasValue("modifiedIfLargerThanExisting", Long.class, v -> {
-                        if (v != null && (entityToUpdate.getModified() == null || v > entityToUpdate.getModified())) {
-                            entityToUpdate.setModified(v);
-                        }
-                    })
-                    .whenHasValue("newHasBinary", Integer.class, entityToUpdate::setHasBinary)
-                    .whenHasValue("newDeletedOnce", Integer.class, entityToUpdate::setDeletedOnce)
-                    .whenHasValue("newCModCount", Long.class, entityToUpdate::setCModCount)
-                    .whenHasValue("newDsize", Long.class, entityToUpdate::setDSize)
-                    .whenHasValue("dsizeAddition", Long.class, v -> {
-                        if (v != null) {
-                            Long existingSize = entityToUpdate.getDSize() != null ? entityToUpdate.getDSize() : 0L;
-                            entityToUpdate.setDSize(existingSize + v);
-                        } else {
-                            entityToUpdate.setDSize(null);
-                        }
-                    })
-                    .whenHasValue("appendData", String.class, v -> {
-                        if (v != null) {
-                            byte[] oldData = entityToUpdate.getData();
-                            byte[] newData = v.getBytes();
-                            byte[] combined = new byte[oldData.length + newData.length];
-                            System.arraycopy(oldData, 0, combined, 0, oldData.length);
-                            System.arraycopy(newData, 0, combined, oldData.length, newData.length);
-                            entityToUpdate.setData(combined);
-                        }
-                    })
-                    .whenHasValue("newData", String.class, v -> {
-                        if (v != null) {
-                            entityToUpdate.setData(v.getBytes());
-                        } else {
-                            entityToUpdate.setData(null);
-                        }
-                    })
-                    .whenHasValue("appendBdata", String.class, v -> {
-                        if (v != null) {
-                            byte[] oldData = entityToUpdate.getBdata();
-                            byte[] newData = v.getBytes();
-                            byte[] combined = new byte[oldData.length + newData.length];
-                            System.arraycopy(oldData, 0, combined, 0, oldData.length);
-                            System.arraycopy(newData, 0, combined, oldData.length, newData.length);
-                            entityToUpdate.setBdata(combined);
-                        }
-                    })
-                    .whenHasValue("newBdata", String.class, v -> {
-                        if (v != null) {
-                            entityToUpdate.setBdata(v.getBytes());
-                        } else {
-                            entityToUpdate.setBdata(null);
-                        }
-                    })
-                    .whenHasValue("newVersion", Integer.class, entityToUpdate::setVersion);
+                updateCommand.getData().update(entityToUpdate);
 
                 System.out.println("entityToUpdate = " + entityToUpdate);
                 CommandResult commandResult = updateCommand.buildResult(entityToUpdate);

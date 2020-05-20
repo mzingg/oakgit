@@ -14,7 +14,7 @@ public class CreateAnalyzer implements QueryAnalyzer {
     public QueryMatchResult matchAndCollect(String sqlQuery) {
         return withPatternMatch(sqlQuery, CREATE_PATTERN, (result, matcher) -> {
             String tableName = matcher.group(1);
-            result.setCommandSupplier(placeholderData -> new CreateContainerCommand().setContainerName(tableName));
+            result.setCommandSupplier(placeholderData -> new CreateContainerCommand(tableName));
             return result;
         });
     }

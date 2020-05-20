@@ -1,36 +1,30 @@
 package oakgit.engine.commands;
 
+import lombok.*;
 import oakgit.engine.Command;
 import oakgit.engine.CommandResult;
 import oakgit.engine.model.ContainerEntry;
-import oakgit.engine.model.UpdateSet;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
 
-import java.util.Collections;
-import java.util.List;
-
+/**
+ * This class offers a {@link Command} to update an entry
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public class UpdatDataInContainerCommand implements Command {
 
     @NonNull
-    private String containerName = "";
+    private final String containerName;
 
     @NonNull
-    private String id = "";
+    private final String id;
 
-    private long modCount = 0L;
+    private final long modCount;
 
     @NonNull
-    private UpdateSet data = new UpdateSet();
+    private final UpdateSet data;
 
-    private List<String> setExpressions = Collections.emptyList();
-
-    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull T foundEntry) {
-        return new UpdateDataInContainerCommandResult(this, foundEntry);
+    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull T updatedEntry) {
+        return new SingleEntryResult<>(containerName, updatedEntry);
     }
 }

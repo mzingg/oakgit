@@ -1,12 +1,12 @@
 package oakgit.engine.commands;
 
-import oakgit.engine.CommandResult;
-import oakgit.engine.model.ContainerEntry;
-import oakgit.jdbc.OakGitResultSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import oakgit.engine.CommandResult;
+import oakgit.engine.model.ContainerEntry;
+import oakgit.jdbc.OakGitResultSet;
 
 import java.sql.ResultSet;
 import java.util.Collections;
@@ -15,19 +15,19 @@ import java.util.List;
 import static oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
+@Getter
 @ToString
-public class MultipleEntitiesCommandResult<T extends ContainerEntry<T>> implements CommandResult {
+public class MultipleEntriesResult<T extends ContainerEntry<T>> implements CommandResult {
 
     @NonNull
-    private final MultipleEntitiesCommandResultProvider command;
+    private final String containerName;
 
     @NonNull
-    @Getter
     private final List<T> foundEntries;
 
     @Override
     public ResultSet toResultSet() {
-        OakGitResultSet result = new OakGitResultSet(command.getContainerName());
+        OakGitResultSet result = new OakGitResultSet(containerName);
         if (foundEntries.size() > 0) {
             foundEntries.get(0).getResultSetTypeModifier().accept(result);
         }

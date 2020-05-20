@@ -15,12 +15,12 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
         return withPatternMatch(sqlQuery, SELECT_BY_RANGE_PATTERN, (result, matcher) -> {
             String fieldDeclaration = matcher.group(1);
             String tableName = matcher.group(2);
-            result.setCommandSupplier(placeholderData -> new SelectFromContainerByIdRangeCommand()
-                .setResultFieldList(parseFieldList(fieldDeclaration))
-                .setContainerName(tableName)
-                .setIdMin(placeholderData.get(1).toString())
-                .setIdMax(placeholderData.get(2).toString())
-            );
+            result.setCommandSupplier(placeholderData -> new SelectFromContainerByIdRangeCommand(
+                tableName,
+                placeholderData.get(1).toString(),
+                placeholderData.get(2).toString()
+            ).setResultFieldList(parseFieldList(fieldDeclaration)));
+
             return result;
         });
     }

@@ -1,18 +1,20 @@
 package oakgit.engine.commands;
 
-import oakgit.engine.Command;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import oakgit.engine.Command;
 
 /**
- * This class offers a {@link Command} to create a container using the containerName
+ * This class offers a {@link Command} to create a new container
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public class CreateContainerCommand implements Command {
 
-    private String containerName = "";
+    @NonNull
+    private final String containerName;
 
 }

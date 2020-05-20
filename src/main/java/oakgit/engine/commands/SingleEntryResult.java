@@ -1,8 +1,8 @@
 package oakgit.engine.commands;
 
 import oakgit.engine.CommandResult;
-import oakgit.engine.model.ContainerEntry;
 import oakgit.jdbc.OakGitResultSet;
+import oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -11,14 +11,14 @@ import lombok.ToString;
 import java.sql.ResultSet;
 import java.util.Collections;
 
-import static oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
+import static oakgit.engine.model.ContainerEntry.*;
 
 @RequiredArgsConstructor
 @ToString
-public class UpdateDataInContainerCommandResult<T extends ContainerEntry<T>> implements CommandResult {
+public class SingleEntryResult<T extends ContainerEntry<T>> implements CommandResult {
 
     @NonNull
-    private final UpdatDataInContainerCommand command;
+    private final String containerName;
 
     @NonNull
     @Getter
@@ -26,7 +26,7 @@ public class UpdateDataInContainerCommandResult<T extends ContainerEntry<T>> imp
 
     @Override
     public ResultSet toResultSet() {
-        OakGitResultSet result = new OakGitResultSet(command.getContainerName());
+        OakGitResultSet result = new OakGitResultSet(containerName);
         foundEntry.getResultSetTypeModifier().accept(result);
         if (wasSuccessfull()) {
             foundEntry.getResultSetModifier(Collections.emptyList()).accept(result);

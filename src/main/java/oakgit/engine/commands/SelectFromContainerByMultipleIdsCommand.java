@@ -1,30 +1,33 @@
 package oakgit.engine.commands;
 
+import lombok.*;
 import oakgit.engine.Command;
 import oakgit.engine.CommandResult;
 import oakgit.engine.model.ContainerEntry;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This class offers a {@link Command} to select an entry by a list of ids
+ */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString(callSuper = true)
-public class SelectFromContainerByMultipleIdsCommand implements Command, MultipleEntitiesCommandResultProvider {
+@ToString
+public class SelectFromContainerByMultipleIdsCommand implements Command {
 
     @NonNull
-    private String containerName = "";
+    private final String containerName;
 
     @NonNull
-    private List<String> ids = Collections.emptyList();
+    private final List<String> ids;
+
+    @NonNull
+    @Setter
     private List<String> resultFieldList = Collections.emptyList();
 
     public <T extends ContainerEntry<T>> CommandResult buildResult(List<T> foundEntries) {
-        return new MultipleEntitiesCommandResult<T>(this, foundEntries);
+        return new MultipleEntriesResult<T>(containerName, foundEntries);
     }
 
 }

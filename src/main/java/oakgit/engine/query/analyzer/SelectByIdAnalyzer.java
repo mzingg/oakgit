@@ -19,10 +19,10 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
             String idValue = matcher.groupCount() == 3 ? matcher.group(3) : "";
             result.setCommandSupplier(placeholderData -> {
                 String replacement = placeholderData.containsKey(1) ? placeholderData.get(1).toString() : "?#1";
-                return new SelectFromContainerByIdCommand()
-                    .setResultFieldList(parseFieldList(fieldDeclaration))
-                    .setContainerName(tableName)
-                    .setId(StringUtils.isNotBlank(idValue) ? idValue : replacement);
+                return new SelectFromContainerByIdCommand(
+                    tableName,
+                    StringUtils.isNotBlank(idValue) ? idValue : replacement
+                ).setResultFieldList(parseFieldList(fieldDeclaration));
             });
             return result;
         });
