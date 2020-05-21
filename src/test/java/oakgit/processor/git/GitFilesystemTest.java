@@ -1,8 +1,8 @@
 package oakgit.processor.git;
 
-import oakgit.UnitTest;
 import io.vavr.Tuple3;
 import oakgit.TestHelpers;
+import oakgit.UnitTest;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
@@ -23,7 +23,7 @@ class GitFilesystemTest {
 
         try {
             new GitFilesystem(gitEnv._1, gitEnv._3)
-                .createDirectory((Path) null);
+                    .createDirectory((Path) null);
 
         } catch (GitFilesystemException expectedException) {
             return;
@@ -38,7 +38,7 @@ class GitFilesystemTest {
 
         try {
             new GitFilesystem(gitEnv._1, gitEnv._3)
-                .createDirectory((String) null);
+                    .createDirectory((String) null);
 
         } catch (GitFilesystemException expectedException) {
             return;
@@ -55,7 +55,7 @@ class GitFilesystemTest {
         try {
 
             new GitFilesystem(gitEnv._1, gitEnv._3)
-                .createDirectory(testPath.resolve("aDirectoryName"));
+                    .createDirectory(testPath.resolve("aDirectoryName"));
 
         } catch (GitFilesystemException expectedException) {
             return;
@@ -76,7 +76,7 @@ class GitFilesystemTest {
             Files.write(existingFilePath, new byte[0]);
 
             new GitFilesystem(gitEnv._1, gitEnv._3)
-                .createDirectory(existingFilePath);
+                    .createDirectory(existingFilePath);
 
         } catch (GitFilesystemException expectedException) {
             return;
@@ -97,7 +97,7 @@ class GitFilesystemTest {
             Files.createDirectory(existingDirectoryPath);
 
             new GitFilesystem(gitEnv._1, gitEnv._3)
-                .createDirectory(existingDirectoryPath);
+                    .createDirectory(existingDirectoryPath);
 
         } catch (GitFilesystemException expectedException) {
             return;
@@ -118,9 +118,9 @@ class GitFilesystemTest {
 
 
         new GitFilesystem(gitEnv._1, gitEnv._3)
-            .createDirectory("aParentDirectory");
+                .createDirectory("aParentDirectory");
         new GitFilesystem(gitEnv._1, gitEnv._3)
-            .createDirectory("aParentDirectory/aDirectoryName");
+                .createDirectory("aParentDirectory/aDirectoryName");
 
         assertThat("directory exists in git workspace path", expectedDirectory.exists() && expectedDirectory.isDirectory());
     }
@@ -132,7 +132,7 @@ class GitFilesystemTest {
         File expectedDirectory = gitEnv._2.resolve(directoryName).toFile();
 
         new GitFilesystem(gitEnv._1, gitEnv._3)
-            .createDirectory(directoryName);
+                .createDirectory(directoryName);
 
         assertThat("directory exists in git workspace path", expectedDirectory.exists() && expectedDirectory.isDirectory());
     }
@@ -142,7 +142,7 @@ class GitFilesystemTest {
         Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
 
         Path actualDirectoryPath = new GitFilesystem(gitEnv._1, gitEnv._3)
-            .createDirectory("aDirectoryName");
+                .createDirectory("aDirectoryName");
 
         File gitIgnoreFile = actualDirectoryPath.resolve(GitFilesystem.GIT_IGNORE_FILENAME).toFile();
         Status status = gitEnv._1.status().call();

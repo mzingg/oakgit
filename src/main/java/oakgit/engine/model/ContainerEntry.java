@@ -1,5 +1,7 @@
 package oakgit.engine.model;
 
+import lombok.Data;
+import lombok.NonNull;
 import oakgit.jdbc.OakGitResultSet;
 
 import java.lang.reflect.InvocationTargetException;
@@ -9,12 +11,13 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public interface ContainerEntry<T extends ContainerEntry>  {
+public interface ContainerEntry<T extends ContainerEntry> {
 
     /**
      * Returns an instance of an empty container typed to the given class.
      * Always returns a new object instance. Calls the ctor(String) of the given type class.
      * Use {@link ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is empty.
+     *
      * @param entryClass
      * @param <T>
      * @return ContainerEntry
@@ -29,6 +32,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
     /**
      * Tests if a given containerEntry object is of the empty type.
+     *
      * @param containerEntry
      * @return boolean
      */
@@ -40,6 +44,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
      * Returns an instance of an invalid container typed to the given class.
      * Always returns a new object instance. Use {@link ContainerEntry#isInvalid(ContainerEntry)}
      * to test if a given object is invalid.
+     *
      * @param entryClass
      * @param <T>
      * @return ContainerEntry
@@ -50,6 +55,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
     /**
      * Tests if a given containerEntry object is of the invalid type.
+     *
      * @param containerEntry
      * @return boolean
      */
@@ -59,6 +65,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
     /**
      * Combines !{@link ContainerEntry#isEmpty(ContainerEntry)} and !{@link ContainerEntry#isInvalid(ContainerEntry)}
+     *
      * @param containerEntry
      * @return
      */
@@ -77,7 +84,7 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
     Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList);
 
-    default void fillResultSet(OakGitResultSet result, List<String> fieldList, Function<String, Object> columnGetter) {
+    default void fillResultSet(OakGitResultSet result, List<String> fieldList, Function<String, ColumnGetterResult> columnGetter) {
         List<String> fields = fieldList;
         if (fields == null || fields.isEmpty()) {
             fields = new ArrayList<>();
@@ -92,15 +99,27 @@ public interface ContainerEntry<T extends ContainerEntry>  {
             }
         }
         for (String fieldName : fields) {
-            result.addValue(fieldName, columnGetter.apply(fieldName));
+            ColumnGetterResult getterResult = columnGetter.apply(fieldName);
+            if (getterResult != null) {
+                result.addValue(getterResult.getFieldName(), getterResult.getValue());
+            }
         }
+    }
+
+    @Data
+    static class ColumnGetterResult {
+        @NonNull
+        private final String fieldName;
+
+        private final Object value;
     }
 
     /**
      * NULL object type to indicate an empty entry.
+     *
      * @param <T>
      */
-    class EmptyContainerEntry<T extends ContainerEntry<T>>  implements ContainerEntry<T> {
+    class EmptyContainerEntry<T extends ContainerEntry<T>> implements ContainerEntry<T> {
 
         @Override
         public String getId() {
@@ -109,21 +128,24 @@ public interface ContainerEntry<T extends ContainerEntry>  {
 
         @Override
         public Consumer<OakGitResultSet> getResultSetTypeModifier() {
-            return (resultSet) -> {};
+            return (resultSet) -> {
+            };
         }
 
         @Override
         public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
-            return (resultSet) -> {};
+            return (resultSet) -> {
+            };
         }
 
     }
 
     /**
      * NULL object type to indicate an invalid entry.
+     *
      * @param <T>
      */
-    class InvalidContainerEntry<T extends ContainerEntry<T>>  implements ContainerEntry<T> {
+    class InvalidContainerEntry<T extends ContainerEntry<T>> implements ContainerEntry<T> {
 
         @Override
         public String getId() {

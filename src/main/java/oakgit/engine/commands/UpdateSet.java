@@ -15,10 +15,9 @@ import java.util.function.Function;
 @ToString
 public class UpdateSet {
 
+    private final Map<String, Object> updatedValues = new HashMap<>();
     @Setter
     private List<String> setExpressions = Collections.emptyList();
-
-    private final Map<String, Object> updatedValues = new HashMap<>();
 
     public UpdateSet withValue(@NonNull String name, Object value) {
         updatedValues.put(name.trim().toLowerCase(), value);

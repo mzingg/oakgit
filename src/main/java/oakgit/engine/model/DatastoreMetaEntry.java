@@ -1,10 +1,10 @@
 package oakgit.engine.model;
 
-import oakgit.jdbc.OakGitResultSet;
-import oakgit.jdbc.util.SqlType;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import oakgit.jdbc.OakGitResultSet;
+import oakgit.jdbc.util.SqlType;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -37,11 +37,14 @@ public class DatastoreMetaEntry implements ContainerEntry<DatastoreMetaEntry> {
         return result -> fillResultSet(result, fieldList, this::columnGetter);
     }
 
-    private Object columnGetter(String fieldName) {
+    private ColumnGetterResult columnGetter(String fieldName) {
         switch (fieldName) {
-            case "ID": return id;
-            case "LASTMOD": return lastmod;
-            case "LVL": return lvl;
+            case "ID":
+                return new ColumnGetterResult(fieldName, id);
+            case "LASTMOD":
+                return new ColumnGetterResult(fieldName, lastmod);
+            case "LVL":
+                return new ColumnGetterResult(fieldName, lvl);
         }
         return null;
     }

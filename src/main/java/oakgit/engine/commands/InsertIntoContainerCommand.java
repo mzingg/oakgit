@@ -1,6 +1,9 @@
 package oakgit.engine.commands;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import oakgit.engine.Command;
 import oakgit.engine.model.ContainerEntry;
 

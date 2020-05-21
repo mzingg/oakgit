@@ -21,14 +21,14 @@ public class SelectInAnalyzer implements QueryAnalyzer {
 
             result.setCommandSupplier(placeholderData -> {
                 List<String> idList = placeholderData.values().stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
+                        .map(Object::toString)
+                        .collect(Collectors.toList());
                 if (idList.size() != StringUtils.countMatches(result.getOriginQuery(), '?')) {
                     throw new IllegalStateException("list of ids does not match ? count in query");
                 }
 
                 return new SelectFromContainerByMultipleIdsCommand(tableName, idList)
-                    .setResultFieldList(parseFieldList(fieldDeclaration));
+                        .setResultFieldList(parseFieldList(fieldDeclaration));
             });
             return result;
         });

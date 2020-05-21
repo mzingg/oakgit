@@ -34,8 +34,8 @@ public interface QueryAnalyzer {
     default List<String> parseFieldList(String fieldDeclaration) {
         if (StringUtils.isNotBlank(fieldDeclaration) && !"*".equals(fieldDeclaration)) {
             return Stream.of(StringUtils.split(fieldDeclaration, ","))
-                .map(StringUtils::trim)
-                .collect(Collectors.toList());
+                    .map(StringUtils::trim)
+                    .collect(Collectors.toList());
         }
 
         // empty list implies all fields

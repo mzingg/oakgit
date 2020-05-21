@@ -12,32 +12,32 @@ class DocumentInsertAnalyzerTest {
     @UnitTest
     void matchAndCollectWithClusternodesCreateReturnsInterestedMatch() {
         testValidQueryMatch(
-            new DocumentInsertAnalyzer(),
-            "insert into CLUSTERNODES(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
+                new DocumentInsertAnalyzer(),
+                "insert into CLUSTERNODES(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
         );
     }
 
     @UnitTest
     void matchAndCollectWithJournalCreateReturnsInterestedMatch() {
         testValidQueryMatch(
-            new DocumentInsertAnalyzer(),
-            "insert into JOURNAL(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
+                new DocumentInsertAnalyzer(),
+                "insert into JOURNAL(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
         );
     }
 
     @UnitTest
     void matchAndCollectWithNodeCreateReturnsInterestedMatch() {
         testValidQueryMatch(
-            new DocumentInsertAnalyzer(),
-            "insert into NODES(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
+                new DocumentInsertAnalyzer(),
+                "insert into NODES(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
         );
     }
 
     @UnitTest
     void matchAndCollectWithSettingsCreateReturnsInterestedMatch() {
         testValidQueryMatch(
-            new DocumentInsertAnalyzer(),
-            "insert into SETTINGS(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
+                new DocumentInsertAnalyzer(),
+                "insert into SETTINGS(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA) values (?, ?, ?, ?, ?, ?, ?,  2, ?, ?, ?, ?)"
         );
     }
 

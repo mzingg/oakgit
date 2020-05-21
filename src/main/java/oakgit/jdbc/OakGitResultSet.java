@@ -1,10 +1,10 @@
 package oakgit.jdbc;
 
-import oakgit.jdbc.util.SqlType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import oakgit.jdbc.util.SqlType;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -33,7 +33,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
     }
 
     public OakGitResultSet addColumn(String columnName, int type, int precision) {
-        Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
+        Optional<Integer> colIndex = getInternalColumnIndexForColumnName(columnName);
         if (colIndex.isEmpty()) {
             columns.add(new Column(columnName, type, precision, new ArrayList<>()));
         }
@@ -42,7 +42,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
     }
 
     public OakGitResultSet addValue(String columnName, Object value) {
-        Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
+        Optional<Integer> colIndex = getInternalColumnIndexForColumnName(columnName);
         int index = colIndex.orElse(columns.size());
         if (colIndex.isEmpty()) {
             throw new IllegalArgumentException("column does not exist");
@@ -53,7 +53,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
     }
 
     public OakGitResultSet addMultiple(String columnName, int type, int precision, List<Object> values) {
-        Optional<Integer> colIndex = getColumnIndexForColumnName(columnName);
+        Optional<Integer> colIndex = getInternalColumnIndexForColumnName(columnName);
         int index = colIndex.orElse(columns.size());
         if (colIndex.isEmpty()) {
             columns.add(new Column(columnName, type, precision, new ArrayList<>()));
@@ -79,52 +79,52 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
     @Override
     public int findColumn(String columnLabel) throws SQLException {
-        return getColumnIndexForColumnName(columnLabel).orElseThrow(() -> new SQLException("column not found"));
+        return getInternalColumnIndexForColumnName(columnLabel).map(internalIndex -> internalIndex + 1).orElseThrow(() -> new SQLException("column not found"));
     }
 
     @Override
-    public String getColumnName(int column) throws SQLException {
-        if (column >= 1 && column <= columns.size()) {
-            return columns.get(column - 1).name;
+    public String getColumnName(int columnIndex) throws SQLException {
+        if (columnIndex >= 1 && columnIndex <= columns.size()) {
+            return columns.get(columnIndex - 1).name;
         }
         throw new SQLException("column does not exist");
     }
 
     @Override
-    public int getColumnType(int column) throws SQLException {
-        if (column >= 1 && column <= columns.size()) {
-            return columns.get(column - 1).type;
+    public int getColumnType(int columnIndex) throws SQLException {
+        if (columnIndex >= 1 && columnIndex <= columns.size()) {
+            return columns.get(columnIndex - 1).type;
         }
         throw new SQLException("column does not exist");
     }
 
     @Override
-    public String getColumnTypeName(int column) throws SQLException {
-        if (column >= 1 && column <= columns.size()) {
-            return SqlType.valueOf(columns.get(column - 1).type).name();
+    public String getColumnTypeName(int columnIndex) throws SQLException {
+        if (columnIndex >= 1 && columnIndex <= columns.size()) {
+            return SqlType.valueOf(columns.get(columnIndex - 1).type).name();
         }
         throw new SQLException("column does not exist");
     }
 
     @Override
-    public int getPrecision(int column) throws SQLException {
-        if (column >= 1 && column <= columns.size()) {
-            return columns.get(column - 1).precision;
+    public int getPrecision(int columnIndex) throws SQLException {
+        if (columnIndex >= 1 && columnIndex <= columns.size()) {
+            return columns.get(columnIndex - 1).precision;
         }
         throw new SQLException("column does not exist");
     }
 
     @Override
-    public String getTableName(int column) throws SQLException {
-        if (column >= 1 && column <= columns.size()) {
+    public String getTableName(int columnIndex) throws SQLException {
+        if (columnIndex >= 1 && columnIndex <= columns.size()) {
             return tableName;
         }
         throw new SQLException("column does not exist");
     }
 
     @Override
-    public String getSchemaName(int column) throws SQLException {
-        if (column >= 1 && column <= columns.size()) {
+    public String getSchemaName(int columnIndex) throws SQLException {
+        if (columnIndex >= 1 && columnIndex <= columns.size()) {
             return DEFAULT_SCHEMA_NAME;
         }
         throw new SQLException("column does not exist");
@@ -137,14 +137,16 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
     @Override
     public long getLong(int columnIndex) {
-        Object result = columns.get(columnIndex).entries.get(pointer);
-        if (result instanceof Integer) {
-            wasNull = false;
-            return ((Integer) result).longValue();
-        }
-        if (result instanceof Long) {
-            wasNull = false;
-            return (Long) result;
+        if (pointer < columns.get(columnIndex - 1).entries.size()) {
+            Object result = columns.get(columnIndex - 1).entries.get(pointer);
+            if (result instanceof Integer) {
+                wasNull = false;
+                return ((Integer) result).longValue();
+            }
+            if (result instanceof Long) {
+                wasNull = false;
+                return (Long) result;
+            }
         }
         wasNull = true;
         return 0L;
@@ -152,7 +154,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
     @Override
     public String getString(int columnIndex) {
-        Object result = columns.get(columnIndex).entries.get(pointer);
+        Object result = columns.get(columnIndex - 1).entries.get(pointer);
         if (result instanceof byte[]) {
             wasNull = false;
             return new String((byte[]) result);
@@ -161,19 +163,27 @@ public class OakGitResultSet extends UnsupportedResultSet {
             wasNull = false;
             return (String) result;
         }
+        if (result != null) {
+            wasNull = false;
+            return result.toString();
+        }
         wasNull = true;
-        return "";
+        return null;
     }
 
     @Override
     public byte[] getBytes(int columnIndex) {
-        Object result = columns.get(columnIndex).entries.get(pointer);
+        Object result = columns.get(columnIndex - 1).entries.get(pointer);
         if (result instanceof byte[]) {
             wasNull = false;
             return (byte[]) result;
         }
+        if (result instanceof String) {
+            wasNull = false;
+            return ((String) result).getBytes();
+        }
         wasNull = true;
-        return new byte[0];
+        return null;
     }
 
     @Override
@@ -188,7 +198,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
         return false;
     }
 
-    private Optional<Integer> getColumnIndexForColumnName(String name) {
+    private Optional<Integer> getInternalColumnIndexForColumnName(String name) {
         for (Column column : columns) {
             if (column.name.equals(name)) {
                 return Optional.of(columns.indexOf(column));
@@ -199,6 +209,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
     }
 
     @RequiredArgsConstructor
+    @ToString
     private final static class Column {
         private final String name;
         private final int type;

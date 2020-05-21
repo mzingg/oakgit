@@ -1,9 +1,9 @@
 package oakgit;
 
-import oakgit.engine.query.QueryAnalyzer;
-import oakgit.engine.query.QueryMatchResult;
 import io.vavr.Tuple;
 import io.vavr.Tuple3;
+import oakgit.engine.query.QueryAnalyzer;
+import oakgit.engine.query.QueryMatchResult;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

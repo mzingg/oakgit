@@ -42,7 +42,7 @@ public class UpdateAnalyzer implements QueryAnalyzer {
                             Long modifiedValue = (Long) placeholderData.get(placeHolderIndex);
                             placeHolderIndex++;
                             updateValue = (Function<DocumentEntry, Long>) entry ->
-                                modifiedCheck > (entry.getModified() != null ? entry.getModified() : 0L) ? modifiedValue : entry.getModified();
+                                    modifiedCheck > (entry.getModified() != null ? entry.getModified() : 0L) ? modifiedValue : entry.getModified();
                             break;
                         case "2":
                             updateValue = 2;
@@ -63,18 +63,18 @@ public class UpdateAnalyzer implements QueryAnalyzer {
                             Integer sizeAddendum = (Integer) placeholderData.get(placeHolderIndex);
                             placeHolderIndex++;
                             updateValue = (Function<DocumentEntry, Long>) entry ->
-                                (entry.getDSize() != null ? entry.getDSize() : 0L) +
-                                    (sizeAddendum != null ? sizeAddendum : 0L);
+                                    (entry.getDSize() != null ? entry.getDSize() : 0L) +
+                                            (sizeAddendum != null ? sizeAddendum : 0L);
                             break;
                     }
                     data.withValue(fieldName, updateValue);
                 }
 
                 return new UpdatDataInContainerCommand(
-                    tableName,
-                    placeholderData.get(lastPlaceholderIndex - 1).toString(),
-                    (Long) placeholderData.get(lastPlaceholderIndex),
-                    data
+                        tableName,
+                        placeholderData.get(lastPlaceholderIndex - 1).toString(),
+                        (Long) placeholderData.get(lastPlaceholderIndex),
+                        data
                 );
             });
             return result;

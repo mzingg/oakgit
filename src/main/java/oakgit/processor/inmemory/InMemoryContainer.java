@@ -1,15 +1,11 @@
 package oakgit.processor.inmemory;
 
-import oakgit.engine.model.ContainerEntry;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import oakgit.engine.model.ContainerEntry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class InMemoryContainer {

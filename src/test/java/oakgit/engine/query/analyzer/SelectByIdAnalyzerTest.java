@@ -1,7 +1,7 @@
 package oakgit.engine.query.analyzer;
 
-import oakgit.UnitTest;
 import oakgit.TestHelpers;
+import oakgit.UnitTest;
 import oakgit.engine.query.QueryMatchResult;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,63 +12,63 @@ class SelectByIdAnalyzerTest {
     @UnitTest
     void matchAndCollectWithClusternodesCreateReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new SelectByIdAnalyzer(),
-            "select * from CLUSTERNODES where ID = '0'"
+                new SelectByIdAnalyzer(),
+                "select * from CLUSTERNODES where ID = '0'"
         );
     }
 
     @UnitTest
     void matchAndCollectWithJournalCreateReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new SelectByIdAnalyzer(),
-            "select * from JOURNAL where ID = '0'"
+                new SelectByIdAnalyzer(),
+                "select * from JOURNAL where ID = '0'"
         );
     }
 
     @UnitTest
     void matchAndCollectWithNodeCreateReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new SelectByIdAnalyzer(),
-            "select * from NODES where ID = '0'"
+                new SelectByIdAnalyzer(),
+                "select * from NODES where ID = '0'"
         );
     }
 
     @UnitTest
     void matchAndCollectWithSettingsCreateReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new SelectByIdAnalyzer(),
-            "select * from SETTINGS where ID = '0'"
+                new SelectByIdAnalyzer(),
+                "select * from SETTINGS where ID = '0'"
         );
     }
 
     @UnitTest
     void matchAndCollectWithDatastoreDataCreateReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new SelectByIdAnalyzer(),
-            "select ID from DATASTORE_DATA where ID = '0'"
+                new SelectByIdAnalyzer(),
+                "select ID from DATASTORE_DATA where ID = '0'"
         );
     }
 
     @UnitTest
     void matchAndCollectWithDatastoreMetaCreateReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new SelectByIdAnalyzer(),
-            "select ID from DATASTORE_META where ID = '0'"
+                new SelectByIdAnalyzer(),
+                "select ID from DATASTORE_META where ID = '0'"
         );
     }
 
     @UnitTest
     void matchAndCollectWithQueryContaingSpecialFieldExpressionsReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new SelectByIdAnalyzer(),
-            "select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, case when (MODCOUNT = ? and MODIFIED = ?) then null else DATA end as DATA, case when (MODCOUNT = ? and MODIFIED = ?) then null else BDATA end as BDATA from NODES where ID = ?"
+                new SelectByIdAnalyzer(),
+                "select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, case when (MODCOUNT = ? and MODIFIED = ?) then null else DATA end as DATA, case when (MODCOUNT = ? and MODIFIED = ?) then null else BDATA end as BDATA from NODES where ID = ?"
         );
     }
 
     @UnitTest
     void matchAndCollectWithNonSelectQueryReturnsNotInterestedMatch() {
         QueryMatchResult actual = new SelectByIdAnalyzer().matchAndCollect(
-            "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from CLUSTERNODES where ID > ? and ID < ? order by ID"
+                "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from CLUSTERNODES where ID > ? and ID < ? order by ID"
         );
 
         assertThat(actual, is(not(nullValue())));

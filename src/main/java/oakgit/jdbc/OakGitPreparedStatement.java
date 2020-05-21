@@ -15,13 +15,12 @@ import java.util.Map;
 
 public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
+    private List<String> commandList = new ArrayList<>();
+    private Map<Integer, Object> placeholderData = new LinkedHashMap<>();
+
     protected OakGitPreparedStatement(OakGitConnection connection, String sql) {
         super(connection, sql);
     }
-
-    private List<String> commandList = new ArrayList<>();
-
-    private Map<Integer, Object> placeholderData = new LinkedHashMap<>();
 
     @Override
     public int executeUpdate() {

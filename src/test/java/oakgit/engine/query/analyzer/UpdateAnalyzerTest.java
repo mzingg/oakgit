@@ -19,8 +19,8 @@ class UpdateAnalyzerTest {
     @UnitTest
     void matchAndCollectWithClusternodesAndMultipleInExpressionsReturnsInterestedMatch() {
         TestHelpers.testValidQueryMatch(
-            new UpdateAnalyzer(),
-            "update CLUSTERNODES set MODIFIED = case when ? > MODIFIED then ? else MODIFIED end, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = DSIZE + ?, VERSION = 2, DATA = DATA || CAST(? AS varchar(16384)) where ID = ? and MODCOUNT = ?"
+                new UpdateAnalyzer(),
+                "update CLUSTERNODES set MODIFIED = case when ? > MODIFIED then ? else MODIFIED end, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = DSIZE + ?, VERSION = 2, DATA = DATA || CAST(? AS varchar(16384)) where ID = ? and MODCOUNT = ?"
         );
     }
 
@@ -41,7 +41,7 @@ class UpdateAnalyzerTest {
         DocumentEntry existing = new DocumentEntry().setDSize(20L);
 
         Command command = target.getCommandSupplier().apply(placeHolderData);
-        ((UpdatDataInContainerCommand)command).getData().update(existing);
+        ((UpdatDataInContainerCommand) command).getData().update(existing);
 
         assertThat(command, is(instanceOf(UpdatDataInContainerCommand.class)));
         assertThat(existing.getDSize(), is(152L));

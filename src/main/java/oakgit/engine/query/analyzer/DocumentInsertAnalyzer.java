@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 public class DocumentInsertAnalyzer implements QueryAnalyzer {
 
     private final Pattern INSERT_PATTERN = Pattern.compile("insert into ([\\w_]+)" +
-        "\\(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA\\) " +
-        "values \\(\\?, \\?, \\?, \\?, \\?, \\?, \\?,\\s+2, \\?, \\?, \\?, \\?\\)"
+            "\\(ID, MODIFIED, HASBINARY, DELETEDONCE, MODCOUNT, CMODCOUNT, DSIZE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA\\) " +
+            "values \\(\\?, \\?, \\?, \\?, \\?, \\?, \\?,\\s+2, \\?, \\?, \\?, \\?\\)"
     );
 
     @Override
@@ -49,7 +49,7 @@ public class DocumentInsertAnalyzer implements QueryAnalyzer {
             } else if (targetClass.isAssignableFrom(object.getClass())) {
                 return (T) object;
             } else if (targetClass.equals(Long.class) && object instanceof Integer) {
-                return (T) Long.valueOf(((Integer)object).longValue());
+                return (T) Long.valueOf(((Integer) object).longValue());
             } else {
                 throw new IllegalArgumentException("Object " + object + " is not of type " + targetClass);
             }

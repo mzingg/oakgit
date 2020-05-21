@@ -1,11 +1,11 @@
 package oakgit.jdbc;
 
-import oakgit.engine.CommandFactory;
-import oakgit.engine.CommandProcessor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import oakgit.engine.CommandFactory;
+import oakgit.engine.CommandProcessor;
 import org.eclipse.jgit.api.Git;
 
 import java.io.IOException;

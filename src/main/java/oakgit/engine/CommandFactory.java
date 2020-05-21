@@ -1,11 +1,11 @@
 package oakgit.engine;
 
+import lombok.Getter;
+import lombok.Setter;
 import oakgit.engine.commands.ErrorCommand;
 import oakgit.engine.commands.NoOperationCommand;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
-import lombok.Getter;
-import lombok.Setter;
 import oakgit.engine.query.analyzer.*;
 
 import java.util.*;
@@ -55,8 +55,8 @@ public class CommandFactory {
         System.out.println("placeholderData = " + placeholderData);
 
         return match(sqlCommand)
-            .map(matchResult -> matchResult.getCommandSupplier().apply(placeholderData))
-            .orElse(new ErrorCommand("Error while parsing the query " + sqlCommand));
+                .map(matchResult -> matchResult.getCommandSupplier().apply(placeholderData))
+                .orElse(new ErrorCommand("Error while parsing the query " + sqlCommand));
     }
 
     public Optional<QueryMatchResult> match(String sqlQuery) {

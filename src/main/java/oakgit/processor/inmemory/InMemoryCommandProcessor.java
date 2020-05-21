@@ -35,7 +35,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             InsertIntoContainerCommand<?> insertCommand = (InsertIntoContainerCommand<?>) command;
 
             getContainer(insertCommand.getContainerName())
-                .setEntry(insertCommand.getData());
+                    .setEntry(insertCommand.getData());
 
             return SUCCESSFULL_RESULT_WITHOUT_DATA;
 
@@ -44,8 +44,8 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             SelectFromContainerByIdCommand selectCommand = (SelectFromContainerByIdCommand) command;
 
             DocumentEntry foundEntry = getContainer(selectCommand.getContainerName())
-                .findById(selectCommand.getId(), DocumentEntry.class)
-                .orElse(ContainerEntry.emptyOf(DocumentEntry.class));
+                    .findById(selectCommand.getId(), DocumentEntry.class)
+                    .orElse(ContainerEntry.emptyOf(DocumentEntry.class));
 
             CommandResult commandResult = selectCommand.buildResult(foundEntry);
             System.out.println("commandResult = " + commandResult.toResultSet());
@@ -56,7 +56,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             SelectFromContainerByIdRangeCommand selectCommand = (SelectFromContainerByIdRangeCommand) command;
 
             List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
-                .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class);
+                    .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class);
 
             CommandResult commandResult = selectCommand.buildResult(foundEntries);
             System.out.println("commandResult = " + commandResult.toResultSet());
@@ -66,7 +66,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             SelectFromContainerByMultipleIdsCommand selectCommand = (SelectFromContainerByMultipleIdsCommand) command;
 
             List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
-                .findByIds(selectCommand.getIds(), DocumentEntry.class);
+                    .findByIds(selectCommand.getIds(), DocumentEntry.class);
 
             CommandResult commandResult = selectCommand.buildResult(foundEntries);
             System.out.println("commandResult = " + commandResult.toResultSet());
@@ -77,7 +77,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             InMemoryContainer container = getContainer(updateCommand.getContainerName());
             Optional<DocumentEntry> existingEntry = container
-                .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
+                    .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
 
             if (existingEntry.isPresent()) {
                 final DocumentEntry entityToUpdate = existingEntry.get();

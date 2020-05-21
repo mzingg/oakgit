@@ -1,8 +1,8 @@
 package oakgit.jdbc;
 
+import com.github.zafarkhaja.semver.Version;
 import oakgit.engine.CommandFactory;
 import oakgit.processor.inmemory.InMemoryCommandProcessor;
-import com.github.zafarkhaja.semver.Version;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -40,11 +40,11 @@ public class OakGitDriver implements Driver {
                 model = reader.read(new FileReader("pom.xml"));
             } else {
                 model = reader.read(
-                    new InputStreamReader(
-                        OakGitDriver.class.getResourceAsStream(
-                            "/META-INF/maven/oakgit/oakgit/pom.xml"
+                        new InputStreamReader(
+                                OakGitDriver.class.getResourceAsStream(
+                                        "/META-INF/maven/oakgit/oakgit/pom.xml"
+                                )
                         )
-                    )
                 );
             }
         } catch (IOException | XmlPullParserException ignored) {

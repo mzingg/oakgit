@@ -38,7 +38,7 @@ public class OakDatabaseDriverSandboxTest {
 
     @AfterEach
     void cleanupDrivers() throws Exception {
-        for (Driver driver: Collections.list(DriverManager.getDrivers())) {
+        for (Driver driver : Collections.list(DriverManager.getDrivers())) {
             if (driver instanceof OakGitDriver) {
                 DriverManager.deregisterDriver(driver);
             }
@@ -98,7 +98,7 @@ public class OakDatabaseDriverSandboxTest {
         ContentRepository contentRepository = new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT)).with(new OpenSecurityProvider()).createContentRepository();
         ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
-       assertThat(session, is(instanceOf(ContentSession.class)));
+        assertThat(session, is(instanceOf(ContentSession.class)));
     }
 
     @SandboxTest

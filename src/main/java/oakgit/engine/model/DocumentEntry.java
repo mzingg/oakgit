@@ -9,7 +9,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Used for CLUSTERNODES, JOURNAL, NODES and SETTINGS
@@ -18,29 +21,19 @@ import java.util.function.Consumer;
 @Setter
 public class DocumentEntry implements ContainerEntry<DocumentEntry> {
 
+    private static final Pattern CASE_PATTERN = Pattern.compile("case when \\(MODCOUNT = (\\d+) and MODIFIED = (\\d+)\\) then null else (BDATA|DATA) end as (?:BDATA|DATA)");
     @NonNull
     private String id;
-
     private Long modified;
-
     private Integer hasBinary;
-
     private Integer deletedOnce;
-
     private Long modCount;
-
     private Long cModCount;
-
     private Long dSize;
-
     private Integer version;
-
     private Integer sdType;
-
     private Long sdMaxRevTime;
-
     private byte[] data;
-
     private byte[] bdata;
 
     @Override
@@ -66,19 +59,49 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry> {
         return result -> fillResultSet(result, fieldList, this::columnGetter);
     }
 
-    private Object columnGetter(String fieldName) {
+    private ColumnGetterResult columnGetter(String fieldName) {
+        Matcher caseMatcher = CASE_PATTERN.matcher(fieldName);
+        boolean isCaseField = false;
+        Long modCountCheck = 0L;
+        Long modifiedCheck = 0L;
+        if (caseMatcher.matches()) {
+            modCountCheck = Long.valueOf(caseMatcher.group(1));
+            modifiedCheck = Long.valueOf(caseMatcher.group(2));
+            fieldName = caseMatcher.group(3);
+            isCaseField = true;
+        }
+
         switch (fieldName) {
-            case "ID": return id;
-            case "MODIFIED": return modified;
-            case "MODCOUNT": return modCount;
-            case "CMODCOUNT": return cModCount;
-            case "HASBINARY": return hasBinary;
-            case "DELETEDONCE": return deletedOnce;
-            case "VERSION": return version;
-            case "SDTYPE": return sdType;
-            case "SDMAXREVTIME": return sdMaxRevTime;
-            case "DATA": return data;
-            case "BDATA": return bdata;
+            case "ID":
+                return new ColumnGetterResult(fieldName, id);
+            case "MODIFIED":
+                return new ColumnGetterResult(fieldName, modified);
+            case "MODCOUNT":
+                return new ColumnGetterResult(fieldName, modCount);
+            case "CMODCOUNT":
+                return new ColumnGetterResult(fieldName, cModCount);
+            case "HASBINARY":
+                return new ColumnGetterResult(fieldName, hasBinary);
+            case "DELETEDONCE":
+                return new ColumnGetterResult(fieldName, deletedOnce);
+            case "VERSION":
+                return new ColumnGetterResult(fieldName, version);
+            case "SDTYPE":
+                return new ColumnGetterResult(fieldName, sdType);
+            case "SDMAXREVTIME":
+                return new ColumnGetterResult(fieldName, sdMaxRevTime);
+            case "DATA": {
+                if (isCaseField && Objects.equals(modCount, modCountCheck) && Objects.equals(modified, modifiedCheck)) {
+                    return new ColumnGetterResult(fieldName, null);
+                }
+                return new ColumnGetterResult(fieldName, data);
+            }
+            case "BDATA": {
+                if (isCaseField && Objects.equals(modCount, modCountCheck) && Objects.equals(modified, modifiedCheck)) {
+                    return new ColumnGetterResult(fieldName, null);
+                }
+                return new ColumnGetterResult(fieldName, bdata);
+            }
         }
         return null;
     }
@@ -86,18 +109,18 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry> {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE)
-            .append("id", id)
-            .append("modified", modified)
-            .append("hasBinary", hasBinary)
-            .append("deletedOnce", deletedOnce)
-            .append("modCount", modCount)
-            .append("cModCount", cModCount)
-            .append("dSize", dSize)
-            .append("version", version)
-            .append("sdType", sdType)
-            .append("sdMaxRevTime", sdMaxRevTime)
-            .append("data", data != null ? new String(data) : "null")
-            .append("bdata", bdata != null ? new String(bdata) : "null")
-            .toString();
+                .append("id", id)
+                .append("modified", modified)
+                .append("hasBinary", hasBinary)
+                .append("deletedOnce", deletedOnce)
+                .append("modCount", modCount)
+                .append("cModCount", cModCount)
+                .append("dSize", dSize)
+                .append("version", version)
+                .append("sdType", sdType)
+                .append("sdMaxRevTime", sdMaxRevTime)
+                .append("data", data != null ? new String(data) : "null")
+                .append("bdata", bdata != null ? new String(bdata) : "null")
+                .toString();
     }
 }
