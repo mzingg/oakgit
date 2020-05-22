@@ -29,7 +29,7 @@ public class UpdatDataInContainerCommand implements Command {
     @NonNull
     private final UpdateSet data;
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(@NonNull T updatedEntry) {
-        return new SingleEntryResult<>(containerName, updatedEntry, Collections.emptyList());
+    public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, T updatedEntry) {
+        return new SingleEntryResult<>(containerName, entryType, updatedEntry, Collections.emptyList());
     }
 }

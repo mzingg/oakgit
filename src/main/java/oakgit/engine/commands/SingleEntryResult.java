@@ -22,6 +22,8 @@ public class SingleEntryResult<T extends ContainerEntry<T>> implements CommandRe
     private final String containerName;
 
     @NonNull
+    private final Class<T> entryType;
+
     private final T foundEntry;
 
     @NonNull
@@ -30,10 +32,13 @@ public class SingleEntryResult<T extends ContainerEntry<T>> implements CommandRe
     @Override
     public ResultSet toResultSet() {
         OakGitResultSet result = new OakGitResultSet(containerName);
-        foundEntry.getResultSetTypeModifier().accept(result);
-        if (wasSuccessfull()) {
+        ContainerEntry.emptyOf(entryType)
+                .getResultSetTypeModifier(resultFieldList).accept(result);
+        if (foundEntry != null) {
             foundEntry.getResultSetModifier(resultFieldList).accept(result);
             result.setWasNull(false);
+        } else {
+            result.setWasNull(true);
         }
         return result;
     }

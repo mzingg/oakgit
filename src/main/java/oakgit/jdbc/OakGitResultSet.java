@@ -22,43 +22,39 @@ public class OakGitResultSet extends UnsupportedResultSet {
     private final String tableName;
 
     private List<Column> columns;
-    private int pointer;
+    private int entryPointer;
+    private int maxEntries;
     private boolean wasNull;
 
     public OakGitResultSet(String tableName) {
         this.tableName = tableName;
         columns = new ArrayList<>();
-        pointer = -1;
+        // init pointer one place before first element, so that first call
+        // to next() will point to the first entry
+        entryPointer = -1;
+        maxEntries = 0;
         wasNull = true;
     }
 
-    public OakGitResultSet addColumn(String columnName, int type, int precision) {
-        Optional<Integer> colIndex = getInternalColumnIndexForColumnName(columnName);
-        if (colIndex.isEmpty()) {
-            columns.add(new Column(columnName, type, precision, new ArrayList<>()));
+    public OakGitResultSet addColumn(Column column) {
+        Optional<Integer> internalIndex = getInternalColumnIndexForColumnName(column.name);
+        if (internalIndex.isEmpty()) {
+            columns.add(column);
         }
 
         return this;
     }
 
     public OakGitResultSet addValue(String columnName, Object value) {
-        Optional<Integer> colIndex = getInternalColumnIndexForColumnName(columnName);
-        int index = colIndex.orElse(columns.size());
-        if (colIndex.isEmpty()) {
+        Optional<Integer> internalIndex = getInternalColumnIndexForColumnName(columnName);
+        if (internalIndex.isEmpty()) {
             throw new IllegalArgumentException("column does not exist");
         }
-        columns.get(index).entries.add(value);
-
-        return this;
-    }
-
-    public OakGitResultSet addMultiple(String columnName, int type, int precision, List<Object> values) {
-        Optional<Integer> colIndex = getInternalColumnIndexForColumnName(columnName);
-        int index = colIndex.orElse(columns.size());
-        if (colIndex.isEmpty()) {
-            columns.add(new Column(columnName, type, precision, new ArrayList<>()));
+        columns.get(internalIndex.get()).entries.add(value);
+        int entryCount = columns.get(internalIndex.get()).entries.size();
+        if (entryCount > maxEntries) {
+            maxEntries = entryCount;
         }
-        columns.get(index).entries.addAll(values);
 
         return this;
     }
@@ -137,35 +133,41 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
     @Override
     public long getLong(int columnIndex) {
-        if (pointer < columns.get(columnIndex - 1).entries.size()) {
-            Object result = columns.get(columnIndex - 1).entries.get(pointer);
-            if (result instanceof Integer) {
+        if (columnIndex <= 0 || columnIndex > columns.size()) {
+            throw new IllegalArgumentException("invalid column index");
+        }
+        if (entryPointer < columns.get(columnIndex - 1).entries.size()) {
+            Object entry = getEntryOrNull(columnIndex);
+            if (entry instanceof Integer) {
                 wasNull = false;
-                return ((Integer) result).longValue();
+                return ((Integer) entry).longValue();
             }
-            if (result instanceof Long) {
+            if (entry instanceof Long) {
                 wasNull = false;
-                return (Long) result;
+                return (Long) entry;
             }
         }
         wasNull = true;
-        return 0L;
+        return 0;
     }
 
     @Override
     public String getString(int columnIndex) {
-        Object result = columns.get(columnIndex - 1).entries.get(pointer);
-        if (result instanceof byte[]) {
-            wasNull = false;
-            return new String((byte[]) result);
+        if (columnIndex <= 0 || columnIndex > columns.size()) {
+            throw new IllegalArgumentException("invalid column index");
         }
-        if (result instanceof String) {
+        Object entry = getEntryOrNull(columnIndex);
+        if (entry instanceof byte[]) {
             wasNull = false;
-            return (String) result;
+            return new String((byte[]) entry);
         }
-        if (result != null) {
+        if (entry instanceof String) {
             wasNull = false;
-            return result.toString();
+            return (String) entry;
+        }
+        if (entry != null) {
+            wasNull = false;
+            return entry.toString();
         }
         wasNull = true;
         return null;
@@ -173,24 +175,32 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
     @Override
     public byte[] getBytes(int columnIndex) {
-        Object result = columns.get(columnIndex - 1).entries.get(pointer);
-        if (result instanceof byte[]) {
-            wasNull = false;
-            return (byte[]) result;
+        if (columnIndex <= 0 || columnIndex > columns.size()) {
+            throw new IllegalArgumentException("invalid column index");
         }
-        if (result instanceof String) {
+        Object entry = getEntryOrNull(columnIndex);
+        if (entry instanceof byte[]) {
             wasNull = false;
-            return ((String) result).getBytes();
+            return (byte[]) entry;
+        }
+        if (entry instanceof String) {
+            wasNull = false;
+            return ((String) entry).getBytes();
         }
         wasNull = true;
         return null;
     }
 
+    private Object getEntryOrNull(int columnIndex) {
+        List<Object> entries = columns.get(columnIndex - 1).entries;
+        return (entryPointer >= 0 && entries.size() > entryPointer) ? entries.get(entryPointer) : null;
+    }
+
     @Override
     public boolean next() {
         if (!columns.isEmpty()) {
-            if (pointer + 1 >= 0 && pointer + 1 < columns.get(0).entries.size()) {
-                pointer = pointer + 1;
+            if (entryPointer + 1 >= 0 && entryPointer + 1 < maxEntries) {
+                entryPointer = entryPointer + 1;
                 return true;
             }
         }
@@ -210,11 +220,15 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
     @RequiredArgsConstructor
     @ToString
-    private final static class Column {
+    public final static class Column {
         private final String name;
         private final int type;
         private final int precision;
         private final List<Object> entries;
+
+        public Column copy() {
+            return new Column(name, type, precision, new ArrayList<>());
+        }
     }
 
 }

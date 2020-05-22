@@ -11,8 +11,6 @@ import oakgit.jdbc.OakGitResultSet;
 import java.sql.ResultSet;
 import java.util.List;
 
-import static oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
-
 @RequiredArgsConstructor
 @Getter
 @ToString
@@ -20,6 +18,9 @@ public class MultipleEntriesResult<T extends ContainerEntry<T>> implements Comma
 
     @NonNull
     private final String containerName;
+
+    @NonNull
+    private final Class<T> entryType;
 
     @NonNull
     private final List<T> foundEntries;
@@ -30,9 +31,8 @@ public class MultipleEntriesResult<T extends ContainerEntry<T>> implements Comma
     @Override
     public ResultSet toResultSet() {
         OakGitResultSet result = new OakGitResultSet(containerName);
-        if (foundEntries.size() > 0) {
-            foundEntries.get(0).getResultSetTypeModifier().accept(result);
-        }
+        ContainerEntry.emptyOf(entryType)
+                .getResultSetTypeModifier(resultFieldList).accept(result);
         if (wasSuccessfull()) {
             foundEntries.stream()
                     .filter(ContainerEntry::isValidAndNotEmpty)
@@ -49,9 +49,7 @@ public class MultipleEntriesResult<T extends ContainerEntry<T>> implements Comma
 
     @Override
     public int affectedCount() {
-        return foundEntries.stream()
-                .mapToInt(e -> isValidAndNotEmpty(e) ? 1 : 0)
-                .sum();
+        return foundEntries.size();
     }
 
 }

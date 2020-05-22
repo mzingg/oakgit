@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import oakgit.engine.model.ContainerEntry;
+import oakgit.engine.model.DocumentEntry;
 
 import java.util.*;
 
@@ -37,7 +38,13 @@ public class InMemoryContainer {
         if (entries.containsKey(id)) {
             ContainerEntry<?> entry = entries.get(id);
             if (resultType.isAssignableFrom(entry.getClass())) {
-                return Optional.of((T) entry);
+                if (entry instanceof DocumentEntry) {
+                    if (((DocumentEntry)entry).getModCount() == modCount) {
+                        return Optional.of((T) entry);
+                    }
+                } else {
+                    return Optional.of((T) entry);
+                }
             }
         }
         return Optional.empty();

@@ -6,8 +6,10 @@ import lombok.Setter;
 import oakgit.jdbc.OakGitResultSet;
 import oakgit.jdbc.util.SqlType;
 
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Used for DATASTORE_META
@@ -24,29 +26,25 @@ public class DatastoreMetaEntry implements ContainerEntry<DatastoreMetaEntry> {
     private Integer lvl;
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetTypeModifier() {
-        return result -> {
-            result.addColumn("ID", SqlType.VARCHAR.id, 512);
-            result.addColumn("LASTMOD", SqlType.BIGINT.id, 0);
-            result.addColumn("LVL", SqlType.SMALLINT.id, 0);
-        };
+    public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+        Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
+        result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 512, Collections.emptyList()));
+        result.put("LASTMOD", new OakGitResultSet.Column("LASTMOD", SqlType.BIGINT.id, 0, Collections.emptyList()));
+        result.put("LVL", new OakGitResultSet.Column("LVL", SqlType.SMALLINT.id, 0, Collections.emptyList()));
+        return result;
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList) {
-        return result -> fillResultSet(result, fieldList, this::columnGetter);
-    }
-
-    private ColumnGetterResult columnGetter(String fieldName) {
+    public Optional<ColumnGetterResult> entryGetter(String fieldName) {
         switch (fieldName) {
             case "ID":
-                return new ColumnGetterResult(fieldName, id);
+                return Optional.of(new ColumnGetterResult(fieldName, id));
             case "LASTMOD":
-                return new ColumnGetterResult(fieldName, lastmod);
+                return Optional.of(new ColumnGetterResult(fieldName, lastmod));
             case "LVL":
-                return new ColumnGetterResult(fieldName, lvl);
+                return Optional.of(new ColumnGetterResult(fieldName, lvl));
         }
-        return null;
+        return Optional.empty();
     }
 
 

@@ -6,8 +6,10 @@ import lombok.Setter;
 import oakgit.jdbc.OakGitResultSet;
 import oakgit.jdbc.util.SqlType;
 
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * DATASTORE_DATA
@@ -22,25 +24,21 @@ public class DatastoreDataEntry implements ContainerEntry<DatastoreDataEntry> {
     private byte[] data;
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetTypeModifier() {
-        return result -> {
-            result.addColumn("ID", SqlType.VARCHAR.id, 64);
-            result.addColumn("DATA", SqlType.BLOB.id, 0);
-        };
+    public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+        Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
+        result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 64, Collections.emptyList()));
+        result.put("DATA", new OakGitResultSet.Column("DATA", SqlType.BLOB.id, 0, Collections.emptyList()));
+        return result;
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList) {
-        return result -> fillResultSet(result, fieldList, this::columnGetter);
-    }
-
-    private ColumnGetterResult columnGetter(String fieldName) {
+    public Optional<ColumnGetterResult> entryGetter(String fieldName) {
         switch (fieldName) {
             case "ID":
-                return new ColumnGetterResult(fieldName, id);
+                return Optional.of(new ColumnGetterResult(fieldName, id));
             case "DATA":
-                return new ColumnGetterResult(fieldName, data);
+                return Optional.of(new ColumnGetterResult(fieldName, data));
         }
-        return null;
+        return Optional.empty();
     }
 }

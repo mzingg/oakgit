@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class SelectByIdAnalyzer implements QueryAnalyzer {
 
     private static final Pattern SELECT_BY_ID_PATTERN = Pattern.compile("select ([\\w\\s*,?=()]+?) from ([\\w_]+) where ID = (?:'([^?]+)'|\\?)");
-    private static final Pattern CASE_PATTERN = Pattern.compile("case when \\(MODCOUNT = \\? and MODIFIED = \\? then null else (BDATA|DATA) end as (?:BDATA|DATA)");
+    private static final Pattern CASE_PATTERN = Pattern.compile("case when \\(MODCOUNT = \\? and MODIFIED = \\?\\) then null else (BDATA|DATA) end as (?:BDATA|DATA)");
 
     @Override
     public QueryMatchResult matchAndCollect(String sqlQuery) {
@@ -31,7 +31,7 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
                         Long modifiedCheck = (Long) placeholderData.get(placeHolderIndex);
                         placeHolderIndex++;
                         resultFieldList.set(i, fieldMatcher.replaceAll(String.format(
-                                "case when (MODCOUNT = %d and MODIFIED = %d then null else $1 end as $1",
+                                "case when (MODCOUNT = %d and MODIFIED = %d) then null else $1 end as $1",
                                 modCountCheck,
                                 modifiedCheck
                         )));

@@ -29,8 +29,8 @@ public class SelectFromContainerByIdRangeCommand implements Command {
     @Setter
     private List<String> resultFieldList = Collections.emptyList();
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(List<T> foundEntries) {
-        return new MultipleEntriesResult<T>(containerName, foundEntries, resultFieldList);
+    public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, @NonNull List<T> foundEntries) {
+        return new MultipleEntriesResult<T>(containerName, entryType, foundEntries, resultFieldList);
     }
 
 }

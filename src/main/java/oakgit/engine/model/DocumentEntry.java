@@ -8,9 +8,7 @@ import oakgit.jdbc.util.SqlType;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +20,7 @@ import java.util.regex.Pattern;
 public class DocumentEntry implements ContainerEntry<DocumentEntry> {
 
     private static final Pattern CASE_PATTERN = Pattern.compile("case when \\(MODCOUNT = (\\d+) and MODIFIED = (\\d+)\\) then null else (BDATA|DATA) end as (?:BDATA|DATA)");
+
     @NonNull
     private String id;
     private Long modified;
@@ -37,73 +36,85 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry> {
     private byte[] bdata;
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetTypeModifier() {
-        return result -> {
-            result.addColumn("ID", SqlType.VARCHAR.id, 512);
-            result.addColumn("MODIFIED", SqlType.BIGINT.id, 0);
-            result.addColumn("HASBINARY", SqlType.SMALLINT.id, 0);
-            result.addColumn("DELETEDONCE", SqlType.SMALLINT.id, 0);
-            result.addColumn("MODCOUNT", SqlType.BIGINT.id, 0);
-            result.addColumn("CMODCOUNT", SqlType.BIGINT.id, 0);
-            result.addColumn("DSIZE", SqlType.BIGINT.id, 0);
-            result.addColumn("VERSION", SqlType.SMALLINT.id, 0);
-            result.addColumn("SDTYPE", SqlType.SMALLINT.id, 0);
-            result.addColumn("SDMAXREVTIME", SqlType.BIGINT.id, 0);
-            result.addColumn("DATA", SqlType.VARCHAR.id, 16384);
-            result.addColumn("BDATA", SqlType.BLOB.id, 1073741824);
-        };
+    public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+        Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
+        result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 512, Collections.emptyList()));
+        result.put("MODIFIED", new OakGitResultSet.Column("MODIFIED", SqlType.BIGINT.id, 0, Collections.emptyList()));
+        result.put("HASBINARY", new OakGitResultSet.Column("HASBINARY", SqlType.SMALLINT.id, 0, Collections.emptyList()));
+        result.put("DELETEDONCE", new OakGitResultSet.Column("DELETEDONCE", SqlType.SMALLINT.id, 0, Collections.emptyList()));
+        result.put("CMODCOUNT", new OakGitResultSet.Column("CMODCOUNT", SqlType.BIGINT.id, 0, Collections.emptyList()));
+        result.put("MODCOUNT", new OakGitResultSet.Column("MODCOUNT", SqlType.BIGINT.id, 0, Collections.emptyList()));
+        result.put("DSIZE", new OakGitResultSet.Column("DSIZE", SqlType.BIGINT.id, 0, Collections.emptyList()));
+        result.put("VERSION", new OakGitResultSet.Column("VERSION", SqlType.SMALLINT.id, 0, Collections.emptyList()));
+        result.put("SDTYPE", new OakGitResultSet.Column("SDTYPE", SqlType.SMALLINT.id, 0, Collections.emptyList()));
+        result.put("SDMAXREVTIME", new OakGitResultSet.Column("SDMAXREVTIME", SqlType.BIGINT.id, 0, Collections.emptyList()));
+        result.put("DATA", new OakGitResultSet.Column("DATA", SqlType.VARCHAR.id, 16384, Collections.emptyList()));
+        result.put("BDATA", new OakGitResultSet.Column("BDATA", SqlType.BLOB.id, 1073741824, Collections.emptyList()));
+        return result;
     }
 
     @Override
-    public Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList) {
-        return result -> fillResultSet(result, fieldList, this::columnGetter);
+    public Optional<String> typeGetter(String fieldName) {
+        String fieldNameToCheck = fieldName;
+        Matcher caseMatcher = CASE_PATTERN.matcher(fieldNameToCheck);
+        if (caseMatcher.matches()) {
+            fieldNameToCheck = caseMatcher.group(3);
+        }
+        if (getAvailableColumnsByName().containsKey(fieldNameToCheck)) {
+            return Optional.of(fieldNameToCheck);
+        }
+        return Optional.empty();
     }
 
-    private ColumnGetterResult columnGetter(String fieldName) {
+    @Override
+    public Optional<ColumnGetterResult> entryGetter(String fieldName) {
         Matcher caseMatcher = CASE_PATTERN.matcher(fieldName);
         boolean isCaseField = false;
-        Long modCountCheck = 0L;
-        Long modifiedCheck = 0L;
+        long modCountCheck = 0L;
+        long modifiedCheck = 0L;
         if (caseMatcher.matches()) {
-            modCountCheck = Long.valueOf(caseMatcher.group(1));
-            modifiedCheck = Long.valueOf(caseMatcher.group(2));
+            modCountCheck = Long.parseLong(caseMatcher.group(1));
+            modifiedCheck = Long.parseLong(caseMatcher.group(2));
             fieldName = caseMatcher.group(3);
             isCaseField = true;
         }
 
         switch (fieldName) {
             case "ID":
-                return new ColumnGetterResult(fieldName, id);
+                return Optional.of(new ColumnGetterResult(fieldName, id));
             case "MODIFIED":
-                return new ColumnGetterResult(fieldName, modified);
+                return Optional.of(new ColumnGetterResult(fieldName, modified));
             case "MODCOUNT":
-                return new ColumnGetterResult(fieldName, modCount);
+                return Optional.of(new ColumnGetterResult(fieldName, modCount));
             case "CMODCOUNT":
-                return new ColumnGetterResult(fieldName, cModCount);
+                return Optional.of(new ColumnGetterResult(fieldName, cModCount));
             case "HASBINARY":
-                return new ColumnGetterResult(fieldName, hasBinary);
+                return Optional.of(new ColumnGetterResult(fieldName, hasBinary));
             case "DELETEDONCE":
-                return new ColumnGetterResult(fieldName, deletedOnce);
+                return Optional.of(new ColumnGetterResult(fieldName, deletedOnce));
             case "VERSION":
-                return new ColumnGetterResult(fieldName, version);
+                return Optional.of(new ColumnGetterResult(fieldName, version));
             case "SDTYPE":
-                return new ColumnGetterResult(fieldName, sdType);
+                return Optional.of(new ColumnGetterResult(fieldName, sdType));
             case "SDMAXREVTIME":
-                return new ColumnGetterResult(fieldName, sdMaxRevTime);
+                return Optional.of(new ColumnGetterResult(fieldName, sdMaxRevTime));
+            case "DSIZE":
+                return Optional.of(new ColumnGetterResult(fieldName, dSize));
             case "DATA": {
-                if (isCaseField && Objects.equals(modCount, modCountCheck) && Objects.equals(modified, modifiedCheck)) {
-                    return new ColumnGetterResult(fieldName, null);
+                if (isCaseField && modCount == modCountCheck && modified == modifiedCheck) {
+                    return Optional.of(new ColumnGetterResult(fieldName, null));
                 }
-                return new ColumnGetterResult(fieldName, data);
+                return Optional.of(new ColumnGetterResult(fieldName, data));
             }
             case "BDATA": {
-                if (isCaseField && Objects.equals(modCount, modCountCheck) && Objects.equals(modified, modifiedCheck)) {
-                    return new ColumnGetterResult(fieldName, null);
+                if (isCaseField && modCount == modCountCheck && modified == modifiedCheck) {
+                    return Optional.of(new ColumnGetterResult(fieldName, null));
                 }
-                return new ColumnGetterResult(fieldName, bdata);
+                return Optional.of(new ColumnGetterResult(fieldName, bdata));
             }
         }
-        return null;
+
+        return Optional.empty();
     }
 
     @Override

@@ -4,7 +4,6 @@ import oakgit.engine.Command;
 import oakgit.engine.CommandProcessor;
 import oakgit.engine.CommandResult;
 import oakgit.engine.commands.*;
-import oakgit.engine.model.ContainerEntry;
 import oakgit.engine.model.DocumentEntry;
 
 import java.util.HashMap;
@@ -45,9 +44,9 @@ public class InMemoryCommandProcessor implements CommandProcessor {
 
             DocumentEntry foundEntry = getContainer(selectCommand.getContainerName())
                     .findById(selectCommand.getId(), DocumentEntry.class)
-                    .orElse(ContainerEntry.emptyOf(DocumentEntry.class));
+                    .orElse(null);
 
-            CommandResult commandResult = selectCommand.buildResult(foundEntry);
+            CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntry);
             System.out.println("commandResult = " + commandResult.toResultSet());
             return commandResult;
 
@@ -58,7 +57,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
                     .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class);
 
-            CommandResult commandResult = selectCommand.buildResult(foundEntries);
+            CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntries);
             System.out.println("commandResult = " + commandResult.toResultSet());
             return commandResult;
         } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {
@@ -68,7 +67,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
             List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
                     .findByIds(selectCommand.getIds(), DocumentEntry.class);
 
-            CommandResult commandResult = selectCommand.buildResult(foundEntries);
+            CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntries);
             System.out.println("commandResult = " + commandResult.toResultSet());
             return commandResult;
         } else if (command instanceof UpdatDataInContainerCommand) {
@@ -84,7 +83,7 @@ public class InMemoryCommandProcessor implements CommandProcessor {
                 updateCommand.getData().update(entityToUpdate);
 
                 System.out.println("entityToUpdate = " + entityToUpdate);
-                CommandResult commandResult = updateCommand.buildResult(entityToUpdate);
+                CommandResult commandResult = updateCommand.buildResult(DocumentEntry.class, entityToUpdate);
                 System.out.println("commandResult = " + commandResult.toResultSet());
                 return commandResult;
             }

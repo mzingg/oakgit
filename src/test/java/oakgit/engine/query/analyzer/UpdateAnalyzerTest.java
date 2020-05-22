@@ -34,7 +34,7 @@ class UpdateAnalyzerTest {
         placeHolderData.put(4, null);
         placeHolderData.put(5, 2);
         placeHolderData.put(6, 0);
-        placeHolderData.put(7, 132L);
+        placeHolderData.put(7, 132);
         placeHolderData.put(8, ",[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]");
         placeHolderData.put(9, "0:/");
         placeHolderData.put(10, 1L);

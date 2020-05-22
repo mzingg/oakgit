@@ -5,11 +5,8 @@ import lombok.NonNull;
 import oakgit.jdbc.OakGitResultSet;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public interface ContainerEntry<T extends ContainerEntry> {
 
@@ -80,31 +77,47 @@ public interface ContainerEntry<T extends ContainerEntry> {
      */
     String getId();
 
-    Consumer<OakGitResultSet> getResultSetTypeModifier();
+    Map<String, OakGitResultSet.Column> getAvailableColumnsByName();
 
-    Consumer<OakGitResultSet> getResultSetModifier(List<String> fieldList);
-
-    default void fillResultSet(OakGitResultSet result, List<String> fieldList, Function<String, ColumnGetterResult> columnGetter) {
-        List<String> fields = fieldList;
-        if (fields == null || fields.isEmpty()) {
-            fields = new ArrayList<>();
-            OakGitResultSet set = new OakGitResultSet("dummy");
-            getResultSetTypeModifier().accept(set);
-            for (int col = 1; col < set.getColumnCount(); col++) {
-                try {
-                    fields.add(set.getColumnName(col));
-                } catch (SQLException e) {
-                    throw new IllegalStateException(e);
-                }
+    default Consumer<OakGitResultSet> getResultSetTypeModifier(@NonNull List<String> fieldList) {
+        return result -> {
+            List<String> fields = expandOrReturnFieldList(fieldList);
+            for (String specialFieldName : fields) {
+                String fieldName = typeGetter(specialFieldName)
+                        .orElseThrow(() -> new IllegalStateException("could not assign column type to fieldName: " + specialFieldName));
+                result.addColumn(getAvailableColumnsByName().get(fieldName).copy());
             }
+        };
+    }
+
+    default List<String> expandOrReturnFieldList(@NonNull List<String> fieldList) {
+        List<String> result = new ArrayList<>(fieldList);
+        if (result.isEmpty()) {
+            result.addAll(getAvailableColumnsByName().keySet());
         }
-        for (String fieldName : fields) {
-            ColumnGetterResult getterResult = columnGetter.apply(fieldName);
-            if (getterResult != null) {
+        return result;
+    }
+
+    default Optional<String> typeGetter(String fieldName) {
+        if (getAvailableColumnsByName().containsKey(fieldName)) {
+            return Optional.of(fieldName);
+        }
+        return Optional.empty();
+    }
+
+    default Consumer<OakGitResultSet> getResultSetModifier(@NonNull List<String> fieldList) {
+        return result -> {
+            List<String> fields = expandOrReturnFieldList(fieldList);
+            for (String specialFieldName : fields) {
+                ColumnGetterResult getterResult = entryGetter(specialFieldName)
+                        .orElseThrow(() -> new IllegalStateException("could not assign entry to fieldName: " + specialFieldName));
                 result.addValue(getterResult.getFieldName(), getterResult.getValue());
             }
-        }
+        };
     }
+
+    Optional<ColumnGetterResult> entryGetter(String fieldName);
+
 
     @Data
     static class ColumnGetterResult {
@@ -112,32 +125,6 @@ public interface ContainerEntry<T extends ContainerEntry> {
         private final String fieldName;
 
         private final Object value;
-    }
-
-    /**
-     * NULL object type to indicate an empty entry.
-     *
-     * @param <T>
-     */
-    class EmptyContainerEntry<T extends ContainerEntry<T>> implements ContainerEntry<T> {
-
-        @Override
-        public String getId() {
-            return "";
-        }
-
-        @Override
-        public Consumer<OakGitResultSet> getResultSetTypeModifier() {
-            return (resultSet) -> {
-            };
-        }
-
-        @Override
-        public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
-            return (resultSet) -> {
-            };
-        }
-
     }
 
     /**
@@ -153,12 +140,12 @@ public interface ContainerEntry<T extends ContainerEntry> {
         }
 
         @Override
-        public Consumer<OakGitResultSet> getResultSetTypeModifier() {
-            throw new UnsupportedOperationException("trying to apply invalid entry to a result set");
+        public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+            throw new UnsupportedOperationException("trying to get columns from an invalid entry");
         }
 
         @Override
-        public Consumer<OakGitResultSet> getResultSetModifier(List<String> exclude) {
+        public Optional<ColumnGetterResult> entryGetter(String fieldName) {
             throw new UnsupportedOperationException("trying to apply invalid entry to a result set");
         }
 
