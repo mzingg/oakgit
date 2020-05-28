@@ -71,7 +71,6 @@ public class OakDatabaseDriverSandboxTest {
 
         Repository contentRepository = new Jcr(new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES)).with(new OpenSecurityProvider())).createRepository();
         Session session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
-
         Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
         hello.setProperty("velo", "velo");
         session.save();
@@ -93,8 +92,8 @@ public class OakDatabaseDriverSandboxTest {
     void createContentRepositoryWithOakGitDriverInstantiatesOakSession() throws Exception {
         Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
         Git.init().setDirectory(gitDirectory.toFile()).call();
-        DriverManager.registerDriver(new OakGitDriver());
         DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
+
         ContentRepository contentRepository = new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT)).with(new OpenSecurityProvider()).createContentRepository();
         ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
@@ -105,11 +104,10 @@ public class OakDatabaseDriverSandboxTest {
     void oakWithOakGitDriverCanInstantiateJcr() throws Exception {
         Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
         Git.init().setDirectory(gitDirectory.toFile()).call();
-        DriverManager.registerDriver(new OakGitDriver());
         DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
+
         Repository contentRepository = new Jcr(new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT)).with(new OpenSecurityProvider())).createRepository();
         Session session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()));
-
         Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
         hello.setProperty("velo", "velo");
         session.save();
