@@ -64,12 +64,10 @@ public class PlaceholderData {
         if (!hasIndex(index)) {
             throw new IllegalArgumentException("index [" + index + "] does not exist");
         }
-        
+
         Object element = delegate.get(index);
         if (element != null) {
-            if (!(element instanceof String) && targetClass.equals(String.class)) {
-                return Optional.of((T) element.toString());
-            } else if (element instanceof String && targetClass.equals(byte[].class)) {
+            if (element instanceof String && targetClass.equals(byte[].class)) {
                 return Optional.of((T) ((String) element).getBytes());
             } else if (targetClass.isAssignableFrom(element.getClass())) {
                 return Optional.of((T) element);
