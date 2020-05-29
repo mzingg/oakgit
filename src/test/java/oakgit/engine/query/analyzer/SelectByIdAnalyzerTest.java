@@ -5,12 +5,11 @@ import oakgit.UnitTest;
 import oakgit.engine.Command;
 import oakgit.engine.commands.SelectFromContainerByIdCommand;
 import oakgit.engine.model.DocumentEntry;
+import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryMatchResult;
 
 import java.sql.ResultSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -76,14 +75,14 @@ class SelectByIdAnalyzerTest {
     @UnitTest
     void matchAndCollectWithQueryContaingSpecialFieldExpressionsAndPlaceholderDateReturnsFieldListWithReplacedPlaceholders() {
         QueryMatchResult target = new SelectByIdAnalyzer().matchAndCollect("select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, case when (MODCOUNT = ? and MODIFIED = ?) then null else DATA end as DATA, case when (MODCOUNT = ? and MODIFIED = ?) then null else BDATA end as BDATA from NODES where ID = ?");
-        Map<Integer, Object> placeHolderData = new HashMap<>();
-        placeHolderData.put(1, 1L);
-        placeHolderData.put(2, 1589793585L);
-        placeHolderData.put(3, 1L);
-        placeHolderData.put(4, 1589793585L);
-        placeHolderData.put(5, "0:/");
+        PlaceholderData placeholderData = new PlaceholderData()
+                .set(1, 1L)
+                .set(2, 1589793585L)
+                .set(3, 1L)
+                .set(4, 1589793585L)
+                .set(5, "0:/");
 
-        Command command = target.getCommandSupplier().apply(placeHolderData);
+        Command command = target.getCommandSupplier().apply(placeholderData);
         List<String> actual = ((SelectFromContainerByIdCommand) command).getResultFieldList();
 
         assertThat(actual.size(), is(10));
@@ -102,12 +101,12 @@ class SelectByIdAnalyzerTest {
     @UnitTest
     void matchAndCollectWithQueryContaingSpecialFieldExpressionsNotFullfilledAndPlaceholderDataReturnsResultSetWithEvaluatedExpressions() throws Exception {
         QueryMatchResult target = new SelectByIdAnalyzer().matchAndCollect("select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, case when (MODCOUNT = ? and MODIFIED = ?) then null else DATA end as DATA, case when (MODCOUNT = ? and MODIFIED = ?) then null else BDATA end as BDATA from NODES where ID = ?");
-        Map<Integer, Object> placeHolderData = new HashMap<>();
-        placeHolderData.put(1, 1L);
-        placeHolderData.put(2, 1589793585L);
-        placeHolderData.put(3, 1L);
-        placeHolderData.put(4, 1589793585L);
-        placeHolderData.put(5, "0:/");
+        PlaceholderData placeholderData = new PlaceholderData()
+                .set(1, 1L)
+                .set(2, 1589793585L)
+                .set(3, 1L)
+                .set(4, 1589793585L)
+                .set(5, "0:/");
         DocumentEntry referenceEntry = new DocumentEntry()
                 .setId("0:/")
                 .setModified(1589793585L)
@@ -115,7 +114,7 @@ class SelectByIdAnalyzerTest {
                 .setData("testData".getBytes())
                 .setBdata("testBigData".getBytes());
 
-        Command command = target.getCommandSupplier().apply(placeHolderData);
+        Command command = target.getCommandSupplier().apply(placeholderData);
         ResultSet actual = ((SelectFromContainerByIdCommand) command).buildResult(DocumentEntry.class, referenceEntry).toResultSet();
 
         assertThat(actual.next(), is(true));
@@ -128,12 +127,12 @@ class SelectByIdAnalyzerTest {
     @UnitTest
     void matchAndCollectWithQueryContaingSpecialFieldExpressionsFullfilledAndPlaceholderDataReturnsResultSetWithEvaluatedExpressions() throws Exception {
         QueryMatchResult target = new SelectByIdAnalyzer().matchAndCollect("select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, case when (MODCOUNT = ? and MODIFIED = ?) then null else DATA end as DATA, case when (MODCOUNT = ? and MODIFIED = ?) then null else BDATA end as BDATA from NODES where ID = ?");
-        Map<Integer, Object> placeHolderData = new HashMap<>();
-        placeHolderData.put(1, 1L);
-        placeHolderData.put(2, 1589793585L);
-        placeHolderData.put(3, 1L);
-        placeHolderData.put(4, 1589793585L);
-        placeHolderData.put(5, "0:/");
+        PlaceholderData placeholderData = new PlaceholderData()
+                .set(1, 1L)
+                .set(2, 1589793585L)
+                .set(3, 1L)
+                .set(4, 1589793585L)
+                .set(5, "0:/");
         DocumentEntry referenceEntry = new DocumentEntry()
                 .setId("0:/")
                 .setModified(1589793585L)
@@ -141,7 +140,7 @@ class SelectByIdAnalyzerTest {
                 .setData("testData".getBytes())
                 .setBdata("testBigData".getBytes());
 
-        Command command = target.getCommandSupplier().apply(placeHolderData);
+        Command command = target.getCommandSupplier().apply(placeholderData);
         ResultSet actual = ((SelectFromContainerByIdCommand) command).buildResult(DocumentEntry.class, referenceEntry).toResultSet();
 
         assertThat(actual.next(), is(true));

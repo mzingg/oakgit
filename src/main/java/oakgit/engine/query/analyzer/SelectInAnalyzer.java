@@ -20,7 +20,7 @@ public class SelectInAnalyzer implements QueryAnalyzer {
             String tableName = matcher.group(2);
 
             result.setCommandSupplier(placeholderData -> {
-                List<String> idList = placeholderData.values().stream()
+                List<String> idList = placeholderData.valueStream()
                         .map(Object::toString)
                         .collect(Collectors.toList());
                 if (idList.size() != StringUtils.countMatches(result.getOriginQuery(), '?')) {

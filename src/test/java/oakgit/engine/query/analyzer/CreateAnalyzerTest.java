@@ -4,9 +4,8 @@ import oakgit.TestHelpers;
 import oakgit.UnitTest;
 import oakgit.engine.Command;
 import oakgit.engine.commands.CreateContainerCommand;
+import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryMatchResult;
-
-import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -81,7 +80,7 @@ class CreateAnalyzerTest {
     void matchAndCollectReturnsWithValidQueryReturnCorrectCommand() {
         QueryMatchResult target = new CreateAnalyzer().matchAndCollect("create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
 
-        Command actual = target.getCommandSupplier().apply(Collections.emptyMap());
+        Command actual = target.getCommandSupplier().apply(new PlaceholderData());
 
         assertThat(actual, is(instanceOf(CreateContainerCommand.class)));
         assertThat(((CreateContainerCommand) actual).getContainerName(), is("NODES"));

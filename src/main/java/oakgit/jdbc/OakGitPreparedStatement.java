@@ -2,21 +2,19 @@ package oakgit.jdbc;
 
 import oakgit.engine.CommandFactory;
 import oakgit.engine.CommandProcessor;
+import oakgit.engine.model.PlaceholderData;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
-    private List<String> commandList = new ArrayList<>();
-    private Map<Integer, Object> placeholderData = new LinkedHashMap<>();
+    private final List<String> commandList = new ArrayList<>();
+    private final PlaceholderData placeholderData = new PlaceholderData();
 
     protected OakGitPreparedStatement(OakGitConnection connection, String sql) {
         super(connection, sql);
@@ -32,12 +30,12 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     }
 
     @Override
-    public void setLong(int parameterIndex, long x) throws SQLException {
-        placeholderData.put(parameterIndex, x);
+    public void setLong(int parameterIndex, long x) {
+        placeholderData.set(parameterIndex, x);
     }
 
     @Override
-    public ResultSet executeQuery() throws SQLException {
+    public ResultSet executeQuery() {
         OakGitConnection connection = getConnection();
         CommandProcessor processor = connection.getProcessor();
         CommandFactory factory = connection.getCommandFactory();
@@ -64,22 +62,22 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
     @Override
     public void setString(int parameterIndex, String x) {
-        placeholderData.put(parameterIndex, x);
+        placeholderData.set(parameterIndex, x);
     }
 
     @Override
-    public void setBytes(int parameterIndex, byte[] x) throws SQLException {
-        placeholderData.put(parameterIndex, x);
+    public void setBytes(int parameterIndex, byte[] x) {
+        placeholderData.set(parameterIndex, x);
     }
 
     @Override
     public void setObject(int parameterIndex, Object x) {
-        placeholderData.put(parameterIndex, x);
+        placeholderData.set(parameterIndex, x);
     }
 
     @Override
     public void setObject(int parameterIndex, Object x, int targetSqlType) {
-        placeholderData.put(parameterIndex, x);
+        placeholderData.set(parameterIndex, x);
     }
 
     @Override
@@ -92,12 +90,12 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
                 } else {
                     bytes = IOUtils.toByteArray(stream);
                 }
-                placeholderData.put(parameterIndex, bytes);
+                placeholderData.set(parameterIndex, bytes);
             } catch (IOException e) {
                 throw new IllegalArgumentException(e);
             }
         } else {
-            placeholderData.put(parameterIndex, "");
+            placeholderData.set(parameterIndex, null);
         }
     }
 

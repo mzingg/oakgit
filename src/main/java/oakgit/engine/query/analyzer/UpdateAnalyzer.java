@@ -21,7 +21,7 @@ public class UpdateAnalyzer implements QueryAnalyzer {
             String tableName = matcher.group(1);
             String setExpressionsString = matcher.group(2);
             result.setCommandSupplier(placeholderData -> {
-                int lastPlaceholderIndex = placeholderData.size();
+                int lastPlaceholderIndex = placeholderData.maxIndex();
 
                 List<String> setExpressions = parseFieldList(setExpressionsString);
                 UpdateSet data = new UpdateSet();
@@ -60,20 +60,20 @@ public class UpdateAnalyzer implements QueryAnalyzer {
                             };
                             break;
                         case "DSIZE + ?":
-                            Integer sizeAddendum = (Integer) placeholderData.get(placeHolderIndex);
+                            Long sizeAddendum = placeholderData.getLong(placeHolderIndex);
                             placeHolderIndex++;
                             updateValue = (Function<DocumentEntry, Long>) entry ->
                                     (entry.getDSize() != null ? entry.getDSize() : 0L) +
                                             (sizeAddendum != null ? sizeAddendum : 0L);
                             break;
                     }
-                    data.withValue(fieldName, updateValue);
+                    data.withValue(fieldName.trim(), updateValue);
                 }
 
                 return new UpdatDataInContainerCommand(
                         tableName,
-                        placeholderData.get(lastPlaceholderIndex - 1).toString(),
-                        (Long) placeholderData.get(lastPlaceholderIndex),
+                        placeholderData.getString(lastPlaceholderIndex - 1),
+                        placeholderData.getLong(lastPlaceholderIndex),
                         data
                 );
             });

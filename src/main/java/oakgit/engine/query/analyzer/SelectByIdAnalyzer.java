@@ -26,9 +26,9 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
                 for (int i = 0; i < resultFieldList.size(); i++) {
                     Matcher fieldMatcher = CASE_PATTERN.matcher(resultFieldList.get(i));
                     if (fieldMatcher.matches()) {
-                        Long modCountCheck = (Long) placeholderData.get(placeHolderIndex);
+                        Long modCountCheck = placeholderData.getLong(placeHolderIndex);
                         placeHolderIndex++;
-                        Long modifiedCheck = (Long) placeholderData.get(placeHolderIndex);
+                        Long modifiedCheck = placeholderData.getLong(placeHolderIndex);
                         placeHolderIndex++;
                         resultFieldList.set(i, fieldMatcher.replaceAll(String.format(
                                 "case when (MODCOUNT = %d and MODIFIED = %d) then null else $1 end as $1",
@@ -37,7 +37,7 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
                         )));
                     }
                 }
-                String idByPlaceholder = placeholderData.containsKey(placeHolderIndex) ? placeholderData.get(placeHolderIndex).toString() : null;
+                String idByPlaceholder = placeholderData.hasIndex(placeHolderIndex) ? placeholderData.getString(placeHolderIndex) : null;
                 return new SelectFromContainerByIdCommand(
                         tableName,
                         StringUtils.isNotBlank(idValue) ? idValue : idByPlaceholder

@@ -17,8 +17,8 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
             String tableName = matcher.group(2);
             result.setCommandSupplier(placeholderData -> new SelectFromContainerByIdRangeCommand(
                     tableName,
-                    placeholderData.get(1).toString(),
-                    placeholderData.get(2).toString()
+                    placeholderData.getString(1),
+                    placeholderData.getString(2)
             ).setResultFieldList(parseFieldList(fieldDeclaration)));
 
             return result;

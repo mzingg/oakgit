@@ -20,7 +20,7 @@ public class UpdateSet {
     private List<String> setExpressions = Collections.emptyList();
 
     public UpdateSet withValue(@NonNull String name, Object value) {
-        updatedValues.put(name.trim().toLowerCase(), value);
+        updatedValues.put(name, value);
         return this;
     }
 
@@ -41,9 +41,8 @@ public class UpdateSet {
 
     @SuppressWarnings("unchecked")
     private <T> UpdateSet whenHasValue(@NonNull String name, Class<T> targetType, DocumentEntry entityToUpdate, Consumer<T> setter) {
-        String key = name.trim().toLowerCase();
-        if (updatedValues.containsKey(key)) {
-            Object value = updatedValues.get(key);
+        if (updatedValues.containsKey(name)) {
+            Object value = updatedValues.get(name);
             if (value instanceof Function) {
                 value = ((Function<DocumentEntry, ?>) value).apply(entityToUpdate);
             }

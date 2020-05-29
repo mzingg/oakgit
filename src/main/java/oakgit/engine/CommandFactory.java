@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import oakgit.engine.commands.ErrorCommand;
 import oakgit.engine.commands.NoOperationCommand;
+import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
 import oakgit.engine.query.analyzer.*;
@@ -40,7 +41,7 @@ public class CommandFactory {
      * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recognized as a command.
      */
     public Command getCommandForSql(String sqlCommand) {
-        return getCommandForSql(sqlCommand, Collections.emptyMap());
+        return getCommandForSql(sqlCommand, new PlaceholderData());
     }
 
     /**
@@ -50,7 +51,7 @@ public class CommandFactory {
      * @param placeholderData {@link Map}
      * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recognized as a command.
      */
-    public Command getCommandForSql(String sqlCommand, Map<Integer, Object> placeholderData) {
+    public Command getCommandForSql(String sqlCommand, PlaceholderData placeholderData) {
         System.out.println("sqlCommand = " + sqlCommand);
         System.out.println("placeholderData = " + placeholderData);
 

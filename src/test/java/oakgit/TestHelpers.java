@@ -2,6 +2,7 @@ package oakgit;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple3;
+import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
 import org.apache.commons.io.FileUtils;
@@ -17,8 +18,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,11 +48,11 @@ public class TestHelpers {
         return Tuple.of(git, workspaceDirectory, committer);
     }
 
-    public static Map<Integer, Object> placeholderData(Object... values) {
-        Map<Integer, Object> result = new LinkedHashMap<>();
+    public static PlaceholderData placeholderData(Object... values) {
+        PlaceholderData result = new PlaceholderData();
 
         for (int i = 1; i <= values.length; i++) {
-            result.put(i, values[i - 1]);
+            result.set(i, values[i - 1]);
         }
 
         return result;

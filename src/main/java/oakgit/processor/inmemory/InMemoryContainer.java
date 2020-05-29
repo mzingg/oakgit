@@ -81,9 +81,9 @@ public class InMemoryContainer {
         for (String id : ids) {
             if (entries.containsKey(id)) {
                 ContainerEntry<?> containerEntry = entries.get(id);
-                if (resultType.isAssignableFrom(containerEntry.getClass())) {
+//                if (resultType.isAssignableFrom(containerEntry.getClass())) {
                     result.add((T) containerEntry);
-                }
+//                }
             }
         }
 

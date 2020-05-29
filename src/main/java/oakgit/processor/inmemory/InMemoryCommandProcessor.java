@@ -13,15 +13,14 @@ import java.util.Optional;
 
 import static oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
-public class InMemoryCommandProcessor implements CommandProcessor {
+public final class InMemoryCommandProcessor implements CommandProcessor {
 
-    private static final InMemoryContainer NULL_CONTAINER = new InMemoryContainer("null container");
     private final Map<String, InMemoryContainer> containerMap = new HashMap<>();
 
 
     @Override
     public synchronized CommandResult execute(Command command) {
-        System.out.println("Executing " + command);
+        System.out.println("T[" + Thread.currentThread().getName() + "] Executing " + command);
         if (command instanceof CreateContainerCommand) {
 
             String containerName = ((CreateContainerCommand) command).getContainerName();
@@ -93,7 +92,11 @@ public class InMemoryCommandProcessor implements CommandProcessor {
     }
 
     private InMemoryContainer getContainer(String name) {
-        return containerMap.getOrDefault(name, NULL_CONTAINER);
+        if (containerMap.containsKey(name)) {
+            return containerMap.get(name);
+        }
+
+        throw new IllegalArgumentException("container " + name + " does not exist");
     }
 
 }
