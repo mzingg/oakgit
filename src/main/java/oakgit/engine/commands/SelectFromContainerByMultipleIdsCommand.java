@@ -16,18 +16,18 @@ import java.util.List;
 @ToString
 public class SelectFromContainerByMultipleIdsCommand implements Command {
 
-    @NonNull
-    private final String containerName;
+  @NonNull
+  private final String containerName;
 
-    @NonNull
-    private final List<String> ids;
+  @NonNull
+  private final List<String> ids;
 
-    @NonNull
-    @Setter
-    private List<String> resultFieldList = Collections.emptyList();
+  @NonNull
+  @Setter
+  private List<String> resultFieldList = Collections.emptyList();
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, @NonNull List<T> foundEntries) {
-        return new MultipleEntriesResult<T>(containerName, entryType, foundEntries, resultFieldList);
-    }
+  public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, @NonNull List<T> foundEntries) {
+    return new MultipleEntriesResult<T>(containerName, entryType, foundEntries, resultFieldList);
+  }
 
 }

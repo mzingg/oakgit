@@ -1,10 +1,10 @@
 version: '3.7'
 
 services:
-    publish:
-        image: aem-publish:6.5.4
-        environment:
-            CQ_JVM_OPTS: -server -Xmx2048m -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303 -noverify
-        ports:
-            - 15005:4502
-            - 15006:30303
+  publish:
+    image: aem-publish:6.5.4
+    environment:
+      CQ_JVM_OPTS: -server -Xmx2048m -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=30303 -noverify
+    ports:
+      - 15005:4502
+      - 15006:30303

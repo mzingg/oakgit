@@ -1,7 +1,7 @@
 package oakgit.jdbc;
 
-import oakgit.util.TestHelpers;
 import oakgit.UnitTest;
+import oakgit.util.TestHelpers;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.AfterEach;
 
@@ -16,27 +16,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OakGitDriverTest {
 
-    @AfterEach
-    void cleanupDrivers() throws Exception {
-        for (Enumeration<Driver> drivers = DriverManager.getDrivers(); drivers.hasMoreElements(); ) {
-            Driver driver = drivers.nextElement();
-            if (driver instanceof OakGitDriver) {
-                DriverManager.deregisterDriver(driver);
-            }
-        }
+  @AfterEach
+  void cleanupDrivers() throws Exception {
+    for (Enumeration<Driver> drivers = DriverManager.getDrivers(); drivers.hasMoreElements(); ) {
+      Driver driver = drivers.nextElement();
+      if (driver instanceof OakGitDriver) {
+        DriverManager.deregisterDriver(driver);
+      }
     }
+  }
 
-    @UnitTest
-    void driverInitialisationWithValidPathReturnsConnectionConfiguredForTheGivenPath() throws Exception {
-        Path gitDirectory = TestHelpers.aCleanTestDirectory("driver-init-test");
-        String absoluteDirectoryPath = gitDirectory.toAbsolutePath().toString();
-        Git.init().setDirectory(gitDirectory.toFile()).call();
+  @UnitTest
+  void driverInitialisationWithValidPathReturnsConnectionConfiguredForTheGivenPath() throws Exception {
+    Path gitDirectory = TestHelpers.aCleanTestDirectory("driver-init-test");
+    String absoluteDirectoryPath = gitDirectory.toAbsolutePath().toString();
+    Git.init().setDirectory(gitDirectory.toFile()).call();
 
-        DriverManager.registerDriver(new OakGitDriver());
-        Connection connection = DriverManager.getConnection("jdbc:oakgit://" + absoluteDirectoryPath);
+    DriverManager.registerDriver(new OakGitDriver());
+    Connection connection = DriverManager.getConnection("jdbc:oakgit://" + absoluteDirectoryPath);
 
-        assertTrue(connection instanceof OakGitConnection);
-        assertEquals(absoluteDirectoryPath, ((OakGitConnection) connection).getGit().getRepository().getWorkTree().getAbsolutePath());
-    }
+    assertTrue(connection instanceof OakGitConnection);
+    assertEquals(absoluteDirectoryPath, ((OakGitConnection) connection).getGit().getRepository().getWorkTree().getAbsolutePath());
+  }
 
 }

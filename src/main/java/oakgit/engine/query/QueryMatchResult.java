@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 @Data
 public class QueryMatchResult {
-    public Function<PlaceholderData, Command> commandSupplier;
-    private boolean interested;
-    private String originQuery;
+  public Function<PlaceholderData, Command> commandSupplier;
+  private boolean interested;
+  private String originQuery;
 }

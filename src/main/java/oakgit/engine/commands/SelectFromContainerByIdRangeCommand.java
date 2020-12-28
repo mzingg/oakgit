@@ -16,21 +16,21 @@ import java.util.List;
 @ToString
 public class SelectFromContainerByIdRangeCommand implements Command {
 
-    @NonNull
-    private final String containerName;
+  @NonNull
+  private final String containerName;
 
-    @NonNull
-    private final String idMin;
+  @NonNull
+  private final String idMin;
 
-    @NonNull
-    private final String idMax;
+  @NonNull
+  private final String idMax;
 
-    @NonNull
-    @Setter
-    private List<String> resultFieldList = Collections.emptyList();
+  @NonNull
+  @Setter
+  private List<String> resultFieldList = Collections.emptyList();
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, @NonNull List<T> foundEntries) {
-        return new MultipleEntriesResult<T>(containerName, entryType, foundEntries, resultFieldList);
-    }
+  public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, @NonNull List<T> foundEntries) {
+    return new MultipleEntriesResult<T>(containerName, entryType, foundEntries, resultFieldList);
+  }
 
 }

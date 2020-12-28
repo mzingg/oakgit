@@ -8,15 +8,15 @@ import java.util.regex.Pattern;
 
 public class CreateAnalyzer implements QueryAnalyzer {
 
-    private final Pattern CREATE_PATTERN = Pattern.compile("create table ([\\w_]+) \\(.+\\)");
+  private final Pattern CREATE_PATTERN = Pattern.compile("create table ([\\w_]+) \\(.+\\)");
 
-    @Override
-    public QueryMatchResult matchAndCollect(String sqlQuery) {
-        return withPatternMatch(sqlQuery, CREATE_PATTERN, (result, matcher) -> {
-            String tableName = matcher.group(1);
-            result.setCommandSupplier(placeholderData -> new CreateContainerCommand(tableName));
-            return result;
-        });
-    }
+  @Override
+  public QueryMatchResult matchAndCollect(String sqlQuery) {
+    return withPatternMatch(sqlQuery, CREATE_PATTERN, (result, matcher) -> {
+      String tableName = matcher.group(1);
+      result.setCommandSupplier(placeholderData -> new CreateContainerCommand(tableName));
+      return result;
+    });
+  }
 
 }

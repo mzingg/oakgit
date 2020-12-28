@@ -1,9 +1,9 @@
 version: '3.7'
 
 services:
-    postgres:
-        image: postgres
-        environment:
-            POSTGRES_PASSWORD: admin
-        ports:
-            - 15020:5432
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: admin
+    ports:
+      - 15020:5432

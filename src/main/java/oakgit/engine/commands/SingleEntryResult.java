@@ -18,38 +18,38 @@ import static oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 @ToString
 public class SingleEntryResult<T extends ContainerEntry<T>> implements CommandResult {
 
-    @NonNull
-    private final String containerName;
+  @NonNull
+  private final String containerName;
 
-    @NonNull
-    private final Class<T> entryType;
+  @NonNull
+  private final Class<T> entryType;
 
-    private final T foundEntry;
+  private final T foundEntry;
 
-    @NonNull
-    private final List<String> resultFieldList;
+  @NonNull
+  private final List<String> resultFieldList;
 
-    @Override
-    public ResultSet toResultSet() {
-        OakGitResultSet result = new OakGitResultSet(containerName);
-        ContainerEntry.emptyOf(entryType)
-                .getResultSetTypeModifier(resultFieldList).accept(result);
-        if (foundEntry != null) {
-            foundEntry.getResultSetModifier(resultFieldList).accept(result);
-            result.setWasNull(false);
-        } else {
-            result.setWasNull(true);
-        }
-        return result;
+  @Override
+  public ResultSet toResultSet() {
+    OakGitResultSet result = new OakGitResultSet(containerName);
+    ContainerEntry.emptyOf(entryType)
+        .getResultSetTypeModifier(resultFieldList).accept(result);
+    if (foundEntry != null) {
+      foundEntry.getResultSetModifier(resultFieldList).accept(result);
+      result.setWasNull(false);
+    } else {
+      result.setWasNull(true);
     }
+    return result;
+  }
 
-    @Override
-    public boolean wasSuccessfull() {
-        return isValidAndNotEmpty(foundEntry);
-    }
+  @Override
+  public boolean wasSuccessfull() {
+    return isValidAndNotEmpty(foundEntry);
+  }
 
-    @Override
-    public int affectedCount() {
-        return isValidAndNotEmpty(foundEntry) ? 1 : 0;
-    }
+  @Override
+  public int affectedCount() {
+    return isValidAndNotEmpty(foundEntry) ? 1 : 0;
+  }
 }

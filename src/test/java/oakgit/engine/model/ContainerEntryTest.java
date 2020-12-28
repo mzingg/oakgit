@@ -8,11 +8,11 @@ import static org.hamcrest.Matchers.*;
 
 class ContainerEntryTest {
 
-    @UnitTest
-    void emptyOfWithValidClassCreatesObjectOfGivenType() {
-        RedTestEntry actual = ContainerEntry.emptyOf(RedTestEntry.class);
+  @UnitTest
+  void emptyOfWithValidClassCreatesObjectOfGivenType() {
+    RedTestEntry actual = ContainerEntry.emptyOf(RedTestEntry.class);
 
-        assertThat(actual, is(not(nullValue())));
-    }
+    assertThat(actual, is(not(nullValue())));
+  }
 
 }

@@ -14,7 +14,7 @@ import oakgit.engine.Command;
 @ToString
 public class ErrorCommand implements Command {
 
-    @NonNull
-    private final String errorMessage;
+  @NonNull
+  private final String errorMessage;
 
 }

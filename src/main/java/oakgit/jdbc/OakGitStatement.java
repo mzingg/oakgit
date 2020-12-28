@@ -12,33 +12,33 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class OakGitStatement extends UnsupportedOakGitStatement {
 
-    private final OakGitConnection connection;
+  private final OakGitConnection connection;
 
-    @Override
-    public ResultSet executeQuery(String sql) throws SQLException {
-        OakGitConnection connection = getConnection();
-        CommandProcessor processor = connection.getProcessor();
-        CommandFactory factory = connection.getCommandFactory();
+  @Override
+  public ResultSet executeQuery(String sql) throws SQLException {
+    OakGitConnection connection = getConnection();
+    CommandProcessor processor = connection.getProcessor();
+    CommandFactory factory = connection.getCommandFactory();
 
-        return processor.execute(factory.getCommandForSql(sql)).toResultSet();
-    }
+    return processor.execute(factory.getCommandForSql(sql)).toResultSet();
+  }
 
-    public boolean execute(String sql) {
-        OakGitConnection connection = getConnection();
-        CommandProcessor processor = connection.getProcessor();
-        CommandFactory factory = connection.getCommandFactory();
+  public boolean execute(String sql) {
+    OakGitConnection connection = getConnection();
+    CommandProcessor processor = connection.getProcessor();
+    CommandFactory factory = connection.getCommandFactory();
 
-        return processor.execute(factory.getCommandForSql(sql)).wasSuccessfull();
-    }
+    return processor.execute(factory.getCommandForSql(sql)).wasSuccessfull();
+  }
 
-    public void close() {
-    }
+  public void close() {
+  }
 
-    public boolean isPoolable() {
-        return false;
-    }
+  public boolean isPoolable() {
+    return false;
+  }
 
-    public void setPoolable(boolean poolable) {
+  public void setPoolable(boolean poolable) {
 
-    }
+  }
 }

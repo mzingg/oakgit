@@ -14,7 +14,7 @@ import oakgit.engine.Command;
 @ToString
 public class CreateContainerCommand implements Command {
 
-    @NonNull
-    private final String containerName;
+  @NonNull
+  private final String containerName;
 
 }

@@ -18,52 +18,52 @@ import java.sql.Statement;
 @Slf4j
 public class OakGitConnection extends DefaultOakGitConnection {
 
-    @NonNull
-    private final OakGitDriverConfiguration configuration;
+  @NonNull
+  private final OakGitDriverConfiguration configuration;
 
-    @NonNull
-    private final CommandProcessor processor;
+  @NonNull
+  private final CommandProcessor processor;
 
-    @NonNull
-    private final CommandFactory commandFactory;
+  @NonNull
+  private final CommandFactory commandFactory;
 
-    private Git git;
+  private Git git;
 
-    public Git getGit() throws IOException {
-        if (git == null) {
-            git = Git.open(getConfiguration().getGitDirectory().toFile());
-        }
-        return git;
+  public Git getGit() throws IOException {
+    if (git == null) {
+      git = Git.open(getConfiguration().getGitDirectory().toFile());
     }
+    return git;
+  }
 
-    @Override
-    public DatabaseMetaData getMetaData() {
-        return new OakGitDatabaseMetadata(configuration.getUrl(), configuration.getArtifactId(), configuration.getVersion());
-    }
+  @Override
+  public DatabaseMetaData getMetaData() {
+    return new OakGitDatabaseMetadata(configuration.getUrl(), configuration.getArtifactId(), configuration.getVersion());
+  }
 
-    @Override
-    public Statement createStatement() {
-        return new OakGitStatement(this);
-    }
+  @Override
+  public Statement createStatement() {
+    return new OakGitStatement(this);
+  }
 
-    @Override
-    public PreparedStatement prepareStatement(String sql) {
-        return new OakGitPreparedStatement(this, sql);
-    }
+  @Override
+  public PreparedStatement prepareStatement(String sql) {
+    return new OakGitPreparedStatement(this, sql);
+  }
 
-    @Override
-    public String getCatalog() {
-        return configuration.getDirectoryName();
-    }
+  @Override
+  public String getCatalog() {
+    return configuration.getDirectoryName();
+  }
 
-    @Override
-    public void commit() {
-        // save?
-    }
+  @Override
+  public void commit() {
+    // save?
+  }
 
-    @Override
-    public void rollback() {
+  @Override
+  public void rollback() {
 
-    }
+  }
 
 }

@@ -10,24 +10,24 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BlueTestEntry implements ContainerEntry<BlueTestEntry> {
 
-    private final String id;
+  private final String id;
 
-    public BlueTestEntry() {
-        this.id = "";
-    }
+  public BlueTestEntry() {
+    this.id = "";
+  }
 
-    @Override
-    public String getId() {
-        return id;
-    }
+  @Override
+  public String getId() {
+    return id;
+  }
 
-    @Override
-    public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
-        return null;
-    }
+  @Override
+  public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+    return null;
+  }
 
-    @Override
-    public Optional<ColumnGetterResult> entryGetter(String fieldName) {
-        return Optional.empty();
-    }
+  @Override
+  public Optional<ColumnGetterResult> entryGetter(String fieldName) {
+    return Optional.empty();
+  }
 }

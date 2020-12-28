@@ -2,274 +2,274 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>oakgit</groupId>
-    <artifactId>oakgit-persistence</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+  <groupId>oakgit</groupId>
+  <artifactId>oakgit-persistence</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
 
-    <description>Git persistence layer for OAK</description>
+  <description>Git persistence layer for OAK</description>
 
-    <properties>
-        <encoding>UTF-8</encoding>
-        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+  <properties>
+    <encoding>UTF-8</encoding>
+    <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 
-        <aem.version>6.5.4.0001</aem.version>
-        <!-- has to correspond to aem.version - version taken from wcm.io pom -->
-        <oak.version>1.10.8</oak.version>
-        <junit.version>5.6.2</junit.version>
-    </properties>
+    <aem.version>6.5.4.0001</aem.version>
+    <!-- has to correspond to aem.version - version taken from wcm.io pom -->
+    <oak.version>1.10.8</oak.version>
+    <junit.version>5.6.2</junit.version>
+  </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>4.2.1</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>oakgit.jdbc</Export-Package>
-                        <Import-Package>
-                            !javax.net.ssl
-                            *
-                        </Import-Package>
-                        <Embed-Dependency>
-                            java-semver,
-                            maven-model,
-                            org.eclipse.jgit,
-                            plexus-utils
-                        </Embed-Dependency>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                    <configuration>
-                        <release>11</release>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.2</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
-                    <configuration>
-                        <properties>
-                            <groups>unit</groups>
-                        </properties>
-                        <argLine>
-                            --illegal-access=permit
-                        </argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.22.2</version>
-                    <configuration>
-                        <argLine>
-                            --illegal-access=permit
-                        </argLine>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>4.2.1</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>oakgit.jdbc</Export-Package>
+            <Import-Package>
+              !javax.net.ssl
+              *
+            </Import-Package>
+            <Embed-Dependency>
+              java-semver,
+              maven-model,
+              org.eclipse.jgit,
+              plexus-utils
+            </Embed-Dependency>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.1</version>
+          <configuration>
+            <release>11</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.2</version>
+          <configuration>
+            <properties>
+              <groups>unit</groups>
+            </properties>
+            <argLine>
+              --illegal-access=permit
+            </argLine>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.22.2</version>
+          <configuration>
+            <argLine>
+              --illegal-access=permit
+            </argLine>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- Import Maven dependencies from AEM -->
-            <dependency>
-                <groupId>io.wcm.maven</groupId>
-                <artifactId>io.wcm.maven.aem-dependencies</artifactId>
-                <version>${aem.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+  <dependencyManagement>
     <dependencies>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>5.7.0.202003110725-r</version>
-        </dependency>
-
-        <!-- needed to read the project version form the pom file in META-INF -->
-        <dependency>
-            <groupId>com.github.zafarkhaja</groupId>
-            <artifactId>java-semver</artifactId>
-            <version>0.9.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-model</artifactId>
-            <version>3.6.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>3.3.0</version>
-        </dependency>
-
-        <!-- Transitive dependencies -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>0.10.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>oak-core</artifactId>
-            <version>${oak.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>oak-jcr</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>oak-store-document</artifactId>
-            <version>${oak.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- junit-platform-launcher Public API for configuring and launching test plans — typically used by IDEs and build tools.
-         See JUnit Platform Launcher API for details.https://junit.org/junit5/docs/current/user-guide/#launcher-api
-         We are facing this issue mainly in older version of Intellij (2017)
-         -->
-        <!-- Some times Junit5 test cases are not recognised in IntelliJ. Getting the Warning error when trying to run the test cases.
-         WARNING: TestEngine with ID 'junit-jupiter' failed to discover tests
-         To fix this issue we need to add the junit-platform-launcher in pom file.
-         -->
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>1.6.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
-            <version>2.2</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>3.3.3</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-            <version>9.0.35</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>10.15.2.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.2.12</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.20</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.30</version>
-            <scope>test</scope>
-        </dependency>
-
+      <!-- Import Maven dependencies from AEM -->
+      <dependency>
+        <groupId>io.wcm.maven</groupId>
+        <artifactId>io.wcm.maven.aem-dependencies</artifactId>
+        <version>${aem.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.12</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <version>5.7.0.202003110725-r</version>
+    </dependency>
+
+    <!-- needed to read the project version form the pom file in META-INF -->
+    <dependency>
+      <groupId>com.github.zafarkhaja</groupId>
+      <artifactId>java-semver</artifactId>
+      <version>0.9.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>3.6.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>3.3.0</version>
+    </dependency>
+
+    <!-- Transitive dependencies -->
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>io.vavr</groupId>
+      <artifactId>vavr</artifactId>
+      <version>0.10.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>oak-core</artifactId>
+      <version>${oak.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>oak-jcr</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>oak-store-document</artifactId>
+      <version>${oak.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- junit-platform-launcher Public API for configuring and launching test plans — typically used by IDEs and build tools.
+     See JUnit Platform Launcher API for details.https://junit.org/junit5/docs/current/user-guide/#launcher-api
+     We are facing this issue mainly in older version of Intellij (2017)
+     -->
+    <!-- Some times Junit5 test cases are not recognised in IntelliJ. Getting the Warning error when trying to run the test cases.
+     WARNING: TestEngine with ID 'junit-jupiter' failed to discover tests
+     To fix this issue we need to add the junit-platform-launcher in pom file.
+     -->
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>1.6.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.3.3</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-jdbc</artifactId>
+      <version>9.0.35</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.15.2.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.2.12</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.20</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.30</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 
 </project>

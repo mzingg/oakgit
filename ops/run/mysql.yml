@@ -1,10 +1,10 @@
 version: '3.7'
 
 services:
-    mysql:
-        image: mysql
-        command: --default-authentication-plugin=mysql_native_password
-        environment:
-            MYSQL_ROOT_PASSWORD: admin
-        ports:
-            - 15010:3306
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - 15010:3306

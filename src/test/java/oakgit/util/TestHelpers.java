@@ -21,45 +21,45 @@ import static org.hamcrest.Matchers.*;
 
 public class TestHelpers {
 
-    public static final OutputStream DERBY_DEV_NULL = new OutputStream() {
-        public void write(int b) {
-        }
-    };
+  public static final OutputStream DERBY_DEV_NULL = new OutputStream() {
+    public void write(int b) {
+    }
+  };
 
-    public static Path aCleanTestDirectory(String directoryName) throws IOException {
-        Path target = aCleanTestDirectory().resolve(directoryName);
-        FileUtils.deleteQuietly(target.toFile());
-        return Files.createDirectories(target);
+  public static Path aCleanTestDirectory(String directoryName) throws IOException {
+    Path target = aCleanTestDirectory().resolve(directoryName);
+    FileUtils.deleteQuietly(target.toFile());
+    return Files.createDirectories(target);
+  }
+
+  public static Path aCleanTestDirectory() throws IOException {
+    Path target = Paths.get("target", "test-resources");
+    return Files.createDirectories(target);
+  }
+
+  public static Tuple3<Git, Path, PersonIdent> aCleanGitEnvironment(String directoryName) throws GitAPIException, IOException {
+    Path workspaceDirectory = aCleanTestDirectory(directoryName);
+    Git git = Git.init().setDirectory(workspaceDirectory.toFile()).call();
+    PersonIdent committer = new PersonIdent("Oak Git", "oak-git@somewhere.com");
+    return Tuple.of(git, workspaceDirectory, committer);
+  }
+
+  public static PlaceholderData placeholderData(Object... values) {
+    PlaceholderData result = new PlaceholderData();
+
+    for (int i = 1; i <= values.length; i++) {
+      result.set(i, values[i - 1]);
     }
 
-    public static Path aCleanTestDirectory() throws IOException {
-        Path target = Paths.get("target", "test-resources");
-        return Files.createDirectories(target);
-    }
+    return result;
+  }
 
-    public static Tuple3<Git, Path, PersonIdent> aCleanGitEnvironment(String directoryName) throws GitAPIException, IOException {
-        Path workspaceDirectory = aCleanTestDirectory(directoryName);
-        Git git = Git.init().setDirectory(workspaceDirectory.toFile()).call();
-        PersonIdent committer = new PersonIdent("Oak Git", "oak-git@somewhere.com");
-        return Tuple.of(git, workspaceDirectory, committer);
-    }
+  public static void testValidQueryMatch(QueryAnalyzer analyzer, String sqlQuery) {
+    QueryMatchResult actual = analyzer.matchAndCollect(sqlQuery);
 
-    public static PlaceholderData placeholderData(Object... values) {
-        PlaceholderData result = new PlaceholderData();
-
-        for (int i = 1; i <= values.length; i++) {
-            result.set(i, values[i - 1]);
-        }
-
-        return result;
-    }
-
-    public static void testValidQueryMatch(QueryAnalyzer analyzer, String sqlQuery) {
-        QueryMatchResult actual = analyzer.matchAndCollect(sqlQuery);
-
-        assertThat(actual, is(not(nullValue())));
-        assertThat(actual.isInterested(), is(true));
-        assertThat(actual.getOriginQuery(), is(sqlQuery));
-        assertThat(actual.getCommandSupplier(), is(not(nullValue())));
-    }
+    assertThat(actual, is(not(nullValue())));
+    assertThat(actual.isInterested(), is(true));
+    assertThat(actual.getOriginQuery(), is(sqlQuery));
+    assertThat(actual.getCommandSupplier(), is(not(nullValue())));
+  }
 }

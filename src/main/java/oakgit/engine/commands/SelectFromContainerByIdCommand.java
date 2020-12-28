@@ -16,17 +16,17 @@ import java.util.List;
 @ToString
 public class SelectFromContainerByIdCommand implements Command {
 
-    @NonNull
-    private final String containerName;
+  @NonNull
+  private final String containerName;
 
-    @NonNull
-    private final String id;
+  @NonNull
+  private final String id;
 
-    @Setter
-    private List<String> resultFieldList = Collections.emptyList();
+  @Setter
+  private List<String> resultFieldList = Collections.emptyList();
 
-    public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, T foundEntry) {
-        return new SingleEntryResult<T>(containerName, entryType, foundEntry, resultFieldList);
-    }
+  public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, T foundEntry) {
+    return new SingleEntryResult<T>(containerName, entryType, foundEntry, resultFieldList);
+  }
 
 }

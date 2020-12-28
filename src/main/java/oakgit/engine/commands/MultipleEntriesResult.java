@@ -16,40 +16,40 @@ import java.util.List;
 @ToString
 public class MultipleEntriesResult<T extends ContainerEntry<T>> implements CommandResult {
 
-    @NonNull
-    private final String containerName;
+  @NonNull
+  private final String containerName;
 
-    @NonNull
-    private final Class<T> entryType;
+  @NonNull
+  private final Class<T> entryType;
 
-    @NonNull
-    private final List<T> foundEntries;
+  @NonNull
+  private final List<T> foundEntries;
 
-    @NonNull
-    private final List<String> resultFieldList;
+  @NonNull
+  private final List<String> resultFieldList;
 
-    @Override
-    public ResultSet toResultSet() {
-        OakGitResultSet result = new OakGitResultSet(containerName);
-        ContainerEntry.emptyOf(entryType)
-                .getResultSetTypeModifier(resultFieldList).accept(result);
-        if (wasSuccessfull()) {
-            foundEntries.stream()
-                    .filter(ContainerEntry::isValidAndNotEmpty)
-                    .forEach(e -> e.getResultSetModifier(resultFieldList).accept(result));
-        }
-
-        return result;
+  @Override
+  public ResultSet toResultSet() {
+    OakGitResultSet result = new OakGitResultSet(containerName);
+    ContainerEntry.emptyOf(entryType)
+        .getResultSetTypeModifier(resultFieldList).accept(result);
+    if (wasSuccessfull()) {
+      foundEntries.stream()
+          .filter(ContainerEntry::isValidAndNotEmpty)
+          .forEach(e -> e.getResultSetModifier(resultFieldList).accept(result));
     }
 
-    @Override
-    public boolean wasSuccessfull() {
-        return affectedCount() > 0;
-    }
+    return result;
+  }
 
-    @Override
-    public int affectedCount() {
-        return foundEntries.size();
-    }
+  @Override
+  public boolean wasSuccessfull() {
+    return affectedCount() > 0;
+  }
+
+  @Override
+  public int affectedCount() {
+    return foundEntries.size();
+  }
 
 }

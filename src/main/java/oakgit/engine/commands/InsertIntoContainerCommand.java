@@ -15,10 +15,10 @@ import oakgit.engine.model.ContainerEntry;
 @ToString
 public class InsertIntoContainerCommand<T extends ContainerEntry<T>> implements Command {
 
-    @NonNull
-    private final String containerName;
+  @NonNull
+  private final String containerName;
 
-    @NonNull
-    private final T data;
+  @NonNull
+  private final T data;
 
 }

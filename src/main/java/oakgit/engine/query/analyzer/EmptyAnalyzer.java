@@ -5,9 +5,9 @@ import oakgit.engine.query.QueryMatchResult;
 
 public class EmptyAnalyzer implements QueryAnalyzer {
 
-    @Override
-    public QueryMatchResult matchAndCollect(String sqlQuery) {
-        return null;
-    }
+  @Override
+  public QueryMatchResult matchAndCollect(String sqlQuery) {
+    return null;
+  }
 
 }

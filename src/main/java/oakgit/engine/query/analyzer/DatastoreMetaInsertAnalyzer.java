@@ -5,11 +5,11 @@ import oakgit.engine.query.QueryMatchResult;
 
 public class DatastoreMetaInsertAnalyzer implements QueryAnalyzer {
 
-    public static final String METADATA_TABLE_NAME = "DATASTORE_META";
+  public static final String METADATA_TABLE_NAME = "DATASTORE_META";
 
-    @Override
-    public QueryMatchResult matchAndCollect(String sqlQuery) {
-        return null;
-    }
+  @Override
+  public QueryMatchResult matchAndCollect(String sqlQuery) {
+    return null;
+  }
 
 }
