@@ -4,7 +4,6 @@ import oakgit.UnitTest;
 import oakgit.engine.model.DocumentEntry;
 import oakgit.engine.model.test.BlueTestEntry;
 import oakgit.engine.model.test.RedTestEntry;
-import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
@@ -13,24 +12,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInRelativeOrder;
 import static org.hamcrest.Matchers.is;
 
-@UnitTest
 class InMemoryContainerTest {
 
-    @Test
+    @UnitTest
     void getNameReturnsGivenName() {
         InMemoryContainer testObj = new InMemoryContainer("testcontainer");
 
         assertThat(testObj.getName(), is("testcontainer"));
     }
 
-    @Test
+    @UnitTest
     void findByIdWithNonExistingEntryReturnsEmpty() {
         InMemoryContainer testObj = new InMemoryContainer("testcontainer");
 
         assertThat(testObj.findById("non-existing", BlueTestEntry.class), isEmpty());
     }
 
-    @Test
+    @UnitTest
     void findByIdWithExistingEntryButWrongClassReturnsEmpty() {
         BlueTestEntry expectedValue = new BlueTestEntry("test-id");
         InMemoryContainer testObj = new InMemoryContainer("testcontainer")
@@ -39,7 +37,7 @@ class InMemoryContainerTest {
         assertThat(testObj.findById("test-id", RedTestEntry.class), isEmpty());
     }
 
-    @Test
+    @UnitTest
     void findByIdWithExistingEntryAndCorrectClassReturnsEntry() {
         BlueTestEntry expectedValue = new BlueTestEntry("test-id");
         InMemoryContainer testObj = new InMemoryContainer("testcontainer")
@@ -48,7 +46,7 @@ class InMemoryContainerTest {
         assertThat(testObj.findById("test-id", BlueTestEntry.class), isPresentAndIs(expectedValue));
     }
 
-    @Test
+    @UnitTest
     void findByIdRangeWithReturnsUnsortedSublistBetweenBoundsBasedOnNaturalOrder() {
         InMemoryContainer testObj = new InMemoryContainer("testcontainer")
                 .setEntry(new RedTestEntry("0"))
@@ -64,7 +62,7 @@ class InMemoryContainerTest {
         ));
     }
 
-    @Test
+    @UnitTest
     void findByIdsWithGivenIdListReturnsListInGivenIdOrder() {
         InMemoryContainer testObj = new InMemoryContainer("testcontainer")
                 .setEntry(new RedTestEntry("0"))
@@ -80,7 +78,7 @@ class InMemoryContainerTest {
         ));
     }
 
-    @Test
+    @UnitTest
     void findByIdAndModCountWithGivenIdAndModCountSupportWithGivenModCountReturnsEntry() {
         DocumentEntry expected = new DocumentEntry().setId("testid").setModCount(100L);
         InMemoryContainer testObj = new InMemoryContainer("testcontainer")
@@ -89,7 +87,7 @@ class InMemoryContainerTest {
         assertThat(testObj.findByIdAndModCount("testid", 100, DocumentEntry.class), isPresentAndIs(expected));
     }
 
-    @Test
+    @UnitTest
     void findByIdAndModCountWithGivenIdAndModCountSupportWithWrongModCountReturnsEmpty() {
         DocumentEntry expected = new DocumentEntry().setId("testid").setModCount(101L);
         InMemoryContainer testObj = new InMemoryContainer("testcontainer")
@@ -98,7 +96,7 @@ class InMemoryContainerTest {
         assertThat(testObj.findByIdAndModCount("testid", 100, DocumentEntry.class), isEmpty());
     }
 
-    @Test
+    @UnitTest
     void findByIdAndModCountWithGivenIdAndNoModCountSupportReturnsEntry() {
         RedTestEntry expected = new RedTestEntry("testid");
         InMemoryContainer testObj = new InMemoryContainer("testcontainer")
