@@ -46,46 +46,46 @@ public class OakDatabaseDriverSandboxTest {
   }
 
   @SandboxTest
-  void createContentRepositoryWithMySqlDriverInstantiatesOakSession() throws Exception {
+  void createContentRepositoryWithMySqlDriverInstantiatesJcrSession() throws Exception {
     DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:mysql://localhost:15010/oak", "root", "admin");
 
-    ContentRepository contentRepository = new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.MYSQL, RDBBlobStoreDB.MYSQL)).with(new OpenSecurityProvider()).createContentRepository();
-    ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
-
-    assertThat(session, is(instanceOf(ContentSession.class)));
-  }
-
-  @SandboxTest
-  void createContentRepositoryWithPostgresDriverInstantiatesOakSession() throws Exception {
-    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:postgresql://localhost:15020/oak", "postgres", "admin");
-
-    ContentRepository contentRepository = new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES)).with(new OpenSecurityProvider()).createContentRepository();
-    ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
-
-    assertThat(session, is(instanceOf(ContentSession.class)));
-  }
-
-  @SandboxTest
-  void createContentRepositoryWithPostgresDriverInstantiatesJcrSession() throws Exception {
-    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:postgresql://localhost:15020/oak", "postgres", "admin");
-
-    Repository contentRepository = new Jcr(new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES)).with(new OpenSecurityProvider())).createRepository();
+    DocumentNodeStore store = aNewNodeStore(dataSource, RDBDocumentStoreDB.MYSQL, RDBBlobStoreDB.MYSQL);
+    Repository contentRepository = new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
     Session session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
     Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
     hello.setProperty("velo", "velo");
     session.save();
 
     assertThat(session, is(instanceOf(Session.class)));
+    store.dispose();
+  }
+
+
+  @SandboxTest
+  void createContentRepositoryWithPostgresDriverInstantiatesJcrSession() throws Exception {
+    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:postgresql://localhost:15020/oak", "postgres", "admin");
+
+    DocumentNodeStore store = aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES);
+    Repository contentRepository = new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
+    Session session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+    Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
+    hello.setProperty("velo", "velo");
+    session.save();
+
+    assertThat(session, is(instanceOf(Session.class)));
+    store.dispose();
   }
 
   @SandboxTest
   void createContentRepositoryWithDerbyDriverInstantiatesOakSession() throws Exception {
     DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:derby:memory:derby-oak-connection-test;create=true", "SA", "");
 
-    ContentRepository contentRepository = new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY)).with(new OpenSecurityProvider()).createContentRepository();
+    DocumentNodeStore store = aNewNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY);
+    ContentRepository contentRepository = new Oak(store).with(new OpenSecurityProvider()).createContentRepository();
     ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
     assertThat(session, is(instanceOf(ContentSession.class)));
+    store.dispose();
   }
 
   @SandboxTest
@@ -94,10 +94,12 @@ public class OakDatabaseDriverSandboxTest {
     Git.init().setDirectory(gitDirectory.toFile()).call();
     DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
 
-    ContentRepository contentRepository = new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT)).with(new OpenSecurityProvider()).createContentRepository();
+    DocumentNodeStore store = aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
+    ContentRepository contentRepository = new Oak(store).with(new OpenSecurityProvider()).createContentRepository();
     ContentSession session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
     assertThat(session, is(instanceOf(ContentSession.class)));
+    store.dispose();
   }
 
   @SandboxTest
