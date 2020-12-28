@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 @Getter
 @Setter
-public class DocumentEntry implements ContainerEntry<DocumentEntry> {
+public class DocumentEntry implements ContainerEntry<DocumentEntry>, ModCountSupport {
 
     private static final Pattern CASE_PATTERN = Pattern.compile("case when \\(MODCOUNT = (\\d+) and MODIFIED = (\\d+)\\) then null else (BDATA|DATA) end as (?:BDATA|DATA)");
 

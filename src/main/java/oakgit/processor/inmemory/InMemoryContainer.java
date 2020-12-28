@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import oakgit.engine.model.ContainerEntry;
-import oakgit.engine.model.DocumentEntry;
+import oakgit.engine.model.ModCountSupport;
 
 import java.util.*;
 
@@ -38,8 +38,8 @@ public class InMemoryContainer {
         if (entries.containsKey(id)) {
             ContainerEntry<?> entry = entries.get(id);
             if (resultType.isAssignableFrom(entry.getClass())) {
-                if (entry instanceof DocumentEntry) {
-                    if (((DocumentEntry)entry).getModCount() == modCount) {
+                if (entry instanceof ModCountSupport) {
+                    if (((ModCountSupport) entry).getModCount() == modCount) {
                         return Optional.of((T) entry);
                     }
                 } else {
@@ -54,21 +54,15 @@ public class InMemoryContainer {
     public <T extends ContainerEntry<T>> List<T> findByIdRange(String idMin, String idMax, Class<T> resultType) {
         ArrayList<T> result = new ArrayList<>();
 
-        try {
-            for (String key : entries.keySet()) {
-                ContainerEntry<?> containerEntry = entries.get(key);
-                if (resultType.isAssignableFrom(containerEntry.getClass())) {
-                    try {
-                        if (containerEntry.getId().compareTo(idMin) >= 0 && containerEntry.getId().compareTo(idMax) <= 0) {
-                            result.add((T) containerEntry);
-                        }
-                    } catch (NumberFormatException skipped) {
-                        // skip this entry
-                    }
+        NaturalOrderComparator comparator = new NaturalOrderComparator();
+        for (String key : entries.keySet()) {
+            ContainerEntry<?> containerEntry = entries.get(key);
+            if (resultType.isAssignableFrom(containerEntry.getClass())) {
+                String entryId = containerEntry.getId();
+                if (comparator.compare(entryId, idMin) >= 0 && comparator.compare(entryId, idMax) <= 0) {
+                    result.add((T) containerEntry);
                 }
             }
-        } catch (NumberFormatException ignored) {
-            // fall through to empty result
         }
 
         return result;
@@ -81,9 +75,9 @@ public class InMemoryContainer {
         for (String id : ids) {
             if (entries.containsKey(id)) {
                 ContainerEntry<?> containerEntry = entries.get(id);
-//                if (resultType.isAssignableFrom(containerEntry.getClass())) {
+                if (resultType.isAssignableFrom(containerEntry.getClass())) {
                     result.add((T) containerEntry);
-//                }
+                }
             }
         }
 

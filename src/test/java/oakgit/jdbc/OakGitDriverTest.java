@@ -1,6 +1,6 @@
 package oakgit.jdbc;
 
-import oakgit.TestHelpers;
+import oakgit.util.TestHelpers;
 import oakgit.UnitTest;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.AfterEach;

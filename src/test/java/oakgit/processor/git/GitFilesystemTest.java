@@ -1,7 +1,7 @@
 package oakgit.processor.git;
 
 import io.vavr.Tuple3;
-import oakgit.TestHelpers;
+import oakgit.util.TestHelpers;
 import oakgit.UnitTest;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;

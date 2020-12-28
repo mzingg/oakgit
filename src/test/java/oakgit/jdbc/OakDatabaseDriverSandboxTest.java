@@ -1,7 +1,7 @@
 package oakgit.jdbc;
 
 import oakgit.SandboxTest;
-import oakgit.TestHelpers;
+import oakgit.util.TestHelpers;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
@@ -33,7 +33,7 @@ public class OakDatabaseDriverSandboxTest {
 
     @BeforeAll
     private static void configureDerby() {
-        System.setProperty("derby.stream.error.field", "oakgit.TestHelpers.DERBY_DEV_NULL");
+        System.setProperty("derby.stream.error.field", "oakgit.util.TestHelpers.DERBY_DEV_NULL");
     }
 
     @AfterEach

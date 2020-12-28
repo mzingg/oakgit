@@ -3,7 +3,7 @@ package oakgit.engine.query.analyzer;
 import oakgit.UnitTest;
 import oakgit.engine.query.QueryMatchResult;
 
-import static oakgit.TestHelpers.testValidQueryMatch;
+import static oakgit.util.TestHelpers.testValidQueryMatch;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 

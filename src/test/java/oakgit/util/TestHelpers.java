@@ -1,4 +1,4 @@
-package oakgit;
+package oakgit.util;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple3;
@@ -9,16 +9,12 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -56,21 +52,6 @@ public class TestHelpers {
         }
 
         return result;
-    }
-
-    public static <T> Matcher<Optional<T>> isEmptyOptional() {
-        return new BaseMatcher<>() {
-            @Override
-            public boolean matches(Object o) {
-                return o instanceof Optional<?> && ((Optional<?>) o).isEmpty();
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("empty Optional");
-            }
-
-        };
     }
 
     public static void testValidQueryMatch(QueryAnalyzer analyzer, String sqlQuery) {

@@ -1,6 +1,6 @@
 package oakgit.engine.query.analyzer;
 
-import oakgit.TestHelpers;
+import oakgit.util.TestHelpers;
 import oakgit.UnitTest;
 import oakgit.engine.query.QueryMatchResult;
 
