@@ -39,6 +39,34 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry>, ModCountSup
   private byte[] bdata;
 
   @Override
+  public DocumentEntry copy() {
+    byte[] dataCopy = null;
+    if (data != null) {
+      dataCopy = new byte[data.length];
+      System.arraycopy(data, 0, dataCopy, 0, data.length);
+    }
+    byte[] bDataCopy = null;
+    if (bdata != null) {
+      bDataCopy = new byte[bdata.length];
+      System.arraycopy(bdata, 0, bDataCopy, 0, bdata.length);
+    }
+
+    return new DocumentEntry()
+        .setId(id)
+        .setModified(modified)
+        .setHasBinary(hasBinary)
+        .setDeletedOnce(deletedOnce)
+        .setModCount(modCount)
+        .setCModCount(cModCount)
+        .setDSize(dSize)
+        .setVersion(version)
+        .setSdType(sdType)
+        .setSdMaxRevTime(sdMaxRevTime)
+        .setData(dataCopy)
+        .setBdata(bDataCopy);
+  }
+
+  @Override
   public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
     Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
     result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 512, Collections.emptyList()));

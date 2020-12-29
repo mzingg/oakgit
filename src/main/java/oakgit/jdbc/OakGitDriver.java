@@ -47,8 +47,10 @@ public class OakGitDriver implements Driver {
             )
         );
       }
-    } catch (IOException | XmlPullParserException ignored) {
+    } catch (IOException | XmlPullParserException | NullPointerException ignored) {
       // fall through to empty model
+      model.setArtifactId("oakgit-persistence");
+      model.setVersion("1.0.0");
     }
 
     return model;

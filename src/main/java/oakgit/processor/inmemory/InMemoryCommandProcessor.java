@@ -20,7 +20,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
 
   @Override
   public synchronized CommandResult execute(Command command) {
-    System.out.println("T[" + Thread.currentThread().getName() + "] Executing " + command);
+    System.err.println("T[" + Thread.currentThread().getName() + "] Executing " + command);
     if (command instanceof CreateContainerCommand) {
 
       String containerName = ((CreateContainerCommand) command).getContainerName();
@@ -46,7 +46,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
           .orElse(null);
 
       CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntry);
-      System.out.println("commandResult = " + commandResult.toResultSet());
+      // System.out.println("commandResult = " + commandResult.toResultSet());
       return commandResult;
 
     } else if (command instanceof SelectFromContainerByIdRangeCommand) {
@@ -57,7 +57,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
           .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class);
 
       CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntries);
-      System.out.println("commandResult = " + commandResult.toResultSet());
+      // System.out.println("commandResult = " + commandResult.toResultSet());
       return commandResult;
     } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {
 
@@ -67,7 +67,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
           .findByIds(selectCommand.getIds(), DocumentEntry.class);
 
       CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntries);
-      System.out.println("commandResult = " + commandResult.toResultSet());
+      // System.out.println("commandResult = " + commandResult.toResultSet());
       return commandResult;
     } else if (command instanceof UpdatDataInContainerCommand) {
 
@@ -80,10 +80,11 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       if (existingEntry.isPresent()) {
         final DocumentEntry entityToUpdate = existingEntry.get();
         updateCommand.getData().update(entityToUpdate);
+        container.setEntry(entityToUpdate);
 
-        System.out.println("entityToUpdate = " + entityToUpdate);
+        // System.out.println("entityToUpdate = " + entityToUpdate);
         CommandResult commandResult = updateCommand.buildResult(DocumentEntry.class, entityToUpdate);
-        System.out.println("commandResult = " + commandResult.toResultSet());
+        // System.out.println("commandResult = " + commandResult.toResultSet());
         return commandResult;
       }
     }
@@ -92,11 +93,11 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
   }
 
   private InMemoryContainer getContainer(String name) {
-    if (containerMap.containsKey(name)) {
-      return containerMap.get(name);
+    if (!containerMap.containsKey(name)) {
+      containerMap.put(name, new InMemoryContainer(name));
     }
 
-    throw new IllegalArgumentException("container " + name + " does not exist");
+    return containerMap.get(name);
   }
 
 }

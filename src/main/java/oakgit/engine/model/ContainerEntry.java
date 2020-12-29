@@ -121,6 +121,8 @@ public interface ContainerEntry<T extends ContainerEntry> {
 
   Optional<ColumnGetterResult> entryGetter(String fieldName);
 
+  T copy();
+
 
   @Data
   static class ColumnGetterResult {
@@ -150,6 +152,11 @@ public interface ContainerEntry<T extends ContainerEntry> {
     @Override
     public Optional<ColumnGetterResult> entryGetter(String fieldName) {
       throw new UnsupportedOperationException("trying to apply invalid entry to a result set");
+    }
+
+    @Override
+    public T copy() {
+      throw new UnsupportedOperationException();
     }
 
   }

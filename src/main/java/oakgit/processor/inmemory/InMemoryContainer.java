@@ -27,7 +27,7 @@ public class InMemoryContainer {
     if (entries.containsKey(id)) {
       ContainerEntry<?> entry = entries.get(id);
       if (resultType.isAssignableFrom(entry.getClass())) {
-        return Optional.of((T) entry);
+        return Optional.of((T) entry.copy());
       }
     }
     return Optional.empty();
@@ -40,10 +40,10 @@ public class InMemoryContainer {
       if (resultType.isAssignableFrom(entry.getClass())) {
         if (entry instanceof ModCountSupport) {
           if (((ModCountSupport) entry).getModCount() == modCount) {
-            return Optional.of((T) entry);
+            return Optional.of((T) entry.copy());
           }
         } else {
-          return Optional.of((T) entry);
+          return Optional.of((T) entry.copy());
         }
       }
     }
@@ -60,7 +60,7 @@ public class InMemoryContainer {
       if (resultType.isAssignableFrom(containerEntry.getClass())) {
         String entryId = containerEntry.getId();
         if (comparator.compare(entryId, idMin) >= 0 && comparator.compare(entryId, idMax) <= 0) {
-          result.add((T) containerEntry);
+          result.add((T) containerEntry.copy());
         }
       }
     }
@@ -76,7 +76,7 @@ public class InMemoryContainer {
       if (entries.containsKey(id)) {
         ContainerEntry<?> containerEntry = entries.get(id);
         if (resultType.isAssignableFrom(containerEntry.getClass())) {
-          result.add((T) containerEntry);
+          result.add((T) containerEntry.copy());
         }
       }
     }

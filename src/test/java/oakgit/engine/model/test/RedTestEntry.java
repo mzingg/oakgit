@@ -17,6 +17,11 @@ public class RedTestEntry implements ContainerEntry<RedTestEntry> {
   }
 
   @Override
+  public RedTestEntry copy() {
+    return new RedTestEntry(id);
+  }
+
+  @Override
   public String getId() {
     return id;
   }

@@ -65,7 +65,7 @@ public class CommandFactory {
 
   public Optional<QueryMatchResult> match(String sqlQuery) {
     for (QueryAnalyzer analyzer : analyzers) {
-      var matchResult = analyzer.matchAndCollect(sqlQuery);
+      QueryMatchResult matchResult = analyzer.matchAndCollect(sqlQuery);
       if (matchResult != null && matchResult.isInterested()) {
         return Optional.of(matchResult);
       }

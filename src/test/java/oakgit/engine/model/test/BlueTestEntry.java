@@ -17,6 +17,11 @@ public class BlueTestEntry implements ContainerEntry<BlueTestEntry> {
   }
 
   @Override
+  public BlueTestEntry copy() {
+    return new BlueTestEntry(id);
+  }
+
+  @Override
   public String getId() {
     return id;
   }

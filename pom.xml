@@ -20,6 +20,8 @@
     <!-- has to correspond to aem.version - version taken from wcm.io pom -->
     <oak.version>1.10.8</oak.version>
     <junit.version>5.6.2</junit.version>
+    <localdev.aem.root>../run/author</localdev.aem.root>
+    <localdev.aem.jar>aem-author-p4502.jar</localdev.aem.jar>
   </properties>
 
   <build>
@@ -40,11 +42,75 @@
               java-semver,
               maven-model,
               org.eclipse.jgit,
-              plexus-utils
+              plexus-utils,
+              commons-lang3
             </Embed-Dependency>
           </instructions>
         </configuration>
       </plugin>
+
+      <!-- Reset local AEM - make sure server is not running -->
+
+      <!--Unpack AEM distro -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>java</executable>
+              <workingDirectory>${localdev.aem.root}</workingDirectory>
+              <arguments>
+                <argument>-jar</argument>
+                <argument>${localdev.aem.jar}</argument>
+                <argument>-unpack</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Copy configuration and oakgit release -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>remove-aem-dir</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete dir="${localdev.aem.root}/crx-quickstart" verbose="true"/>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-config-and-artifact</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <copy todir="${localdev.aem.root}/crx-quickstart" overwrite="true" verbose="true">
+                  <fileset dir="${project.basedir}/ops/localdev/crx-quickstart"/>
+                </copy>
+                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
+                      todir="${localdev.aem.root}/crx-quickstart/install/9"
+                      overwrite="true"
+                      verbose="true"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
     <pluginManagement>
       <plugins>
@@ -92,6 +158,16 @@
               --illegal-access=permit
             </argLine>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.0.0</version>
         </plugin>
       </plugins>
     </pluginManagement>

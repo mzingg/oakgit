@@ -24,6 +24,19 @@ public class DatastoreDataEntry implements ContainerEntry<DatastoreDataEntry> {
   private byte[] data;
 
   @Override
+  public DatastoreDataEntry copy() {
+    byte[] dataCopy = null;
+    if (data != null) {
+      dataCopy = new byte[data.length];
+      System.arraycopy(data, 0, dataCopy, 0, data.length);
+    }
+
+    return new DatastoreDataEntry()
+        .setId(id)
+        .setData(dataCopy);
+  }
+
+  @Override
   public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
     Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
     result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 64, Collections.emptyList()));

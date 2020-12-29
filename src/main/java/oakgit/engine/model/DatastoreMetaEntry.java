@@ -26,6 +26,14 @@ public class DatastoreMetaEntry implements ContainerEntry<DatastoreMetaEntry> {
   private Integer lvl;
 
   @Override
+  public DatastoreMetaEntry copy() {
+    return new DatastoreMetaEntry()
+        .setId(id)
+        .setLastmod(lastmod)
+        .setLvl(lvl);
+  }
+
+  @Override
   public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
     Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
     result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 512, Collections.emptyList()));

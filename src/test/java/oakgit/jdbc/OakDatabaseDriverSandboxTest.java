@@ -108,13 +108,15 @@ public class OakDatabaseDriverSandboxTest {
     Git.init().setDirectory(gitDirectory.toFile()).call();
     DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
 
-    Repository contentRepository = new Jcr(new Oak(aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT)).with(new OpenSecurityProvider())).createRepository();
+    DocumentNodeStore store = aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
+    Repository contentRepository = new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
     Session session = contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()));
     Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
     hello.setProperty("velo", "velo");
     session.save();
 
     assertThat(session, is(instanceOf(Session.class)));
+    store.dispose();
   }
 
   private DocumentNodeStore aNewNodeStore(DataSource dataSource, RDBDocumentStoreDB ddb, RDBBlobStoreDB bdb) throws SQLException {

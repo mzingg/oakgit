@@ -7,11 +7,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="oak-git-persistence" />
+        <module name="oakgit-persistence" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="oak-git-persistence" target="11" />
+      <module name="oakgit-persistence.main" target="11" />
+      <module name="oakgit-persistence.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -13,8 +13,9 @@ import java.util.List;
 
 public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
-  private final List<String> commandList = new ArrayList<>();
-  private final PlaceholderData placeholderData = new PlaceholderData();
+  private final List<PlaceholderData> dataList = new ArrayList<>();
+  private PlaceholderData placeholderData = new PlaceholderData();
+  private int maxRows;
 
   protected OakGitPreparedStatement(OakGitConnection connection, String sql) {
     super(connection, sql);
@@ -45,20 +46,23 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
   @Override
   public void addBatch() {
-    commandList.add(getSql());
+    dataList.add(placeholderData);
+    placeholderData = new PlaceholderData();
   }
 
   public int[] executeBatch() {
-    int[] result = new int[commandList.size()];
-    for (int i = 0; i < commandList.size(); i++) {
+    int[] result = new int[dataList.size()];
+    for (int i = 0; i < dataList.size(); i++) {
       OakGitConnection connection = getConnection();
       CommandProcessor processor = connection.getProcessor();
       CommandFactory factory = connection.getCommandFactory();
 
-      result[i] = processor.execute(factory.getCommandForSql(commandList.get(i), placeholderData)).affectedCount();
+      result[i] = processor.execute(factory.getCommandForSql(getSql(), dataList.get(i))).affectedCount();
     }
     return result;
   }
+
+
 
   @Override
   public void setString(int parameterIndex, String x) {
@@ -99,4 +103,8 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     }
   }
 
+  @Override
+  public void setFetchSize(int rows) {
+    this.maxRows = rows;
+  }
 }

@@ -1,5 +1,7 @@
 package oakgit.engine.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -80,4 +82,11 @@ public class PlaceholderData {
     return Optional.empty();
   }
 
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("delegate", delegate)
+        .append("maxIndex", maxIndex)
+        .toString();
+  }
 }

@@ -9,8 +9,7 @@ import java.util.Arrays;
 
 import static oakgit.util.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInRelativeOrder;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 class InMemoryContainerTest {
 
@@ -43,7 +42,7 @@ class InMemoryContainerTest {
     InMemoryContainer testObj = new InMemoryContainer("testcontainer")
         .setEntry(expectedValue);
 
-    assertThat(testObj.findById("test-id", BlueTestEntry.class), isPresentAndIs(expectedValue));
+    assertThat(testObj.findById("test-id", BlueTestEntry.class), isPresent());
   }
 
   @UnitTest
@@ -84,7 +83,7 @@ class InMemoryContainerTest {
     InMemoryContainer testObj = new InMemoryContainer("testcontainer")
         .setEntry(expected);
 
-    assertThat(testObj.findByIdAndModCount("testid", 100, DocumentEntry.class), isPresentAndIs(expected));
+    assertThat(testObj.findByIdAndModCount("testid", 100, DocumentEntry.class), isPresent());
   }
 
   @UnitTest
@@ -102,6 +101,6 @@ class InMemoryContainerTest {
     InMemoryContainer testObj = new InMemoryContainer("testcontainer")
         .setEntry(expected);
 
-    assertThat(testObj.findByIdAndModCount("testid", 100, RedTestEntry.class), isPresentAndIs(expected));
+    assertThat(testObj.findByIdAndModCount("testid", 100, RedTestEntry.class), isPresent());
   }
 }
