@@ -54,12 +54,11 @@ public class InMemoryContainer {
   public <T extends ContainerEntry<T>> List<T> findByIdRange(String idMin, String idMax, Class<T> resultType) {
     ArrayList<T> result = new ArrayList<>();
 
-    NaturalOrderComparator comparator = new NaturalOrderComparator();
     for (String key : entries.keySet()) {
       ContainerEntry<?> containerEntry = entries.get(key);
       if (resultType.isAssignableFrom(containerEntry.getClass())) {
         String entryId = containerEntry.getId();
-        if (comparator.compare(entryId, idMin) >= 0 && comparator.compare(entryId, idMax) <= 0) {
+        if (entryId.compareTo(idMin) >= 0 && entryId.compareTo(idMax) <= 0) {
           result.add((T) containerEntry.copy());
         }
       }

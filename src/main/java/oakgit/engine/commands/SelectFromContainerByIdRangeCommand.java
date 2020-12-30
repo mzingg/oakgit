@@ -26,6 +26,9 @@ public class SelectFromContainerByIdRangeCommand implements Command {
   private final String idMax;
 
   @NonNull
+  private final int limit;
+
+  @NonNull
   @Setter
   private List<String> resultFieldList = Collections.emptyList();
 

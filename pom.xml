@@ -18,7 +18,7 @@
 
     <aem.version>6.5.4.0001</aem.version>
     <!-- has to correspond to aem.version - version taken from wcm.io pom -->
-    <oak.version>1.10.8</oak.version>
+    <oak.version>1.10.2</oak.version>
     <junit.version>5.6.2</junit.version>
     <localdev.aem.root>../run/author</localdev.aem.root>
     <localdev.aem.jar>aem-author-p4502.jar</localdev.aem.jar>
