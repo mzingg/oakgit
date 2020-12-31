@@ -44,9 +44,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
           .findById(selectCommand.getId(), DocumentEntry.class)
           .orElse(null);
 
-      CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntry);
-      // System.out.println("commandResult = " + commandResult.toResultSet());
-      return commandResult;
+      return selectCommand.buildResult(DocumentEntry.class, foundEntry);
 
     } else if (command instanceof SelectFromContainerByIdRangeCommand) {
 
@@ -55,9 +53,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
           .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class);
 
-      CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntries);
-      // System.out.println("commandResult = " + commandResult.toResultSet());
-      return commandResult;
+      return selectCommand.buildResult(DocumentEntry.class, foundEntries);
     } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {
 
       SelectFromContainerByMultipleIdsCommand selectCommand = (SelectFromContainerByMultipleIdsCommand) command;
@@ -65,9 +61,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
           .findByIds(selectCommand.getIds(), DocumentEntry.class);
 
-      CommandResult commandResult = selectCommand.buildResult(DocumentEntry.class, foundEntries);
-      // System.out.println("commandResult = " + commandResult.toResultSet());
-      return commandResult;
+      return selectCommand.buildResult(DocumentEntry.class, foundEntries);
     } else if (command instanceof UpdatDataInContainerCommand) {
 
       UpdatDataInContainerCommand updateCommand = (UpdatDataInContainerCommand) command;
@@ -81,10 +75,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
         updateCommand.getData().update(entityToUpdate);
         container.setEntry(entityToUpdate);
 
-        // System.out.println("entityToUpdate = " + entityToUpdate);
-        CommandResult commandResult = updateCommand.buildResult(DocumentEntry.class, entityToUpdate);
-        // System.out.println("commandResult = " + commandResult.toResultSet());
-        return commandResult;
+        return updateCommand.buildResult(DocumentEntry.class, entityToUpdate);
       }
     } else if (command instanceof ErrorCommand) {
       System.err.println(command);
