@@ -35,7 +35,7 @@ class SelectByRangeAnalyzerTest {
         "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where ID > ? and ID < ? order by ID FETCH FIRST 201 ROWS ONLY"
     );
 
-    Command actual = target.getCommandSupplier().apply(new PlaceholderData().set(1, "0").set(2, "1"));
+    Command actual = target.getCommandSupplier().apply(new PlaceholderData().set(1, "0").set(2, "1"), Integer.MAX_VALUE);
 
     assertThat(actual, instanceOf(SelectFromContainerByIdRangeCommand.class));
     assertThat(((SelectFromContainerByIdRangeCommand)actual).getLimit(), is(201));

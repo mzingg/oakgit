@@ -51,15 +51,20 @@ public class InMemoryContainer {
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends ContainerEntry<T>> List<T> findByIdRange(String idMin, String idMax, Class<T> resultType) {
+  public <T extends ContainerEntry<T>> List<T> findByIdRange(String idMin, String idMax, Class<T> resultType, int limit) {
     ArrayList<T> result = new ArrayList<>();
 
+    int count = 0;
     for (String key : entries.keySet()) {
+      if (count > limit) {
+        break;
+      }
       ContainerEntry<?> containerEntry = entries.get(key);
       if (resultType.isAssignableFrom(containerEntry.getClass())) {
         String entryId = containerEntry.getId();
         if (entryId.compareTo(idMin) >= 0 && entryId.compareTo(idMax) <= 0) {
           result.add((T) containerEntry.copy());
+          count++;
         }
       }
     }

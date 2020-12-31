@@ -114,6 +114,28 @@
         </executions>
       </plugin>
 
+      <!-- copy database drivers -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-database-drivers</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${localdev.aem.root}/crx-quickstart/install/9</outputDirectory>
+              <includeArtifactIds>
+                postgresql,
+                mysql-connector-java
+              </includeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
     <pluginManagement>
       <plugins>
@@ -338,7 +360,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.20</version>
+      <version>8.0.22</version>
       <scope>test</scope>
     </dependency>
 

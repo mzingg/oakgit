@@ -3,7 +3,6 @@ package oakgit.engine;
 import lombok.Getter;
 import lombok.Setter;
 import oakgit.engine.commands.ErrorCommand;
-import oakgit.engine.commands.NoOperationCommand;
 import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
@@ -22,11 +21,12 @@ public class CommandFactory {
 
   static {
     DEFAULT_ANALYZERS.add(new CreateAnalyzer());
-    DEFAULT_ANALYZERS.add(new DeleteAnalyzer());
     DEFAULT_ANALYZERS.add(new DatastoreMetaInsertAnalyzer());
+    DEFAULT_ANALYZERS.add(new DatastoreDataInsertAnalyzer());
     DEFAULT_ANALYZERS.add(new DocumentInsertAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectByModifiedAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectInAnalyzer());
     DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
   }
@@ -41,10 +41,10 @@ public class CommandFactory {
    * Returns a {@link Command} for a given SQL string.
    *
    * @param sqlCommand {@link String}
-   * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recognized as a command.
+   * @return {@link Command}, {@link ErrorCommand} in case the SQL was not recognized as a command.
    */
   public Command getCommandForSql(String sqlCommand) {
-    return getCommandForSql(sqlCommand, new PlaceholderData());
+    return getCommandForSql(sqlCommand, new PlaceholderData(), Integer.MAX_VALUE);
   }
 
   /**
@@ -52,11 +52,12 @@ public class CommandFactory {
    *
    * @param sqlCommand      {@link String}
    * @param placeholderData {@link Map}
-   * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recognized as a command.
+   * @param selectionLimit  int
+   * @return {@link Command}, {@link ErrorCommand} in case the SQL was not recognized as a command.
    */
-  public Command getCommandForSql(String sqlCommand, PlaceholderData placeholderData) {
+  public Command getCommandForSql(String sqlCommand, PlaceholderData placeholderData, int selectionLimit) {
     return match(sqlCommand)
-        .map(matchResult -> matchResult.getCommandSupplier().apply(placeholderData))
+        .map(matchResult -> matchResult.getCommandSupplier().apply(placeholderData, selectionLimit))
         .orElse(new ErrorCommand("Error while parsing the query " + sqlCommand));
   }
 

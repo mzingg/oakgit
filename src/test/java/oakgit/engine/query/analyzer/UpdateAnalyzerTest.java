@@ -38,7 +38,7 @@ class UpdateAnalyzerTest {
         .set(10, 1L);
     DocumentEntry existing = new DocumentEntry().setDSize(20L);
 
-    Command command = target.getCommandSupplier().apply(placeholderData);
+    Command command = target.getCommandSupplier().apply(placeholderData, Integer.MAX_VALUE);
     ((UpdatDataInContainerCommand) command).getData().update(existing);
 
     assertThat(command, is(instanceOf(UpdatDataInContainerCommand.class)));

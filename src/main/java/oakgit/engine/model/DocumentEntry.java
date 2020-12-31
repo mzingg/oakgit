@@ -110,38 +110,39 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry>, ModCountSup
       isCaseField = true;
     }
 
+    DocumentEntry accessor = this.copy();
     switch (fieldName) {
       case "ID":
-        return Optional.of(new ColumnGetterResult(fieldName, id));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getId()));
       case "MODIFIED":
-        return Optional.of(new ColumnGetterResult(fieldName, modified));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getModified()));
       case "MODCOUNT":
-        return Optional.of(new ColumnGetterResult(fieldName, modCount));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getModCount()));
       case "CMODCOUNT":
-        return Optional.of(new ColumnGetterResult(fieldName, cModCount));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getCModCount()));
       case "HASBINARY":
-        return Optional.of(new ColumnGetterResult(fieldName, hasBinary));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getHasBinary()));
       case "DELETEDONCE":
-        return Optional.of(new ColumnGetterResult(fieldName, deletedOnce));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getDeletedOnce()));
       case "VERSION":
-        return Optional.of(new ColumnGetterResult(fieldName, version));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getVersion()));
       case "SDTYPE":
-        return Optional.of(new ColumnGetterResult(fieldName, sdType));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getSdType()));
       case "SDMAXREVTIME":
-        return Optional.of(new ColumnGetterResult(fieldName, sdMaxRevTime));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getSdMaxRevTime()));
       case "DSIZE":
-        return Optional.of(new ColumnGetterResult(fieldName, dSize));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getDSize()));
       case "DATA": {
         if (isCaseField && modCount == modCountCheck && modified == modifiedCheck) {
           return Optional.of(new ColumnGetterResult(fieldName, null));
         }
-        return Optional.of(new ColumnGetterResult(fieldName, data));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getData()));
       }
       case "BDATA": {
         if (isCaseField && modCount == modCountCheck && modified == modifiedCheck) {
           return Optional.of(new ColumnGetterResult(fieldName, null));
         }
-        return Optional.of(new ColumnGetterResult(fieldName, bdata));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getBdata()));
       }
     }
 

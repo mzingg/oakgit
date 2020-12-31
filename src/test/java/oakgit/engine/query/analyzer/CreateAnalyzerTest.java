@@ -80,7 +80,7 @@ class CreateAnalyzerTest {
   void matchAndCollectReturnsWithValidQueryReturnCorrectCommand() {
     QueryMatchResult target = new CreateAnalyzer().matchAndCollect("create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
 
-    Command actual = target.getCommandSupplier().apply(new PlaceholderData());
+    Command actual = target.getCommandSupplier().apply(new PlaceholderData(), Integer.MAX_VALUE);
 
     assertThat(actual, is(instanceOf(CreateContainerCommand.class)));
     assertThat(((CreateContainerCommand) actual).getContainerName(), is("NODES"));

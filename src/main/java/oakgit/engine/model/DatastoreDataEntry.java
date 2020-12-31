@@ -46,11 +46,12 @@ public class DatastoreDataEntry implements ContainerEntry<DatastoreDataEntry> {
 
   @Override
   public Optional<ColumnGetterResult> entryGetter(String fieldName) {
+    DatastoreDataEntry accessor = this.copy();
     switch (fieldName) {
       case "ID":
-        return Optional.of(new ColumnGetterResult(fieldName, id));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getId()));
       case "DATA":
-        return Optional.of(new ColumnGetterResult(fieldName, data));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getData()));
     }
     return Optional.empty();
   }

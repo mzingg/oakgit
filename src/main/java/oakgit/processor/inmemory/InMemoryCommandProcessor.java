@@ -51,7 +51,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       SelectFromContainerByIdRangeCommand selectCommand = (SelectFromContainerByIdRangeCommand) command;
 
       List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
-          .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class);
+          .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class, selectCommand.getLimit());
 
       return selectCommand.buildResult(DocumentEntry.class, foundEntries);
     } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {

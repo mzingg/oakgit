@@ -20,6 +20,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
   protected OakGitPreparedStatement(OakGitConnection connection, String sql) {
     super(connection, sql);
+    connection.queryLog("P>>" + sql);
   }
 
   @Override
@@ -28,7 +29,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     CommandProcessor processor = connection.getProcessor();
     CommandFactory factory = connection.getCommandFactory();
 
-    return processor.execute(factory.getCommandForSql(getSql(), placeholderData)).affectedCount();
+    return processor.execute(factory.getCommandForSql(getSql(), placeholderData, maxRows)).affectedCount();
   }
 
   @Override
@@ -42,7 +43,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     CommandProcessor processor = connection.getProcessor();
     CommandFactory factory = connection.getCommandFactory();
 
-    return processor.execute(factory.getCommandForSql(getSql(), placeholderData)).toResultSet();
+    return processor.execute(factory.getCommandForSql(getSql(), placeholderData, maxRows)).toResultSet();
   }
 
   @Override
@@ -58,7 +59,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
       CommandProcessor processor = connection.getProcessor();
       CommandFactory factory = connection.getCommandFactory();
 
-      result[i] = processor.execute(factory.getCommandForSql(getSql(), dataList.get(i))).affectedCount();
+      result[i] = processor.execute(factory.getCommandForSql(getSql(), dataList.get(i), maxRows)).affectedCount();
     }
     return result;
   }

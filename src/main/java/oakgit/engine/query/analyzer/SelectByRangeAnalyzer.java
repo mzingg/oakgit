@@ -21,11 +21,11 @@ public class SelectByRangeAnalyzer implements QueryAnalyzer {
       }
 
       final int limitToPass = parsedLimit;
-      result.setCommandSupplier(placeholderData -> new SelectFromContainerByIdRangeCommand(
+      result.setCommandSupplier((placeholderData, selectionLimit) -> new SelectFromContainerByIdRangeCommand(
           tableName,
           placeholderData.getString(1),
           placeholderData.getString(2),
-          limitToPass
+          Integer.min(limitToPass, selectionLimit)
       ).setResultFieldList(parseFieldList(fieldDeclaration)));
 
       return result;

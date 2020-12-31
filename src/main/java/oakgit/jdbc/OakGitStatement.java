@@ -19,6 +19,7 @@ public class OakGitStatement extends UnsupportedOakGitStatement {
   @Override
   public ResultSet executeQuery(String sql) throws SQLException {
     OakGitConnection connection = getConnection();
+    connection.queryLog("S>>" + sql);
     CommandProcessor processor = connection.getProcessor();
     CommandFactory factory = connection.getCommandFactory();
 

@@ -20,7 +20,7 @@ public class UpdateAnalyzer implements QueryAnalyzer {
     return withPatternMatch(sqlQuery, UPDATE_PATTERN, (result, matcher) -> {
       String tableName = matcher.group(1);
       String setExpressionsString = matcher.group(2);
-      result.setCommandSupplier(placeholderData -> {
+      result.setCommandSupplier((placeholderData, selectionLimit) -> {
         int lastPlaceholderIndex = placeholderData.maxIndex();
 
         List<String> setExpressions = parseFieldList(setExpressionsString);

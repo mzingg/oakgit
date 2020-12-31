@@ -20,7 +20,7 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
       String fieldDeclaration = matcher.group(1);
       String tableName = matcher.group(2);
       String idValue = matcher.groupCount() == 3 ? matcher.group(3) : "";
-      result.setCommandSupplier(placeholderData -> {
+      result.setCommandSupplier((placeholderData, selectionLimit) -> {
         List<String> resultFieldList = parseFieldList(fieldDeclaration);
         int placeHolderIndex = 1;
         for (int i = 0; i < resultFieldList.size(); i++) {

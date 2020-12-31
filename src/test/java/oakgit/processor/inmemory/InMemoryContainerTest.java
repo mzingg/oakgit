@@ -46,7 +46,7 @@ class InMemoryContainerTest {
   }
 
   @UnitTest
-  void findByIdRangeWithReturnsUnsortedSublistBetweenBoundsBasedOnNaturalOrder() {
+  void findByIdRangeReturnsUnsortedSublistBetweenBoundsBasedOnLexicalOrder() {
     InMemoryContainer testObj = new InMemoryContainer("testcontainer")
         .setEntry(new RedTestEntry("0"))
         .setEntry(new RedTestEntry("b"))
@@ -56,8 +56,24 @@ class InMemoryContainerTest {
         .setEntry(new RedTestEntry("aaaa"))
         .setEntry(new RedTestEntry("76"));
 
-    assertThat(testObj.findByIdRange("0", "a", RedTestEntry.class), containsInRelativeOrder(
+    assertThat(testObj.findByIdRange("0", "a", RedTestEntry.class, Integer.MAX_VALUE), containsInRelativeOrder(
         entryWithId("0"), entryWithId("a"), entryWithId("2"), entryWithId("76")
+    ));
+  }
+
+  @UnitTest
+  void findByIdRangeWithLimitReturnsUnsortedSublistBetweenBoundsBasedOnLexicalOrder() {
+    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
+        .setEntry(new RedTestEntry("0"))
+        .setEntry(new RedTestEntry("b"))
+        .setEntry(new RedTestEntry("a"))
+        .setEntry(new RedTestEntry("2"))
+        .setEntry(new RedTestEntry("zzzz"))
+        .setEntry(new RedTestEntry("aaaa"))
+        .setEntry(new RedTestEntry("76"));
+
+    assertThat(testObj.findByIdRange("0", "a", RedTestEntry.class, 2), containsInRelativeOrder(
+        entryWithId("0"), entryWithId("a")
     ));
   }
 

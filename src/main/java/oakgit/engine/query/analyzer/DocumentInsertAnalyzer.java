@@ -18,7 +18,7 @@ public class DocumentInsertAnalyzer implements QueryAnalyzer {
   public QueryMatchResult matchAndCollect(String sqlQuery) {
     return withPatternMatch(sqlQuery, INSERT_PATTERN, (result, matcher) -> {
       String tableName = matcher.group(1);
-      result.setCommandSupplier(placeholderData -> {
+      result.setCommandSupplier((placeholderData, selectionLimit) -> {
         DocumentEntry data = new DocumentEntry();
         data.setId(placeholderData.getString(1));
         data.setModified(placeholderData.getLong(2));

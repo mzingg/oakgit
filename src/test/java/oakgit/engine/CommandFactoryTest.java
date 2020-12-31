@@ -50,7 +50,8 @@ class CommandFactoryTest {
         .set(9, 0L).set(10, new byte[0]).set(11, new byte[0]);
     Command commandObj = new CommandFactory().getCommandForSql(
         INSERT_INTO_TABLE_PATTERN_TEST,
-        placeholderData
+        placeholderData,
+        Integer.MAX_VALUE
     );
 
     assertThat(commandObj, is(instanceOf(InsertIntoContainerCommand.class)));

@@ -8,6 +8,9 @@ import oakgit.engine.CommandProcessor;
 import org.eclipse.jgit.api.Git;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -34,6 +37,19 @@ public class OakGitConnection extends DefaultOakGitConnection {
     return git;
   }
 
+  public void queryLog(String sql) {
+    try {
+      Files.writeString(
+          getConfiguration().getGitDirectory().resolve("query.log"),
+          sql + "\r\n",
+          StandardCharsets.UTF_8,
+          StandardOpenOption.CREATE, StandardOpenOption.APPEND
+      );
+    } catch (IOException ioException) {
+      throw new IllegalStateException(ioException);
+    }
+  }
+
   @Override
   public DatabaseMetaData getMetaData() {
     return new OakGitDatabaseMetadata(configuration.getUrl(), configuration.getArtifactId(), configuration.getVersion());
@@ -56,7 +72,7 @@ public class OakGitConnection extends DefaultOakGitConnection {
 
   @Override
   public void commit() {
-    // save?
+
   }
 
   @Override

@@ -44,13 +44,14 @@ public class DatastoreMetaEntry implements ContainerEntry<DatastoreMetaEntry> {
 
   @Override
   public Optional<ColumnGetterResult> entryGetter(String fieldName) {
+    DatastoreMetaEntry accessor = this.copy();
     switch (fieldName) {
       case "ID":
-        return Optional.of(new ColumnGetterResult(fieldName, id));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getId()));
       case "LASTMOD":
-        return Optional.of(new ColumnGetterResult(fieldName, lastmod));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getLastmod()));
       case "LVL":
-        return Optional.of(new ColumnGetterResult(fieldName, lvl));
+        return Optional.of(new ColumnGetterResult(fieldName, accessor.getLvl()));
     }
     return Optional.empty();
   }

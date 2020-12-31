@@ -19,7 +19,7 @@ public class SelectInAnalyzer implements QueryAnalyzer {
       String fieldDeclaration = matcher.group(1);
       String tableName = matcher.group(2);
 
-      result.setCommandSupplier(placeholderData -> {
+      result.setCommandSupplier((placeholderData, selectionLimit) -> {
         List<String> idList = placeholderData.valueStream()
             .map(Object::toString)
             .collect(Collectors.toList());

@@ -47,7 +47,12 @@ public class OakDatabaseDriverSandboxTest {
 
   @SandboxTest
   void createContentRepositoryWithMySqlDriverInstantiatesJcrSession() throws Exception {
-    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:mysql://localhost:15010/oak", "root", "admin");
+    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl(
+        "jdbc:mysql://localhost:15010/oak",
+        "root",
+        "admin",
+        "com.mysql.jdbc.Driver"
+    );
 
     DocumentNodeStore store = aNewNodeStore(dataSource, RDBDocumentStoreDB.MYSQL, RDBBlobStoreDB.MYSQL);
     Repository contentRepository = new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
@@ -63,7 +68,12 @@ public class OakDatabaseDriverSandboxTest {
 
   @SandboxTest
   void createContentRepositoryWithPostgresDriverInstantiatesJcrSession() throws Exception {
-    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:postgresql://localhost:15020/oak", "postgres", "admin");
+    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl(
+        "jdbc:postgresql://localhost:15020/oak",
+        "postgres",
+        "admin",
+        "org.postgresql.Driver"
+    );
 
     DocumentNodeStore store = aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES);
     Repository contentRepository = new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();

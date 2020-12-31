@@ -1,9 +1,5 @@
 package oakgit.engine.query;
 
-import oakgit.engine.model.ContainerEntry;
-import oakgit.engine.model.DatastoreDataEntry;
-import oakgit.engine.model.DatastoreMetaEntry;
-import oakgit.engine.model.DocumentEntry;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -40,21 +36,6 @@ public interface QueryAnalyzer {
 
     // empty list implies all fields
     return Collections.emptyList();
-  }
-
-  default Class<? extends ContainerEntry<?>> typeByTableName(String tableName) {
-    switch (tableName) {
-      case "DATASTORE_DATA":
-        return DatastoreDataEntry.class;
-      case "DATASTORE_META":
-        return DatastoreMetaEntry.class;
-      case "CLUSTERNODES":
-      case "JOURNAL":
-      case "NODES":
-      case "SETTINGS":
-        return DocumentEntry.class;
-    }
-    throw new IllegalArgumentException("Unknown table name: " + tableName);
   }
 
 }
