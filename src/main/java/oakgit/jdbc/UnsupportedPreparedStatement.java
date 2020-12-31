@@ -94,11 +94,6 @@ public abstract class UnsupportedPreparedStatement implements PreparedStatement 
   }
 
   @Override
-  public void clearParameters() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean execute() {
     throw new UnsupportedOperationException();
   }

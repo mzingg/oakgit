@@ -31,7 +31,7 @@ fi
 
 # default JVM options
 if [ -z "$CQ_JVM_OPTS" ]; then
-	CQ_JVM_OPTS='-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true'
+	CQ_JVM_OPTS='-server -Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:45002'
 	# add the required JPMS modules, if needed
 	java --add-modules java.se.ee -version >/dev/null 2>&1
 	if [ $? -eq 0 ]; then

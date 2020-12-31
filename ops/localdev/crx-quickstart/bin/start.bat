@@ -22,7 +22,7 @@ if not defined CQ_RUNMODE set CQ_RUNMODE=author
 :: if not defined CQ_JARFILE set CQ_JARFILE=
 
 ::* default JVM options
-if not defined CQ_JVM_OPTS set CQ_JVM_OPTS=-Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true
+if not defined CQ_JVM_OPTS set CQ_JVM_OPTS=-Xmx1024m -XX:MaxPermSize=256M -Djava.awt.headless=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:45002
 ::* add the required JPMS modules, if needed
 java --add-modules java.se.ee --version > nul 2>&1
 if %errorlevel% EQU 0 set CQ_JVM_OPTS=--add-modules java.se.ee %CQ_JVM_OPTS%

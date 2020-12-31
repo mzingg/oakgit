@@ -20,7 +20,6 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
 
   @Override
   public synchronized CommandResult execute(Command command) {
-    System.err.println("T[" + Thread.currentThread().getName() + "] Executing " + command);
     if (command instanceof CreateContainerCommand) {
 
       String containerName = ((CreateContainerCommand) command).getContainerName();
@@ -87,6 +86,8 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
         // System.out.println("commandResult = " + commandResult.toResultSet());
         return commandResult;
       }
+    } else if (command instanceof ErrorCommand) {
+      System.err.println(command);
     }
 
     return CommandResult.NO_RESULT;

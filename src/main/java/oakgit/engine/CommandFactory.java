@@ -55,9 +55,6 @@ public class CommandFactory {
    * @return {@link Command}, {@link NoOperationCommand} in case the SQL was not recognized as a command.
    */
   public Command getCommandForSql(String sqlCommand, PlaceholderData placeholderData) {
-    System.out.println("sqlCommand = " + sqlCommand);
-    System.out.println("placeholderData = " + placeholderData);
-
     return match(sqlCommand)
         .map(matchResult -> matchResult.getCommandSupplier().apply(placeholderData))
         .orElse(new ErrorCommand("Error while parsing the query " + sqlCommand));

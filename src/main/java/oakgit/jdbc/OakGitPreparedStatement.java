@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +63,11 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     return result;
   }
 
-
+  @Override
+  public void clearParameters() throws SQLException {
+    dataList.clear();
+    placeholderData = new PlaceholderData();
+  }
 
   @Override
   public void setString(int parameterIndex, String x) {

@@ -134,10 +134,6 @@ public abstract class UnsupportedOakGitStatement implements Statement {
     throw new UnsupportedOperationException();
   }
 
-  public boolean isClosed() {
-    throw new UnsupportedOperationException();
-  }
-
   public void closeOnCompletion() {
     throw new UnsupportedOperationException();
   }
@@ -154,7 +150,4 @@ public abstract class UnsupportedOakGitStatement implements Statement {
     throw new UnsupportedOperationException();
   }
 
-  public ResultSet getResultSet() {
-    throw new UnsupportedOperationException();
-  }
 }
