@@ -1,5 +1,7 @@
 package oakgit.engine;
 
+import lombok.NonNull;
+import oakgit.engine.model.ContainerEntry;
 import oakgit.jdbc.OakGitResultSet;
 
 import java.sql.ResultSet;
@@ -40,11 +42,17 @@ public interface CommandResult {
     }
   };
 
-  static CommandResult emptyResult(String tableName) {
+  static <T extends ContainerEntry<T>> CommandResult emptyResult(@NonNull String tableName, Class<T> entryType) {
     return new CommandResult() {
       @Override
       public ResultSet toResultSet() {
-        return new OakGitResultSet(tableName);
+        OakGitResultSet resultSet = new OakGitResultSet(tableName);
+
+        ContainerEntry.emptyOf(entryType)
+            .getResultSetTypeModifier()
+            .accept(resultSet);
+
+        return resultSet;
       }
 
       @Override

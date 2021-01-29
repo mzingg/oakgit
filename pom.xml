@@ -21,7 +21,7 @@
     <oak.version>1.10.2</oak.version>
     <!-- has to correspond to aem.version - version taken from org.apache.sling.datasource dependency -->
     <tomcat.version>7.0.92</tomcat.version>
-    <junit.version>5.6.2</junit.version>
+    <junit.version>5.7.0</junit.version>
 
     <localdev.aem.root>../run/author</localdev.aem.root>
     <localdev.aem.jar>aem-author-p4502.jar</localdev.aem.jar>
@@ -216,13 +216,13 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.12</version>
+      <version>1.18.18</version>
     </dependency>
 
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
-      <version>5.7.0.202003110725-r</version>
+      <version>5.10.0.202012080955-r</version>
     </dependency>
 
     <!-- needed to read the project version form the pom file in META-INF -->
@@ -266,13 +266,6 @@
     </dependency>
 
     <!-- Test dependencies -->
-    <dependency>
-      <groupId>io.vavr</groupId>
-      <artifactId>vavr</artifactId>
-      <version>0.10.2</version>
-      <scope>test</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-core</artifactId>
@@ -318,7 +311,7 @@
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
-      <version>1.6.2</version>
+      <version>1.7.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -332,7 +325,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>3.3.3</version>
+      <version>3.7.7</version>
       <scope>test</scope>
     </dependency>
 
@@ -353,14 +346,14 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.2.12</version>
+      <version>42.2.18</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.22</version>
+      <version>8.0.23</version>
       <scope>test</scope>
     </dependency>
 

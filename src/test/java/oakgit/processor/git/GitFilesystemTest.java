@@ -1,12 +1,10 @@
 package oakgit.processor.git;
 
-import io.vavr.Tuple3;
 import oakgit.UnitTest;
 import oakgit.util.TestHelpers;
+import oakgit.util.TestHelpers.GitEnv;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.lib.PersonIdent;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -19,10 +17,10 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryWithNullPathArgumentThrowsException() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
 
     try {
-      new GitFilesystem(gitEnv._1, gitEnv._3)
+      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
           .createDirectory((Path) null);
 
     } catch (GitFilesystemException expectedException) {
@@ -34,10 +32,10 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryWithNullStringArgumentThrowsException() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
 
     try {
-      new GitFilesystem(gitEnv._1, gitEnv._3)
+      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
           .createDirectory((String) null);
 
     } catch (GitFilesystemException expectedException) {
@@ -49,12 +47,12 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryWithParentDirectoryOutsideGitWorkspaceThrowsException() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
     Path testPath = Files.createTempDirectory("aTestPath");
 
     try {
 
-      new GitFilesystem(gitEnv._1, gitEnv._3)
+      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
           .createDirectory(testPath.resolve("aDirectoryName"));
 
     } catch (GitFilesystemException expectedException) {
@@ -69,13 +67,13 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryWithPathOfAlreadyExistingFileThrowsException() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
-    Path existingFilePath = gitEnv._2.resolve("anExistingFile");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    Path existingFilePath = gitEnv.getPath().resolve("anExistingFile");
 
     try {
       Files.write(existingFilePath, new byte[0]);
 
-      new GitFilesystem(gitEnv._1, gitEnv._3)
+      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
           .createDirectory(existingFilePath);
 
     } catch (GitFilesystemException expectedException) {
@@ -90,13 +88,13 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryWithPathOfAlreadyExistingDirectoryThrowsException() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
-    Path existingDirectoryPath = gitEnv._2.resolve("anExistingDirectory");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    Path existingDirectoryPath = gitEnv.getPath().resolve("anExistingDirectory");
 
     try {
       Files.createDirectory(existingDirectoryPath);
 
-      new GitFilesystem(gitEnv._1, gitEnv._3)
+      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
           .createDirectory(existingDirectoryPath);
 
     } catch (GitFilesystemException expectedException) {
@@ -111,15 +109,15 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryWithParentDirectoryCreatesDirectoryInGitWorkspace() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
-    Path parentDirectoryPath = gitEnv._2.resolve("aParentDirectory");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    Path parentDirectoryPath = gitEnv.getPath().resolve("aParentDirectory");
     Path subDirectoryPath = parentDirectoryPath.resolve("aDirectoryName");
     File expectedDirectory = subDirectoryPath.toFile();
 
 
-    new GitFilesystem(gitEnv._1, gitEnv._3)
+    new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
         .createDirectory("aParentDirectory");
-    new GitFilesystem(gitEnv._1, gitEnv._3)
+    new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
         .createDirectory("aParentDirectory/aDirectoryName");
 
     assertThat("directory exists in git workspace path", expectedDirectory.exists() && expectedDirectory.isDirectory());
@@ -127,11 +125,11 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryWithNullParentDirectoryButRelativePathPartsInDirectoryNameCreatesDirectoryInGitWorkspace() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
     String directoryName = "aParentDirectory/aDirectoryName";
-    File expectedDirectory = gitEnv._2.resolve(directoryName).toFile();
+    File expectedDirectory = gitEnv.getPath().resolve(directoryName).toFile();
 
-    new GitFilesystem(gitEnv._1, gitEnv._3)
+    new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
         .createDirectory(directoryName);
 
     assertThat("directory exists in git workspace path", expectedDirectory.exists() && expectedDirectory.isDirectory());
@@ -139,13 +137,13 @@ class GitFilesystemTest {
 
   @UnitTest
   void createDirectoryAddsAndCommitsEmptyGitIgnoreFile() throws Exception {
-    Tuple3<Git, Path, PersonIdent> gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
+    GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
 
-    Path actualDirectoryPath = new GitFilesystem(gitEnv._1, gitEnv._3)
+    Path actualDirectoryPath = new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
         .createDirectory("aDirectoryName");
 
     File gitIgnoreFile = actualDirectoryPath.resolve(GitFilesystem.GIT_IGNORE_FILENAME).toFile();
-    Status status = gitEnv._1.status().call();
+    Status status = gitEnv.getGit().status().call();
     assertThat(".gitignore exists", gitIgnoreFile.exists() && gitIgnoreFile.isFile());
     assertThat("git status has no untracked files", status.getUntracked().isEmpty());
     assertThat("git status is clean", status.isClean());

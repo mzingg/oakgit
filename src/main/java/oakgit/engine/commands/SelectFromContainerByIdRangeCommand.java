@@ -1,6 +1,9 @@
 package oakgit.engine.commands;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 import oakgit.engine.Command;
 import oakgit.engine.CommandResult;
 import oakgit.engine.model.ContainerEntry;
@@ -11,13 +14,9 @@ import java.util.List;
 /**
  * This class offers a {@link Command} to select an entry by an id range
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public class SelectFromContainerByIdRangeCommand implements Command {
-
-  @NonNull
-  private final String containerName;
+public class SelectFromContainerByIdRangeCommand<T extends ContainerEntry<T>> extends AbstractContainerCommand<T> {
 
   @NonNull
   private final String idMin;
@@ -25,15 +24,21 @@ public class SelectFromContainerByIdRangeCommand implements Command {
   @NonNull
   private final String idMax;
 
-  @NonNull
   private final int limit;
 
   @NonNull
   @Setter
   private List<String> resultFieldList = Collections.emptyList();
 
-  public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, @NonNull List<T> foundEntries) {
-    return new MultipleEntriesResult<T>(containerName, entryType, foundEntries, resultFieldList);
+  public SelectFromContainerByIdRangeCommand(@NonNull String containerName, @NonNull String idMin, @NonNull String idMax, int limit) {
+    super(containerName);
+    this.idMin = idMin;
+    this.idMax = idMax;
+    this.limit = limit;
+  }
+
+  public CommandResult buildResult(@NonNull List<T> foundEntries) {
+    return new MultipleEntriesResult<>(getContainerName(), getEntryType(), foundEntries, resultFieldList);
   }
 
 }

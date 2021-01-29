@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public interface ContainerEntry<T extends ContainerEntry> {
+public interface ContainerEntry<T extends ContainerEntry<T>> {
 
   /**
    * Returns an instance of an empty container typed to the given class.
@@ -82,6 +82,14 @@ public interface ContainerEntry<T extends ContainerEntry> {
 
   Map<String, OakGitResultSet.Column> getAvailableColumnsByName();
 
+  default Consumer<OakGitResultSet> getResultSetTypeModifier() {
+    return result -> {
+      for (OakGitResultSet.Column column : getAvailableColumnsByName().values()) {
+        result.addColumn(column);
+      }
+    };
+  }
+
   default Consumer<OakGitResultSet> getResultSetTypeModifier(@NonNull List<String> fieldList) {
     return result -> {
       List<String> fields = expandOrReturnFieldList(fieldList);
@@ -125,7 +133,7 @@ public interface ContainerEntry<T extends ContainerEntry> {
 
 
   @Data
-  static class ColumnGetterResult {
+  class ColumnGetterResult {
     @NonNull
     private final String fieldName;
 

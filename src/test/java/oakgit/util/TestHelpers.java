@@ -1,7 +1,6 @@
 package oakgit.util;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple3;
+import lombok.Data;
 import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
@@ -37,11 +36,11 @@ public class TestHelpers {
     return Files.createDirectories(target);
   }
 
-  public static Tuple3<Git, Path, PersonIdent> aCleanGitEnvironment(String directoryName) throws GitAPIException, IOException {
+  public static GitEnv aCleanGitEnvironment(String directoryName) throws GitAPIException, IOException {
     Path workspaceDirectory = aCleanTestDirectory(directoryName);
     Git git = Git.init().setDirectory(workspaceDirectory.toFile()).call();
     PersonIdent committer = new PersonIdent("Oak Git", "oak-git@somewhere.com");
-    return Tuple.of(git, workspaceDirectory, committer);
+    return new GitEnv(git, workspaceDirectory, committer);
   }
 
   public static PlaceholderData placeholderData(Object... values) {
@@ -62,4 +61,12 @@ public class TestHelpers {
     assertThat(actual.getOriginQuery(), is(sqlQuery));
     assertThat(actual.getCommandSupplier(), is(not(nullValue())));
   }
+
+  @Data
+  public static class GitEnv {
+    private final Git git;
+    private final Path path;
+    private final PersonIdent personIdent;
+  }
+
 }

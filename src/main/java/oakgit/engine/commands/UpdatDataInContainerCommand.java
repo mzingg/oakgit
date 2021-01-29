@@ -2,7 +2,6 @@ package oakgit.engine.commands;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import oakgit.engine.Command;
 import oakgit.engine.CommandResult;
@@ -13,13 +12,9 @@ import java.util.Collections;
 /**
  * This class offers a {@link Command} to update an entry
  */
-@RequiredArgsConstructor
 @Getter
 @ToString
-public class UpdatDataInContainerCommand implements Command {
-
-  @NonNull
-  private final String containerName;
+public class UpdatDataInContainerCommand<T extends ContainerEntry<T>> extends AbstractContainerCommand<T> {
 
   @NonNull
   private final String id;
@@ -29,7 +24,15 @@ public class UpdatDataInContainerCommand implements Command {
   @NonNull
   private final UpdateSet data;
 
-  public <T extends ContainerEntry<T>> CommandResult buildResult(Class<T> entryType, T updatedEntry) {
-    return new SingleEntryResult<>(containerName, entryType, updatedEntry, Collections.emptyList());
+  public UpdatDataInContainerCommand(@NonNull String containerName, @NonNull String id, long modCount, @NonNull UpdateSet data) {
+    super(containerName);
+    this.id = id;
+    this.modCount = modCount;
+    this.data = data;
   }
+
+  public CommandResult buildResult(T updatedEntry) {
+    return new SingleEntryResult<>(getContainerName(), getEntryType(), updatedEntry, Collections.emptyList());
+  }
+
 }

@@ -115,7 +115,7 @@ class SelectByIdAnalyzerTest {
         .setBdata("testBigData".getBytes());
 
     Command command = target.getCommandSupplier().apply(placeholderData, Integer.MAX_VALUE);
-    ResultSet actual = ((SelectFromContainerByIdCommand) command).buildResult(DocumentEntry.class, referenceEntry).toResultSet();
+    ResultSet actual = ((SelectFromContainerByIdCommand) command).buildResult(referenceEntry).toResultSet();
 
     assertThat(actual.next(), is(true));
     assertThat(actual.getLong(1), is(1589793585L));
@@ -141,7 +141,7 @@ class SelectByIdAnalyzerTest {
         .setBdata("testBigData".getBytes());
 
     Command command = target.getCommandSupplier().apply(placeholderData, Integer.MAX_VALUE);
-    ResultSet actual = ((SelectFromContainerByIdCommand) command).buildResult(DocumentEntry.class, referenceEntry).toResultSet();
+    ResultSet actual = ((SelectFromContainerByIdCommand) command).buildResult(referenceEntry).toResultSet();
 
     assertThat(actual.next(), is(true));
     assertThat(actual.getLong(1), is(1589793585L));

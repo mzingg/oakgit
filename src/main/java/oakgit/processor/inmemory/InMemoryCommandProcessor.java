@@ -3,6 +3,7 @@ package oakgit.processor.inmemory;
 import oakgit.engine.Command;
 import oakgit.engine.CommandProcessor;
 import oakgit.engine.CommandResult;
+import oakgit.engine.ContainerCommand;
 import oakgit.engine.commands.*;
 import oakgit.engine.model.DocumentEntry;
 
@@ -18,78 +19,98 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
   private final Map<String, InMemoryContainer> containerMap = new HashMap<>();
 
 
+  @SuppressWarnings("unchecked")
   @Override
   public synchronized CommandResult execute(Command command) {
-    if (command instanceof CreateContainerCommand) {
 
-      String containerName = ((CreateContainerCommand) command).getContainerName();
-      containerMap.put(containerName, new InMemoryContainer(containerName));
+    if (!(command instanceof ContainerCommand<?>)) {
+      return CommandResult.NO_RESULT;
+    }
 
-      return SUCCESSFULL_RESULT_WITHOUT_DATA;
+    ContainerCommand<?> containerCommand = (ContainerCommand<?>) command;
 
-    } else if (command instanceof InsertIntoContainerCommand) {
+    String containerName = containerCommand.getContainerName();
 
-      InsertIntoContainerCommand<?> insertCommand = (InsertIntoContainerCommand<?>) command;
-
-      getContainer(insertCommand.getContainerName())
-          .setEntry(insertCommand.getData());
+    if (containerCommand instanceof CreateContainerCommand) {
+      createContainer(containerName);
 
       return SUCCESSFULL_RESULT_WITHOUT_DATA;
 
-    } else if (command instanceof SelectFromContainerByIdCommand) {
+    } else {
+      Optional<InMemoryContainer> container = getContainer(containerCommand.getContainerName());
 
-      SelectFromContainerByIdCommand selectCommand = (SelectFromContainerByIdCommand) command;
+      if (containerCommand instanceof InsertIntoContainerCommand) {
+        InsertIntoContainerCommand<?> insertCommand = (InsertIntoContainerCommand<?>) containerCommand;
 
-      DocumentEntry foundEntry = getContainer(selectCommand.getContainerName())
-          .findById(selectCommand.getId(), DocumentEntry.class)
-          .orElse(null);
+        container.orElse(createContainer(containerName))
+            .setEntry(insertCommand.getData());
 
-      return selectCommand.buildResult(DocumentEntry.class, foundEntry);
+        return SUCCESSFULL_RESULT_WITHOUT_DATA;
 
-    } else if (command instanceof SelectFromContainerByIdRangeCommand) {
+      } else if (containerCommand instanceof SelectFromContainerByIdCommand) {
+        SelectFromContainerByIdCommand<DocumentEntry> selectCommand = (SelectFromContainerByIdCommand<DocumentEntry>) containerCommand;
 
-      SelectFromContainerByIdRangeCommand selectCommand = (SelectFromContainerByIdRangeCommand) command;
+        if (container.isEmpty()) {
+          return CommandResult.emptyResult(containerName, containerCommand.getEntryType());
+        }
 
-      List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
-          .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class, selectCommand.getLimit());
+        DocumentEntry foundEntry = container.get().findById(selectCommand.getId(), DocumentEntry.class)
+            .orElse(null);
 
-      return selectCommand.buildResult(DocumentEntry.class, foundEntries);
-    } else if (command instanceof SelectFromContainerByMultipleIdsCommand) {
+        return selectCommand.buildResult(foundEntry);
 
-      SelectFromContainerByMultipleIdsCommand selectCommand = (SelectFromContainerByMultipleIdsCommand) command;
+      } else if (containerCommand instanceof SelectFromContainerByIdRangeCommand) {
 
-      List<DocumentEntry> foundEntries = getContainer(selectCommand.getContainerName())
-          .findByIds(selectCommand.getIds(), DocumentEntry.class);
+        SelectFromContainerByIdRangeCommand<DocumentEntry> selectCommand = (SelectFromContainerByIdRangeCommand<DocumentEntry>) containerCommand;
 
-      return selectCommand.buildResult(DocumentEntry.class, foundEntries);
-    } else if (command instanceof UpdatDataInContainerCommand) {
+        List<DocumentEntry> foundEntries = container.orElse(createContainer(containerName))
+            .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), DocumentEntry.class, selectCommand.getLimit());
 
-      UpdatDataInContainerCommand updateCommand = (UpdatDataInContainerCommand) command;
+        return selectCommand.buildResult(foundEntries);
+      } else if (containerCommand instanceof SelectFromContainerByMultipleIdsCommand) {
 
-      InMemoryContainer container = getContainer(updateCommand.getContainerName());
-      Optional<DocumentEntry> existingEntry = container
-          .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
+        SelectFromContainerByMultipleIdsCommand<DocumentEntry> selectCommand = (SelectFromContainerByMultipleIdsCommand<DocumentEntry>) containerCommand;
 
-      if (existingEntry.isPresent()) {
-        final DocumentEntry entityToUpdate = existingEntry.get();
-        updateCommand.getData().update(entityToUpdate);
-        container.setEntry(entityToUpdate);
+        List<DocumentEntry> foundEntries = container.orElse(createContainer(containerName))
+            .findByIds(selectCommand.getIds(), DocumentEntry.class);
 
-        return updateCommand.buildResult(DocumentEntry.class, entityToUpdate);
+        return selectCommand.buildResult(foundEntries);
+      } else if (containerCommand instanceof UpdatDataInContainerCommand) {
+
+        UpdatDataInContainerCommand<DocumentEntry> updateCommand = (UpdatDataInContainerCommand<DocumentEntry>) containerCommand;
+
+        InMemoryContainer containerToUpdate = container.orElse(createContainer(containerName));
+        Optional<DocumentEntry> existingEntry = containerToUpdate
+            .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
+
+        if (existingEntry.isPresent()) {
+          final DocumentEntry entityToUpdate = existingEntry.get();
+          updateCommand.getData().update(entityToUpdate);
+          containerToUpdate.setEntry(entityToUpdate);
+
+          return updateCommand.buildResult(entityToUpdate);
+        }
+      } else if (containerCommand instanceof ErrorCommand) {
+        System.err.println(containerCommand);
       }
-    } else if (command instanceof ErrorCommand) {
-      System.err.println(command);
     }
 
     return CommandResult.NO_RESULT;
   }
 
-  private InMemoryContainer getContainer(String name) {
-    if (!containerMap.containsKey(name)) {
-      containerMap.put(name, new InMemoryContainer(name));
+  private InMemoryContainer createContainer(String containerName) {
+    InMemoryContainer result = new InMemoryContainer(containerName);
+    containerMap.put(containerName, result);
+
+    return result;
+  }
+
+  private Optional<InMemoryContainer> getContainer(String name) {
+    if (containerMap.containsKey(name)) {
+      return Optional.of(containerMap.get(name));
     }
 
-    return containerMap.get(name);
+    return Optional.empty();
   }
 
 }
