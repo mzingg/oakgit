@@ -27,7 +27,7 @@ public class SelectInAnalyzer implements QueryAnalyzer {
           throw new IllegalStateException("list of ids does not match ? count in query");
         }
 
-        return new SelectFromContainerByMultipleIdsCommand(tableName, idList)
+        return new SelectFromContainerByMultipleIdsCommand<>(tableName, idList)
             .setResultFieldList(parseFieldList(fieldDeclaration));
       });
       return result;

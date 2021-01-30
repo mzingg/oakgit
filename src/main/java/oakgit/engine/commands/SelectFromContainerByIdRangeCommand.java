@@ -35,8 +35,8 @@ public class SelectFromContainerByIdRangeCommand<T extends ContainerEntry<T>> ex
     this.limit = limit;
   }
 
-  public ContainerCommandResult buildResult(@NonNull List<T> foundEntries) {
-    return new MultipleEntriesResult<>(getContainerName(), getEntryType(), foundEntries, resultFieldList);
+  public ContainerCommandResult<T> buildResult(@NonNull List<T> foundEntries) {
+    return new MultipleEntriesResult<>(getContainerName(), getEntryType(), foundEntries, getResultFieldList());
   }
 
 }

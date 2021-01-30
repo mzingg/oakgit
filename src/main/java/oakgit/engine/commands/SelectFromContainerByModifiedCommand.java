@@ -17,7 +17,7 @@ public class SelectFromContainerByModifiedCommand<T extends ContainerEntry<T>> e
   @Setter
   private List<String> resultFieldList = Collections.emptyList();
 
-  public SelectFromContainerByModifiedCommand(@NonNull String containerName, @NonNull Long modified, int limit) {
+  public SelectFromContainerByModifiedCommand(@NonNull String containerName, long modified, int limit) {
     super(containerName);
     this.modified = modified;
     this.limit = limit;

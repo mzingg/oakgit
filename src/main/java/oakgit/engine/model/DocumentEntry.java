@@ -5,8 +5,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import oakgit.jdbc.OakGitResultSet;
 import oakgit.jdbc.util.SqlType;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -148,21 +146,4 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry>, ModCountSup
     return Optional.empty();
   }
 
-  @Override
-  public String toString() {
-    return new ToStringBuilder(this, ToStringStyle.SIMPLE_STYLE)
-        .append("id", id)
-        .append("modified", modified)
-        .append("hasBinary", hasBinary)
-        .append("deletedOnce", deletedOnce)
-        .append("modCount", modCount)
-        .append("cModCount", cModCount)
-        .append("dSize", dSize)
-        .append("version", version)
-        .append("sdType", sdType)
-        .append("sdMaxRevTime", sdMaxRevTime)
-        .append("data", data != null ? new String(data) : "null")
-        .append("bdata", bdata != null ? new String(bdata) : "null")
-        .toString();
-  }
 }

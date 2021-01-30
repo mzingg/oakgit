@@ -28,8 +28,8 @@ public class SelectFromContainerByMultipleIdsCommand<T extends ContainerEntry<T>
     this.ids = ids;
   }
 
-  public ContainerCommandResult buildResult(@NonNull List<T> foundEntries) {
-    return new MultipleEntriesResult<>(getContainerName(), getEntryType(), foundEntries, resultFieldList);
+  public ContainerCommandResult<T> buildResult(@NonNull List<T> foundEntries) {
+    return new MultipleEntriesResult<>(getContainerName(), getEntryType(), foundEntries, getResultFieldList());
   }
 
 }
