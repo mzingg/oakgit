@@ -42,15 +42,13 @@ public class OakGitDriver implements Driver {
         model = reader.read(
             new InputStreamReader(
                 OakGitDriver.class.getResourceAsStream(
-                    "/META-INF/maven/oakgit/oakgit/pom.xml"
+                    "/META-INF/maven/oakgit/oakgit-persistence/pom.xml"
                 )
             )
         );
       }
     } catch (IOException | XmlPullParserException | NullPointerException ignored) {
       // fall through to empty model
-      model.setArtifactId("oakgit-persistence");
-      model.setVersion("1.0.0");
     }
 
     return model;

@@ -23,7 +23,11 @@ public class OakGitStatement extends UnsupportedOakGitStatement {
     CommandProcessor processor = connection.getProcessor();
     CommandFactory factory = connection.getCommandFactory();
 
-    this.resultSet = processor.execute(factory.getCommandForSql(sql)).toResultSet();
+    try {
+      this.resultSet = processor.execute(factory.getCommandForSql(sql)).toResultSet();
+    } catch (IllegalStateException stateException) {
+      throw new SQLException(stateException);
+    }
     return resultSet;
   }
 

@@ -28,8 +28,9 @@ public class SelectFromContainerByMultipleIdsCommand<T extends ContainerEntry<T>
     this.ids = ids;
   }
 
-  public ContainerCommandResult<T> buildResult(@NonNull List<T> foundEntries) {
-    return new MultipleEntriesResult<>(getContainerName(), getEntryType(), foundEntries, getResultFieldList());
+  @SuppressWarnings("unchecked")
+  public ContainerCommandResult<T> buildResult(@NonNull List<?> foundEntries) {
+    return new MultipleEntriesResult<T>(getContainerName(), getEntryType(), (List<T>) foundEntries, getResultFieldList());
   }
 
 }

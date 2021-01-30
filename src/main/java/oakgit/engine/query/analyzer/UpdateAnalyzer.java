@@ -48,11 +48,21 @@ public class UpdateAnalyzer implements QueryAnalyzer {
               updateValue = 2;
               break;
             case "DATA || CAST(? AS varchar(16384))":
-              String newDataString = (String) placeholderData.get(placeHolderIndex);
+              byte[] newDataBytes = placeholderData.getBytes(placeHolderIndex);
+              if (newDataBytes == null) {
+                String newDataString = placeholderData.getString(placeHolderIndex);
+                if (newDataString != null) {
+                  newDataBytes = newDataString.getBytes();
+                } else {
+                  newDataBytes = new byte[0];
+                }
+              }
+              final byte[] newData = new byte[newDataBytes.length];
+              System.arraycopy(newDataBytes, 0, newData, 0, newDataBytes.length);
+
               placeHolderIndex++;
               updateValue = (Function<DocumentEntry, byte[]>) entry -> {
                 byte[] oldData = entry.getData() != null ? entry.getData() : new byte[0];
-                byte[] newData = newDataString != null ? newDataString.getBytes() : new byte[0];
                 byte[] combined = new byte[oldData.length + newData.length];
                 System.arraycopy(oldData, 0, combined, 0, oldData.length);
                 System.arraycopy(newData, 0, combined, oldData.length, newData.length);

@@ -20,7 +20,7 @@ public class SelectByModifiedAnalyzer implements QueryAnalyzer {
       String limitValue = matcher.group(4);
       result.setCommandSupplier((placeholderData, selectionLimit) -> {
         List<String> resultFieldList = parseFieldList(fieldDeclaration);
-        return new SelectFromContainerByModifiedCommand(
+        return new SelectFromContainerByModifiedCommand<>(
             tableName,
             Long.parseLong(modifiedValue),
             Integer.parseInt(limitValue)

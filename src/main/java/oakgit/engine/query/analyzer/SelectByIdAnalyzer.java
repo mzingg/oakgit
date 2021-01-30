@@ -38,7 +38,7 @@ public class SelectByIdAnalyzer implements QueryAnalyzer {
           }
         }
         String idByPlaceholder = placeholderData.hasIndex(placeHolderIndex) ? placeholderData.getString(placeHolderIndex) : null;
-        return new SelectFromContainerByIdCommand(
+        return new SelectFromContainerByIdCommand<>(
             tableName,
             StringUtils.isNotBlank(idValue) ? idValue : idByPlaceholder
         ).setResultFieldList(resultFieldList);

@@ -27,8 +27,12 @@ public class SelectFromContainerByIdCommand<T extends ContainerEntry<T>> extends
   @Setter
   private List<String> resultFieldList = Collections.emptyList();
 
-  public ContainerCommandResult<T> buildResult(T foundEntry) {
-    return new SingleEntryResult<>(getContainerName(), getEntryType(), foundEntry, getResultFieldList());
+  @SuppressWarnings("unchecked")
+  public ContainerCommandResult<T> buildResult(ContainerEntry<?> foundEntry) {
+    if (foundEntry != null && !getEntryType().isAssignableFrom(foundEntry.getClass())) {
+      throw new IllegalArgumentException("foundEntry must be of type " + getEntryType());
+    }
+    return new SingleEntryResult<T>(getContainerName(), getEntryType(), (T) foundEntry, getResultFieldList());
   }
 
 }
