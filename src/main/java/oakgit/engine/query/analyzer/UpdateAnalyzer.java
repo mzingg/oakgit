@@ -1,7 +1,7 @@
 package oakgit.engine.query.analyzer;
 
-import oakgit.engine.commands.UpdatDataInContainerCommand;
-import oakgit.engine.commands.UpdateSet;
+import oakgit.engine.commands.UpdatDocumentDataInContainerCommand;
+import oakgit.engine.model.DocumentEntryUpdateSet;
 import oakgit.engine.model.DocumentEntry;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
@@ -24,7 +24,7 @@ public class UpdateAnalyzer implements QueryAnalyzer {
         int lastPlaceholderIndex = placeholderData.maxIndex();
 
         List<String> setExpressions = parseFieldList(setExpressionsString);
-        UpdateSet data = new UpdateSet();
+        DocumentEntryUpdateSet data = new DocumentEntryUpdateSet();
         int placeHolderIndex = 1;
         for (String setExpression : setExpressions) {
           String[] split = StringUtils.splitByWholeSeparator(setExpression, " = ");
@@ -70,7 +70,7 @@ public class UpdateAnalyzer implements QueryAnalyzer {
           data.withValue(fieldName.trim(), updateValue);
         }
 
-        return new UpdatDataInContainerCommand(
+        return new UpdatDocumentDataInContainerCommand(
             tableName,
             placeholderData.getString(lastPlaceholderIndex - 1),
             placeholderData.getLong(lastPlaceholderIndex),

@@ -8,7 +8,6 @@ import oakgit.jdbc.util.SqlType;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,8 +36,8 @@ public class DatastoreDataEntry implements ContainerEntry<DatastoreDataEntry> {
   }
 
   @Override
-  public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
-    Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
+  public LinkedHashMap<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+    LinkedHashMap<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
     result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 64, Collections.emptyList()));
     result.put("DATA", new OakGitResultSet.Column("DATA", SqlType.BLOB.id, 0, Collections.emptyList()));
     return result;

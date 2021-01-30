@@ -10,7 +10,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,8 +66,8 @@ public class DocumentEntry implements ContainerEntry<DocumentEntry>, ModCountSup
   }
 
   @Override
-  public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
-    Map<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
+  public LinkedHashMap<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+    LinkedHashMap<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
     result.put("ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 512, Collections.emptyList()));
     result.put("MODIFIED", new OakGitResultSet.Column("MODIFIED", SqlType.BIGINT.id, 0, Collections.emptyList()));
     result.put("HASBINARY", new OakGitResultSet.Column("HASBINARY", SqlType.SMALLINT.id, 0, Collections.emptyList()));

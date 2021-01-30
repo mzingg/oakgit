@@ -1,9 +1,7 @@
-package oakgit.engine.commands;
+package oakgit.engine.model;
 
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.ToString;
-import oakgit.engine.model.DocumentEntry;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,19 +10,18 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@ToString
-public class UpdateSet {
+public class DocumentEntryUpdateSet {
 
   private final Map<String, Object> updatedValues = new HashMap<>();
   @Setter
   private List<String> setExpressions = Collections.emptyList();
 
-  public UpdateSet withValue(@NonNull String name, Object value) {
+  public DocumentEntryUpdateSet withValue(@NonNull String name, Object value) {
     updatedValues.put(name, value);
     return this;
   }
 
-  public UpdateSet update(DocumentEntry entityToUpdate) {
+  public DocumentEntryUpdateSet update(DocumentEntry entityToUpdate) {
     whenHasValue("MODIFIED", Long.class, entityToUpdate, entityToUpdate::setModified);
     whenHasValue("HASBINARY", Integer.class, entityToUpdate, entityToUpdate::setHasBinary);
     whenHasValue("DELETEDONCE", Integer.class, entityToUpdate, entityToUpdate::setDeletedOnce);
@@ -40,7 +37,7 @@ public class UpdateSet {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> UpdateSet whenHasValue(@NonNull String name, Class<T> targetType, DocumentEntry entityToUpdate, Consumer<T> setter) {
+  private <T> DocumentEntryUpdateSet whenHasValue(@NonNull String name, Class<T> targetType, DocumentEntry entityToUpdate, Consumer<T> setter) {
     if (updatedValues.containsKey(name)) {
       Object value = updatedValues.get(name);
       if (value instanceof Function) {

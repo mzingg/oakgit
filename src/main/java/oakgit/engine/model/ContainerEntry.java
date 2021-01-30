@@ -5,10 +5,7 @@ import lombok.NonNull;
 import oakgit.jdbc.OakGitResultSet;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public interface ContainerEntry<T extends ContainerEntry<T>> {
@@ -80,14 +77,10 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
    */
   String getId();
 
-  Map<String, OakGitResultSet.Column> getAvailableColumnsByName();
+  LinkedHashMap<String, OakGitResultSet.Column> getAvailableColumnsByName();
 
   default Consumer<OakGitResultSet> getResultSetTypeModifier() {
-    return result -> {
-      for (OakGitResultSet.Column column : getAvailableColumnsByName().values()) {
-        result.addColumn(column);
-      }
-    };
+    return getResultSetTypeModifier(Collections.emptyList());
   }
 
   default Consumer<OakGitResultSet> getResultSetTypeModifier(@NonNull List<String> fieldList) {
@@ -153,7 +146,7 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
     }
 
     @Override
-    public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+    public LinkedHashMap<String, OakGitResultSet.Column> getAvailableColumnsByName() {
       throw new UnsupportedOperationException("trying to get columns from an invalid entry");
     }
 

@@ -3,7 +3,6 @@ package oakgit.jdbc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import oakgit.jdbc.util.SqlType;
 
 import java.sql.ResultSetMetaData;
@@ -14,7 +13,6 @@ import java.util.Optional;
 
 @Getter
 @Setter
-@ToString
 public class OakGitResultSet extends UnsupportedResultSet {
 
   public static final OakGitResultSet EMPTY_RESULT_SET = new OakGitResultSet("");
@@ -219,7 +217,6 @@ public class OakGitResultSet extends UnsupportedResultSet {
   }
 
   @RequiredArgsConstructor
-  @ToString
   public final static class Column {
     private final String name;
     private final int type;

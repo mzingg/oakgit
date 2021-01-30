@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.jdbc.OakGitResultSet;
 
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class RedTestEntry implements ContainerEntry<RedTestEntry> {
   }
 
   @Override
-  public Map<String, OakGitResultSet.Column> getAvailableColumnsByName() {
+  public LinkedHashMap<String, OakGitResultSet.Column> getAvailableColumnsByName() {
     return null;
   }
 

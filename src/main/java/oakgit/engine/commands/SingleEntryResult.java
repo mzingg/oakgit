@@ -3,8 +3,7 @@ package oakgit.engine.commands;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import oakgit.engine.CommandResult;
+import oakgit.engine.ContainerCommandResult;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.jdbc.OakGitResultSet;
 
@@ -15,8 +14,7 @@ import static oakgit.engine.model.ContainerEntry.isValidAndNotEmpty;
 
 @RequiredArgsConstructor
 @Getter
-@ToString
-public class SingleEntryResult<T extends ContainerEntry<T>> implements CommandResult {
+public class SingleEntryResult<T extends ContainerEntry<T>> implements ContainerCommandResult<T> {
 
   @NonNull
   private final String containerName;
@@ -30,12 +28,10 @@ public class SingleEntryResult<T extends ContainerEntry<T>> implements CommandRe
   private final List<String> resultFieldList;
 
   @Override
-  public ResultSet toResultSet() {
-    OakGitResultSet result = new OakGitResultSet(containerName);
-    ContainerEntry.emptyOf(entryType)
-        .getResultSetTypeModifier(resultFieldList).accept(result);
-    if (foundEntry != null) {
-      foundEntry.getResultSetModifier(resultFieldList).accept(result);
+  public ResultSet toResultSet(@NonNull OakGitResultSet result, @NonNull T emptyType) {
+    emptyType.getResultSetTypeModifier(getResultFieldList()).accept(result);
+    if (wasSuccessfull()) {
+      getFoundEntry().getResultSetModifier(getResultFieldList()).accept(result);
       result.setWasNull(false);
     } else {
       result.setWasNull(true);

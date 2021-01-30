@@ -3,8 +3,7 @@ package oakgit.engine.commands;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import oakgit.engine.CommandResult;
+import oakgit.engine.ContainerCommandResult;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.jdbc.OakGitResultSet;
 
@@ -13,8 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
-@ToString
-public class MultipleEntriesResult<T extends ContainerEntry<T>> implements CommandResult {
+public class MultipleEntriesResult<T extends ContainerEntry<T>> implements ContainerCommandResult<T> {
 
   @NonNull
   private final String containerName;
@@ -29,14 +27,13 @@ public class MultipleEntriesResult<T extends ContainerEntry<T>> implements Comma
   private final List<String> resultFieldList;
 
   @Override
-  public ResultSet toResultSet() {
-    OakGitResultSet result = new OakGitResultSet(containerName);
-    ContainerEntry.emptyOf(entryType)
-        .getResultSetTypeModifier(resultFieldList).accept(result);
+  public ResultSet toResultSet(@NonNull OakGitResultSet result, @NonNull T emptyType) {
+    List<String> fieldList = getResultFieldList();
+    emptyType.getResultSetTypeModifier(fieldList).accept(result);
     if (wasSuccessfull()) {
-      foundEntries.stream()
+      getFoundEntries().stream()
           .filter(ContainerEntry::isValidAndNotEmpty)
-          .forEach(e -> e.getResultSetModifier(resultFieldList).accept(result));
+          .forEach(e -> e.getResultSetModifier(fieldList).accept(result));
     }
 
     return result;

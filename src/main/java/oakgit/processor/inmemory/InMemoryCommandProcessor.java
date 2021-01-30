@@ -1,9 +1,6 @@
 package oakgit.processor.inmemory;
 
-import oakgit.engine.Command;
-import oakgit.engine.CommandProcessor;
-import oakgit.engine.CommandResult;
-import oakgit.engine.ContainerCommand;
+import oakgit.engine.*;
 import oakgit.engine.commands.*;
 import oakgit.engine.model.DocumentEntry;
 
@@ -12,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static oakgit.engine.CommandResult.NO_RESULT;
 import static oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
 public final class InMemoryCommandProcessor implements CommandProcessor {
@@ -24,7 +22,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
   public synchronized CommandResult execute(Command command) {
 
     if (!(command instanceof ContainerCommand<?>)) {
-      return CommandResult.NO_RESULT;
+      return NO_RESULT;
     }
 
     ContainerCommand<?> containerCommand = (ContainerCommand<?>) command;
@@ -51,7 +49,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
         SelectFromContainerByIdCommand<DocumentEntry> selectCommand = (SelectFromContainerByIdCommand<DocumentEntry>) containerCommand;
 
         if (container.isEmpty()) {
-          return CommandResult.emptyResult(containerName, containerCommand.getEntryType());
+          return ContainerCommandResult.emptyResult(containerName, containerCommand.getEntryType());
         }
 
         DocumentEntry foundEntry = container.get().findById(selectCommand.getId(), DocumentEntry.class)
@@ -72,12 +70,11 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
         SelectFromContainerByMultipleIdsCommand<DocumentEntry> selectCommand = (SelectFromContainerByMultipleIdsCommand<DocumentEntry>) containerCommand;
 
         List<DocumentEntry> foundEntries = container.orElse(createContainer(containerName))
-            .findByIds(selectCommand.getIds(), DocumentEntry.class);
+            .findByIds(selectCommand.getIds(), selectCommand.getEntryType());
 
         return selectCommand.buildResult(foundEntries);
-      } else if (containerCommand instanceof UpdatDataInContainerCommand) {
-
-        UpdatDataInContainerCommand<DocumentEntry> updateCommand = (UpdatDataInContainerCommand<DocumentEntry>) containerCommand;
+      } else if (containerCommand instanceof UpdatDocumentDataInContainerCommand) {
+        UpdatDocumentDataInContainerCommand updateCommand = (UpdatDocumentDataInContainerCommand) containerCommand;
 
         InMemoryContainer containerToUpdate = container.orElse(createContainer(containerName));
         Optional<DocumentEntry> existingEntry = containerToUpdate
@@ -95,7 +92,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       }
     }
 
-    return CommandResult.NO_RESULT;
+    return NO_RESULT;
   }
 
   private InMemoryContainer createContainer(String containerName) {

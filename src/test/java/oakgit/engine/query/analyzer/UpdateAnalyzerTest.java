@@ -2,7 +2,7 @@ package oakgit.engine.query.analyzer;
 
 import oakgit.UnitTest;
 import oakgit.engine.Command;
-import oakgit.engine.commands.UpdatDataInContainerCommand;
+import oakgit.engine.commands.UpdatDocumentDataInContainerCommand;
 import oakgit.engine.model.DocumentEntry;
 import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryMatchResult;
@@ -39,9 +39,9 @@ class UpdateAnalyzerTest {
     DocumentEntry existing = new DocumentEntry().setDSize(20L);
 
     Command command = target.getCommandSupplier().apply(placeholderData, Integer.MAX_VALUE);
-    ((UpdatDataInContainerCommand) command).getData().update(existing);
+    ((UpdatDocumentDataInContainerCommand) command).getData().update(existing);
 
-    assertThat(command, is(instanceOf(UpdatDataInContainerCommand.class)));
+    assertThat(command, is(instanceOf(UpdatDocumentDataInContainerCommand.class)));
     assertThat(existing.getDSize(), is(152L));
     assertThat(existing.getModified(), is(1589793585L));
   }

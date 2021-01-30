@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
-@ToString
 public class SelectFromContainerByModifiedCommand<T extends ContainerEntry<T>> extends AbstractContainerCommand<T> {
 
   @NonNull
