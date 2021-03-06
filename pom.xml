@@ -16,10 +16,11 @@
     <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 
-    <aem.version>6.5.0.0002</aem.version>
-    <!-- has to correspond to aem.version - version taken from wcm.io pom -->
-    <oak.version>1.10.2</oak.version>
-    <!-- has to correspond to aem.version - version taken from org.apache.sling.datasource dependency -->
+    <aem.version>6.5.0.0002</aem.version><!-- has to correspond to aem.version - version taken from wcm.io pom -->
+    <oak.version>1.10.2</oak.version><!-- has to correspond to aem.version - version taken from org.apache.sling.datasource dependency -->
+    <sling.base.version>3.0.4</sling.base.version><!-- has to correspond to aem.version - version taken from org.apache.sling.jcr.base dependency -->
+    <sling.threads.version>3.2.18</sling.threads.version><!-- has to correspond to aem.version - version taken from org.apache.sling.commons.threads dependency -->
+    <sling.discovery.version>1.0.4</sling.discovery.version><!-- has to correspond to aem.version - version taken from org.apache.sling.discovery dependency -->
     <tomcat.version>7.0.92</tomcat.version>
     <junit.version>5.7.0</junit.version>
 
@@ -267,6 +268,57 @@
 
     <!-- Test dependencies -->
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.annotation.versioning</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.jcr.api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.jcr.base</artifactId>
+      <version>${sling.base.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.settings</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.serviceusermapper</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.commons.threads</artifactId>
+      <version>${sling.threads.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.sling</groupId>
+      <artifactId>org.apache.sling.discovery.api</artifactId>
+      <version>${sling.discovery.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-core</artifactId>
       <version>${oak.version}</version>
@@ -287,6 +339,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>oak-lucene</artifactId>
+      <version>${oak.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junit.version}</version>
@@ -298,6 +357,31 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <!-- local dependencies -->
+    <dependency>
+      <groupId>com.adobe.granite</groupId>
+      <artifactId>com.adobe.granite.repository</artifactId>
+      <version>1.6.28</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/ops/lib/com.adobe.granite.repository-1.6.28.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>com.adobe.granite</groupId>
+      <artifactId>com.adobe.granite.license</artifactId>
+      <version>1.2.10</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/ops/lib/com.adobe.granite.license-1.2.10.jar</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>com.adobe</groupId>
+      <artifactId>crx-api</artifactId>
+      <version>2.6.6</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/ops/lib/crx-api-2.6.6.jar</systemPath>
     </dependency>
 
     <!-- junit-platform-launcher Public API for configuring and launching test plans — typically used by IDEs and build tools.

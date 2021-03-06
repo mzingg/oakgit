@@ -2,15 +2,19 @@ package oakgit.jdbc;
 
 import oakgit.SandboxTest;
 import oakgit.util.TestHelpers;
+import oakgit.util.TestRepositoryCreator;
+import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
-import org.apache.jackrabbit.oak.plugins.document.rdb.*;
+import org.apache.jackrabbit.oak.plugins.document.rdb.RDBBlobStoreDB;
+import org.apache.jackrabbit.oak.plugins.document.rdb.RDBDataSourceFactory;
+import org.apache.jackrabbit.oak.plugins.document.rdb.RDBDocumentNodeStoreBuilder;
+import org.apache.jackrabbit.oak.plugins.document.rdb.RDBDocumentStoreDB;
 import org.apache.jackrabbit.oak.spi.security.OpenSecurityProvider;
 import org.eclipse.jgit.api.Git;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 
 import javax.jcr.Node;
@@ -19,11 +23,7 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.sql.DataSource;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -34,15 +34,6 @@ public class OakDatabaseDriverSandboxTest {
   @BeforeAll
   private static void configureDerby() {
     System.setProperty("derby.stream.error.field", "oakgit.util.TestHelpers.DERBY_DEV_NULL");
-  }
-
-  @AfterEach
-  void cleanupDrivers() throws Exception {
-    for (Driver driver : Collections.list(DriverManager.getDrivers())) {
-      if (driver instanceof OakGitDriver) {
-        DriverManager.deregisterDriver(driver);
-      }
-    }
   }
 
   @SandboxTest
@@ -61,7 +52,9 @@ public class OakDatabaseDriverSandboxTest {
     hello.setProperty("velo", "velo");
     session.save();
 
-    assertThat(session, is(instanceOf(Session.class)));
+    Node actual = session.getNode("/jcr:system/hello");
+    assertThat(actual.getProperty("velo").getString(), is("velo"));
+    assertThat(actual.getPrimaryNodeType().getName(), is("nt:unstructured"));
     store.dispose();
   }
 
@@ -82,7 +75,9 @@ public class OakDatabaseDriverSandboxTest {
     hello.setProperty("velo", "velo");
     session.save();
 
-    assertThat(session, is(instanceOf(Session.class)));
+    Node actual = session.getNode("/jcr:system/hello");
+    assertThat(actual.getProperty("velo").getString(), is("velo"));
+    assertThat(actual.getPrimaryNodeType().getName(), is("nt:unstructured"));
     store.dispose();
   }
 
@@ -125,36 +120,33 @@ public class OakDatabaseDriverSandboxTest {
     hello.setProperty("velo", "velo");
     session.save();
 
-    assertThat(session, is(instanceOf(Session.class)));
+    Node actual = session.getNode("/jcr:system/hello");
+    assertThat(actual.getProperty("velo").getString(), is("velo"));
+    assertThat(actual.getPrimaryNodeType().getName(), is("nt:unstructured"));
     store.dispose();
   }
 
+  @SandboxTest
+  void oakWithAemInitializerCanInstantiateJcr() throws Exception {
+    Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
+    Git.init().setDirectory(gitDirectory.toFile()).call();
+    DataSource dataSource = RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
+    DocumentNodeStore nodeStore = aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
+    TestRepositoryCreator testRepositoryCreator = new TestRepositoryCreator(nodeStore);
+
+    JackrabbitRepository repository = testRepositoryCreator.create();
+
+    assertThat(repository, is(instanceOf(Repository.class)));
+    nodeStore.dispose();
+  }
+
   private DocumentNodeStore aNewNodeStore(DataSource dataSource, RDBDocumentStoreDB ddb, RDBBlobStoreDB bdb) throws SQLException {
-    try {
-      createDatabases(dataSource.getConnection(), ddb, bdb);
-    } catch (Exception ignored) {
-      // skip
-    }
-    return new RDBDocumentNodeStoreBuilder().setRDBConnection(dataSource).build();
+    return new RDBDocumentNodeStoreBuilder()
+        .setRDBConnection(dataSource)
+        .setLeaseFailureHandler(() -> {throw new IllegalStateException("Lease failed");})
+        .setPersistentCache(null)
+        .setJournalCache(null)
+        .build();
   }
 
-  // this was taken from the initialization code of an OAK repository
-  private void createDatabases(Connection connection, RDBDocumentStoreDB ddb, RDBBlobStoreDB bdb) throws SQLException {
-    connection.setAutoCommit(true);
-    RDBOptions defaultOpts = new RDBOptions();
-
-    for (String table : RDBDocumentStore.getTableNames()) {
-      connection.createStatement().execute(ddb.getTableCreationStatement(table, defaultOpts.getInitialSchema()));
-      for (String indexCreationStm : ddb.getIndexCreationStatements(table, defaultOpts.getInitialSchema())) {
-        connection.createStatement().execute(indexCreationStm);
-      }
-      for (int level = defaultOpts.getInitialSchema() + 1; level <= defaultOpts.getUpgradeToSchema(); level++) {
-        for (String upgradeStm : ddb.getTableUpgradeStatements(table, level)) {
-          connection.createStatement().execute(upgradeStm);
-        }
-      }
-    }
-    connection.createStatement().execute(bdb.getMetaTableCreationStatement("DATASTORE_META"));
-    connection.createStatement().execute(bdb.getDataTableCreationStatement("DATASTORE_DATA"));
-  }
 }

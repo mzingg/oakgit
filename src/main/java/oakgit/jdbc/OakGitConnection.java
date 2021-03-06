@@ -37,7 +37,7 @@ public class OakGitConnection extends DefaultOakGitConnection {
     return git;
   }
 
-  public void queryLog(String sql) {
+  public synchronized void queryLog(String sql) {
     try {
       Files.writeString(
           getConfiguration().getGitDirectory().resolve("query.log"),

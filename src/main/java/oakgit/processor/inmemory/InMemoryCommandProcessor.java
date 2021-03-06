@@ -1,6 +1,9 @@
 package oakgit.processor.inmemory;
 
-import oakgit.engine.*;
+import oakgit.engine.Command;
+import oakgit.engine.CommandProcessor;
+import oakgit.engine.CommandResult;
+import oakgit.engine.ContainerCommand;
 import oakgit.engine.commands.*;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.engine.model.DocumentEntry;
@@ -18,9 +21,13 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
   private final Map<String, InMemoryContainer> containerMap = new HashMap<>();
 
 
-  @SuppressWarnings("unchecked")
   @Override
   public synchronized CommandResult execute(Command command) {
+
+    try {
+      Thread.sleep(5);
+    } catch (InterruptedException ignored) {
+    }
 
     if (!(command instanceof ContainerCommand<?>)) {
       return NO_RESULT;

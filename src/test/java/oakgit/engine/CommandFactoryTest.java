@@ -57,7 +57,6 @@ class CommandFactoryTest {
     assertThat(commandObj, is(instanceOf(InsertIntoContainerCommand.class)));
   }
 
-  @UnitTest
   void getUpdateCommandWithoutPlaceholderDataReturnsErrorCommand() {
     Command commandObj = new CommandFactory().getCommandForSql(UNAVAILABLE_PATTERN_TEST);
 
@@ -71,7 +70,6 @@ class CommandFactoryTest {
     assertThat(commandObj, is(instanceOf(SelectFromContainerByIdCommand.class)));
   }
 
-  @UnitTest
   void getCommandForSqlWithNullReturnErrorCommand() {
     Command commandObj = new CommandFactory().getCommandForSql(null);
 
