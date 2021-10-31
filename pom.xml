@@ -22,7 +22,7 @@
     <sling.threads.version>3.2.18</sling.threads.version><!-- has to correspond to aem.version - version taken from org.apache.sling.commons.threads dependency -->
     <sling.discovery.version>1.0.4</sling.discovery.version><!-- has to correspond to aem.version - version taken from org.apache.sling.discovery dependency -->
     <tomcat.version>7.0.92</tomcat.version>
-    <junit.version>5.7.0</junit.version>
+    <junit.version>5.8.1</junit.version>
 
     <localdev.aem.root>../run/author</localdev.aem.root>
     <localdev.aem.jar>aem-author-p4502.jar</localdev.aem.jar>
@@ -33,7 +33,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>4.2.1</version>
+        <version>5.1.2</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
@@ -119,6 +119,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>copy-database-drivers</id>
@@ -142,6 +143,16 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.9.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.1</version>
           <configuration>
@@ -151,21 +162,21 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
+          <version>3.0.0-M1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
+          <version>3.0.0-M1</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M5</version>
           <configuration>
             <properties>
               <groups>unit</groups>
@@ -178,7 +189,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M5</version>
           <configuration>
             <argLine>
               --illegal-access=permit
@@ -217,13 +228,13 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.18</version>
+      <version>1.18.22</version>
     </dependency>
 
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
-      <version>5.10.0.202012080955-r</version>
+      <version>5.13.0.202109080827-r</version>
     </dependency>
 
     <!-- needed to read the project version form the pom file in META-INF -->
@@ -236,13 +247,13 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.6.3</version>
+      <version>3.8.1</version>
     </dependency>
 
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.3.0</version>
+      <version>3.4.1</version>
     </dependency>
 
     <!-- Transitive dependencies -->
@@ -395,7 +406,7 @@
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
-      <version>1.7.0</version>
+      <version>1.8.1</version>
       <scope>test</scope>
     </dependency>
 
@@ -409,7 +420,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>3.7.7</version>
+      <version>4.0.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -430,21 +441,21 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.2.18</version>
+      <version>42.3.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.22</version>
+      <version>8.0.27</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.30</version>
+      <version>1.7.32</version>
       <scope>test</scope>
     </dependency>
 

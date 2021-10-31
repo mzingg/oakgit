@@ -1,5 +1,5 @@
 
-# Diconium OAK Persistence
+# OAK Persistence
 This is a project is Created with the goal to implement an OAK persistence layer (Data Store).
 
 
