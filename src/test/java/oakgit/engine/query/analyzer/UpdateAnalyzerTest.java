@@ -52,7 +52,7 @@ class UpdateAnalyzerTest {
     assertThat(existing.getDSize(), is(152L));
     assertThat(existing.getData().length, is(152));
     assertThat(new String(existing.getData()), is("12345678901234567890,[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]"));
-    assertThat(existing.getModified(), is(1589793585L));
+    assertThat(existing.getModified(), is(1636643795L));
     assertThat(existing.getVersion(), is(2));
   }
 
