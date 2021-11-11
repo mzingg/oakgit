@@ -4,7 +4,7 @@ public abstract class DefaultOakGitConnection extends UnsupportedConnection {
 
   @Override
   public boolean getAutoCommit() {
-    return false;
+    return true;
   }
 
   @Override

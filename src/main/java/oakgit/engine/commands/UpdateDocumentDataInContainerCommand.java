@@ -13,7 +13,7 @@ import java.util.Collections;
  * This class offers a {@link Command} to update an entry
  */
 @Getter
-public class UpdatDocumentDataInContainerCommand extends AbstractContainerCommand<DocumentEntry> {
+public class UpdateDocumentDataInContainerCommand extends AbstractContainerCommand<DocumentEntry> {
 
   @NonNull
   private final String id;
@@ -23,7 +23,7 @@ public class UpdatDocumentDataInContainerCommand extends AbstractContainerComman
   @NonNull
   private final DocumentEntryUpdateSet data;
 
-  public UpdatDocumentDataInContainerCommand(@NonNull String containerName, @NonNull String id, long modCount, @NonNull DocumentEntryUpdateSet data) {
+  public UpdateDocumentDataInContainerCommand(@NonNull String containerName, @NonNull String id, long modCount, @NonNull DocumentEntryUpdateSet data) {
     super(containerName);
     this.id = id;
     this.modCount = modCount;

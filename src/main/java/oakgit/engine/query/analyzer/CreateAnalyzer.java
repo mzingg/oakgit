@@ -10,6 +10,7 @@ public class CreateAnalyzer implements QueryAnalyzer {
 
   private final Pattern CREATE_PATTERN = Pattern.compile("create table ([\\w_]+) \\(.+\\)");
 
+  @SuppressWarnings("rawtypes")
   @Override
   public QueryMatchResult matchAndCollect(String sqlQuery) {
     return withPatternMatch(sqlQuery, CREATE_PATTERN, (result, matcher) -> {

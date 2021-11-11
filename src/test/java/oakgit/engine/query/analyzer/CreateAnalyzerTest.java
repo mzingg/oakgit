@@ -15,14 +15,14 @@ class CreateAnalyzerTest {
   @UnitTest
   void matchAndCollectWithDatastoreDataCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
-        new CreateAnalyzer(), "create table DATASTORE_DATA (ID varchar(64) not null primary key, DATA blob)"
+        new CreateAnalyzer(), "create table DATASTORE_DATA (ID varchar(64) not null primary key, DATA blob)" // this is fine
     );
   }
 
   @UnitTest
   void matchAndCollectWithDatastoreMetaCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
-        new CreateAnalyzer(), "create table DATASTORE_META (ID varchar(64) not null primary key, LVL int, LASTMOD bigint)"
+        new CreateAnalyzer(), "create table DATASTORE_META (ID varchar(64) not null primary key, LVL int, LASTMOD bigint)" // this is fine
     );
   }
 
@@ -30,7 +30,7 @@ class CreateAnalyzerTest {
   void matchAndCollectWithClusternodesCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
         new CreateAnalyzer(),
-        "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        "create table CLUSTERNODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))" // this is fine
     );
   }
 
@@ -38,7 +38,7 @@ class CreateAnalyzerTest {
   void matchAndCollectWithJournalCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
         new CreateAnalyzer(),
-        "create table JOURNAL (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        "create table JOURNAL (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))" // this is fine
     );
   }
 
@@ -46,7 +46,7 @@ class CreateAnalyzerTest {
   void matchAndCollectWithNodeCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
         new CreateAnalyzer(),
-        "create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        "create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))" // this is fine
     );
   }
 
@@ -54,7 +54,7 @@ class CreateAnalyzerTest {
   void matchAndCollectWithSettingsCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
         new CreateAnalyzer(),
-        "create table SETTINGS (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"
+        "create table SETTINGS (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))" // this is fine
     );
   }
 
@@ -78,7 +78,7 @@ class CreateAnalyzerTest {
 
   @UnitTest
   void matchAndCollectReturnsWithValidQueryReturnCorrectCommand() {
-    QueryMatchResult target = new CreateAnalyzer().matchAndCollect("create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))");
+    QueryMatchResult target = new CreateAnalyzer().matchAndCollect("create table NODES (ID varchar(512) not null primary key, MODIFIED bigint, HASBINARY smallint, DELETEDONCE smallint, MODCOUNT bigint, CMODCOUNT bigint, DSIZE bigint, VERSION smallint, SDTYPE smallint, SDMAXREVTIME bigint, DATA varchar(16384), BDATA blob(1073741824))"); // this is fine
 
     Command actual = target.getCommandSupplier().apply(new PlaceholderData(), Integer.MAX_VALUE);
 

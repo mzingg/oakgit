@@ -97,10 +97,10 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
         } finally {
           lock.readLock().unlock();
         }
-      } else if (containerCommand instanceof UpdatDocumentDataInContainerCommand) {
+      } else if (containerCommand instanceof UpdateDocumentDataInContainerCommand) {
         lock.writeLock().lock();
         try {
-          UpdatDocumentDataInContainerCommand updateCommand = (UpdatDocumentDataInContainerCommand) containerCommand;
+          UpdateDocumentDataInContainerCommand updateCommand = (UpdateDocumentDataInContainerCommand) containerCommand;
 
           InMemoryContainer containerToUpdate = container.orElseThrow(IllegalStateException::new);
           Optional<DocumentEntry> existingEntry;

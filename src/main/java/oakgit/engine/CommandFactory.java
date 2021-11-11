@@ -22,6 +22,7 @@ public class CommandFactory {
   static {
     DEFAULT_ANALYZERS.add(new CreateAnalyzer());
     DEFAULT_ANALYZERS.add(new DocumentInsertAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectByModifiedAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectInAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());

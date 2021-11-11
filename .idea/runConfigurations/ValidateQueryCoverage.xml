@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ValidateQueryCoverage" type="JUnit" factoryName="JUnit">
+    <module name="oakgit" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="oakgit.jdbc.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <option name="PACKAGE_NAME" value="oakgit.jdbc" />
+    <option name="MAIN_CLASS_NAME" value="oakgit.jdbc.QueryLogProcessor" />
+    <option name="METHOD_NAME" value="validateQueryCoverage" />
+    <option name="TEST_OBJECT" value="method" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

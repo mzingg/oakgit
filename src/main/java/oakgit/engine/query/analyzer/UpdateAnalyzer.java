@@ -1,6 +1,6 @@
 package oakgit.engine.query.analyzer;
 
-import oakgit.engine.commands.UpdatDocumentDataInContainerCommand;
+import oakgit.engine.commands.UpdateDocumentDataInContainerCommand;
 import oakgit.engine.model.DocumentEntryUpdateSet;
 import oakgit.engine.model.DocumentEntry;
 import oakgit.engine.query.QueryAnalyzer;
@@ -80,7 +80,7 @@ public class UpdateAnalyzer implements QueryAnalyzer {
           data.withValue(fieldName.trim(), updateValue);
         }
 
-        return new UpdatDocumentDataInContainerCommand(
+        return new UpdateDocumentDataInContainerCommand(
             tableName,
             placeholderData.getString(lastPlaceholderIndex - 1),
             placeholderData.getLong(lastPlaceholderIndex),

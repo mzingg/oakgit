@@ -53,13 +53,15 @@ public class TestHelpers {
     return result;
   }
 
-  public static void testValidQueryMatch(QueryAnalyzer analyzer, String sqlQuery) {
+  public static QueryMatchResult testValidQueryMatch(QueryAnalyzer analyzer, String sqlQuery) {
     QueryMatchResult actual = analyzer.matchAndCollect(sqlQuery);
 
     assertThat(actual, is(not(nullValue())));
     assertThat(actual.isInterested(), is(true));
     assertThat(actual.getOriginQuery(), is(sqlQuery));
     assertThat(actual.getCommandSupplier(), is(not(nullValue())));
+
+    return actual;
   }
 
   @Data
