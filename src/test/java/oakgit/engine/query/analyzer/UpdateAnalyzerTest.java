@@ -14,13 +14,6 @@ import static org.hamcrest.Matchers.is;
 
 class UpdateAnalyzerTest {
 
-  @UnitTest
-  void matchAndCollectWithClusternodesReturnsInterestedMatch() {
-    TestHelpers.testValidQueryMatch(
-        new UpdateAnalyzer(),
-        "update CLUSTERNODES set MODIFIED = ?, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = ?, DATA = ?,  VERSION = 2, BDATA = ? where ID = ? and MODCOUNT = ?"
-    );
-  }
 
   @UnitTest
   void matchAndCollectWithClusternodesAndMultipleInExpressionsReturnsInterestedMatch() {

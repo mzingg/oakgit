@@ -80,4 +80,11 @@ public class PlaceholderData {
     return Optional.empty();
   }
 
+  @Override
+  public String toString() {
+    return "PlaceholderData{" +
+        "delegate=" + delegate +
+        ", maxIndex=" + maxIndex +
+        '}';
+  }
 }

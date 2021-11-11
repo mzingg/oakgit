@@ -21,7 +21,6 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
   protected OakGitPreparedStatement(OakGitConnection connection, String sql) {
     super(connection, sql);
-    connection.queryLog("P>>" + sql);
   }
 
   @Override
@@ -29,6 +28,9 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     OakGitConnection connection = getConnection();
     CommandProcessor processor = connection.getProcessor();
     CommandFactory factory = connection.getCommandFactory();
+
+    connection.queryLog("P/U>>" + getSql());
+    connection.queryLog("P/U>>" + placeholderData);
 
     return processor.execute(factory.getCommandForSql(getSql(), placeholderData, maxRows)).affectedCount();
   }
@@ -44,6 +46,9 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     CommandProcessor processor = connection.getProcessor();
     CommandFactory factory = connection.getCommandFactory();
 
+    connection.queryLog("P/Q>>" + getSql());
+    connection.queryLog("P/Q>>" + placeholderData);
+
     return processor.execute(factory.getCommandForSql(getSql(), placeholderData, maxRows)).toResultSet();
   }
 
@@ -54,11 +59,16 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
   }
 
   public int[] executeBatch() {
+    OakGitConnection connection = getConnection();
+    CommandProcessor processor = connection.getProcessor();
+    CommandFactory factory = connection.getCommandFactory();
+
+    connection.queryLog("P/B>>" + getSql());
+
     int[] result = new int[dataList.size()];
     for (int i = 0; i < dataList.size(); i++) {
-      OakGitConnection connection = getConnection();
-      CommandProcessor processor = connection.getProcessor();
-      CommandFactory factory = connection.getCommandFactory();
+
+      connection.queryLog("P/B(" + i + ")>>" + dataList.get(i));
 
       try {
         result[i] = processor.execute(factory.getCommandForSql(getSql(), dataList.get(i), maxRows)).affectedCount();
@@ -70,7 +80,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
   }
 
   @Override
-  public void clearParameters() throws SQLException {
+  public void clearParameters() {
     dataList.clear();
     placeholderData = new PlaceholderData();
   }

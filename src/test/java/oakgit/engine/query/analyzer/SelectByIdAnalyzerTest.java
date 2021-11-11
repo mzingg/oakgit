@@ -16,6 +16,10 @@ import static org.hamcrest.Matchers.*;
 
 class SelectByIdAnalyzerTest {
 
+  // select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where ID = ?
+  // select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from CLUSTERNODES where ID = ?
+  // select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from SETTINGS where ID = ?
+
   @UnitTest
   void matchAndCollectWithClusternodesCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
@@ -52,7 +56,7 @@ class SelectByIdAnalyzerTest {
   void matchAndCollectWithDatastoreDataCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
         new SelectByIdAnalyzer(),
-        "select ID from DATASTORE_DATA where ID = '0'"
+        "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where ID = ?"
     );
   }
 
@@ -60,7 +64,7 @@ class SelectByIdAnalyzerTest {
   void matchAndCollectWithDatastoreMetaCreateReturnsInterestedMatch() {
     TestHelpers.testValidQueryMatch(
         new SelectByIdAnalyzer(),
-        "select ID from DATASTORE_META where ID = '0'"
+        "select MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from JOURNAL where ID = ?"
     );
   }
 
