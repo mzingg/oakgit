@@ -18,7 +18,7 @@
 
     <aem.version>6.5.0.0002</aem.version><!-- has to correspond to aem.version - version taken from wcm.io pom -->
     <oak.version>1.10.8</oak.version><!-- has to correspond to aem.version - version taken from org.apache.sling.datasource dependency -->
-    <sling.base.version>3.0.4</sling.base.version><!-- has to correspond to aem.version - version taken from org.apache.sling.jcr.base dependency -->
+    <sling.base.version>3.1.12</sling.base.version><!-- has to correspond to aem.version - version taken from org.apache.sling.jcr.base dependency -->
     <sling.threads.version>3.2.18</sling.threads.version><!-- has to correspond to aem.version - version taken from org.apache.sling.commons.threads dependency -->
     <sling.discovery.version>1.0.4</sling.discovery.version><!-- has to correspond to aem.version - version taken from org.apache.sling.discovery dependency -->
     <tomcat.version>7.0.92</tomcat.version>
