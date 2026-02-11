@@ -1,27 +1,24 @@
 package oakgit.jdbc;
 
 import com.github.zafarkhaja.semver.Version;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class OakGitDriverConfiguration {
 
-  public static final OakGitDriverConfiguration INVALID_CONFIGURATION = new OakGitDriverConfiguration("invalid url", Version.valueOf("0.0.0"), "oakgit");
+  public static final OakGitDriverConfiguration INVALID_CONFIGURATION =
+      new OakGitDriverConfiguration("invalid url", Version.valueOf("0.0.0"), "oakgit");
   private static final String URL_PREFIX = "jdbc:oakgit://";
-  @NonNull
-  private final String url;
-  @NonNull
-  private final Version version;
-  @NonNull
-  private final String artifactId;
+  @NonNull private final String url;
+  @NonNull private final Version version;
+  @NonNull private final String artifactId;
 
   public static OakGitDriverConfiguration fromUrl(String url, Version version, String artifactId) {
     if (StringUtils.startsWith(url, URL_PREFIX)) {
@@ -39,5 +36,4 @@ public class OakGitDriverConfiguration {
     Path gitDirectory = getGitDirectory();
     return gitDirectory.getName(gitDirectory.getNameCount() - 1).toString();
   }
-
 }

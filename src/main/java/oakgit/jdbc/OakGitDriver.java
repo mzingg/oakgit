@@ -1,13 +1,6 @@
 package oakgit.jdbc;
 
 import com.github.zafarkhaja.semver.Version;
-import oakgit.engine.CommandFactory;
-import oakgit.processor.inmemory.InMemoryCommandProcessor;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,10 +8,16 @@ import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.Properties;
 import java.util.logging.Logger;
+import oakgit.engine.CommandFactory;
+import oakgit.processor.inmemory.InMemoryCommandProcessor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 public class OakGitDriver implements Driver {
 
-  private final static InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor();
+  private static final InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor();
 
   static {
     try {
@@ -39,13 +38,11 @@ public class OakGitDriver implements Driver {
       if ((new File("pom.xml")).exists()) {
         model = reader.read(new FileReader("pom.xml"));
       } else {
-        model = reader.read(
-            new InputStreamReader(
-                OakGitDriver.class.getResourceAsStream(
-                    "/META-INF/maven/oakgit/oakgit-persistence/pom.xml"
-                )
-            )
-        );
+        model =
+            reader.read(
+                new InputStreamReader(
+                    OakGitDriver.class.getResourceAsStream(
+                        "/META-INF/maven/oakgit/oakgit-persistence/pom.xml")));
       }
     } catch (IOException | XmlPullParserException | NullPointerException ignored) {
       // fall through to empty model
@@ -56,7 +53,9 @@ public class OakGitDriver implements Driver {
 
   @Override
   public Connection connect(String url, Properties info) throws SQLException {
-    OakGitDriverConfiguration configuration = OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId());
+    OakGitDriverConfiguration configuration =
+        OakGitDriverConfiguration.fromUrl(
+            url, readMavenVersion(), readMavenModel().getArtifactId());
     if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
 
       return new OakGitConnection(configuration, PROCESSOR, new CommandFactory());
@@ -67,7 +66,9 @@ public class OakGitDriver implements Driver {
 
   @Override
   public boolean acceptsURL(String url) {
-    return OakGitDriverConfiguration.fromUrl(url, readMavenVersion(), readMavenModel().getArtifactId()) != OakGitDriverConfiguration.INVALID_CONFIGURATION;
+    return OakGitDriverConfiguration.fromUrl(
+            url, readMavenVersion(), readMavenModel().getArtifactId())
+        != OakGitDriverConfiguration.INVALID_CONFIGURATION;
   }
 
   @Override

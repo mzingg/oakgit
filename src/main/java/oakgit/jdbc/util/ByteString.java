@@ -10,19 +10,17 @@ import java.util.Base64;
 /**
  * Collection of bytes.
  *
- * <p>ByteString is to bytes what {@link String} is to chars: It is immutable,
- * implements equality ({@link #hashCode} and {@link #equals}),
- * comparison ({@link #compareTo}) and
- * {@link Serializable serialization} correctly.</p>
+ * <p>ByteString is to bytes what {@link String} is to chars: It is immutable, implements equality
+ * ({@link #hashCode} and {@link #equals}), comparison ({@link #compareTo}) and {@link Serializable
+ * serialization} correctly.
  */
 public class ByteString implements Comparable<ByteString>, Serializable {
-  /**
-   * An empty byte string.
-   */
+  /** An empty byte string. */
   public static final ByteString EMPTY = new ByteString(new byte[0], false);
+
   private static final char[] DIGITS = {
-      '0', '1', '2', '3', '4', '5', '6', '7',
-      '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
   };
   private final byte[] bytes;
 
@@ -43,11 +41,10 @@ public class ByteString implements Comparable<ByteString>, Serializable {
   /**
    * Returns the given byte array in hexadecimal format.
    *
-   * <p>For example, <code>toString(new byte[] {0xDE, 0xAD})</code>
-   * returns {@code "DEAD"}.</p>
+   * <p>For example, <code>toString(new byte[] {0xDE, 0xAD})</code> returns {@code "DEAD"}.
    *
    * @param bytes Array of bytes
-   * @param base  Base (2 or 16)
+   * @param base Base (2 or 16)
    * @return String
    */
   public static String toString(byte[] bytes, int base) {
@@ -83,11 +80,11 @@ public class ByteString implements Comparable<ByteString>, Serializable {
   /**
    * Creates a byte string from a hexadecimal or binary string.
    *
-   * <p>For example, <code>of("DEAD", 16)</code>
-   * returns the same as {@code ByteString(new byte[] {0xDE, 0xAD})}.
+   * <p>For example, <code>of("DEAD", 16)</code> returns the same as {@code ByteString(new byte[]
+   * {0xDE, 0xAD})}.
    *
    * @param string Array of bytes
-   * @param base   Base (2 or 16)
+   * @param base Base (2 or 16)
    * @return String
    */
   public static ByteString of(String string, int base) {
@@ -99,7 +96,7 @@ public class ByteString implements Comparable<ByteString>, Serializable {
    * Parses a hexadecimal or binary string to a byte array.
    *
    * @param string Hexadecimal or binary string
-   * @param base   Base (2 or 16)
+   * @param base Base (2 or 16)
    * @return Byte array
    */
   public static byte[] parse(String string, int base) {
@@ -190,8 +187,7 @@ public class ByteString implements Comparable<ByteString>, Serializable {
   @Override
   public boolean equals(Object obj) {
     return this == obj
-        || obj instanceof ByteString
-        && Arrays.equals(bytes, ((ByteString) obj).bytes);
+        || obj instanceof ByteString && Arrays.equals(bytes, ((ByteString) obj).bytes);
   }
 
   public int compareTo(ByteString that) {
@@ -236,10 +232,7 @@ public class ByteString implements Comparable<ByteString>, Serializable {
     return Base64.getEncoder().encodeToString(bytes);
   }
 
-  @SuppressWarnings({
-      "CloneDoesntCallSuperClone",
-      "CloneDoesntDeclareCloneNotSupportedException"
-  })
+  @SuppressWarnings({"CloneDoesntCallSuperClone", "CloneDoesntDeclareCloneNotSupportedException"})
   @Override
   public Object clone() {
     return this;
@@ -259,8 +252,8 @@ public class ByteString implements Comparable<ByteString>, Serializable {
    *
    * @param i Index
    * @return Byte at given position
-   * @throws IndexOutOfBoundsException if the <code>index</code> argument is
-   *                                   negative or not less than <code>length()</code>
+   * @throws IndexOutOfBoundsException if the <code>index</code> argument is negative or not less
+   *     than <code>length()</code>
    */
   public byte byteAt(int i) {
     return bytes[i];
@@ -270,7 +263,7 @@ public class ByteString implements Comparable<ByteString>, Serializable {
    * Returns a ByteString that consists of a given range.
    *
    * @param start Start of range
-   * @param end   Position after end of range
+   * @param end Position after end of range
    * @return Substring
    */
   public ByteString substring(int start, int end) {
@@ -288,16 +281,13 @@ public class ByteString implements Comparable<ByteString>, Serializable {
     return substring(start, length());
   }
 
-  /**
-   * Returns a copy of the byte array.
-   */
+  /** Returns a copy of the byte array. */
   public byte[] getBytes() {
     return bytes.clone();
   }
 
   /**
-   * Returns a ByteString consisting of the concatenation of this and another
-   * string.
+   * Returns a ByteString consisting of the concatenation of this and another string.
    *
    * @param other Byte string to concatenate
    * @return Combined byte string
@@ -314,16 +304,16 @@ public class ByteString implements Comparable<ByteString>, Serializable {
   }
 
   /**
-   * Returns the position at which {@code seek} first occurs in this byte
-   * string, or -1 if it does not occur.
+   * Returns the position at which {@code seek} first occurs in this byte string, or -1 if it does
+   * not occur.
    */
   public int indexOf(ByteString seek) {
     return indexOf(seek, 0);
   }
 
   /**
-   * Returns the position at which {@code seek} first occurs in this byte
-   * string, starting at the specified index, or -1 if it does not occur.
+   * Returns the position at which {@code seek} first occurs in this byte string, starting at the
+   * specified index, or -1 if it does not occur.
    */
   public int indexOf(ByteString seek, int start) {
     iLoop:

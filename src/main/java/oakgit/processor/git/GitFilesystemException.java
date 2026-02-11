@@ -13,5 +13,4 @@ public class GitFilesystemException extends Exception {
   public GitFilesystemException(Throwable cause) {
     super(cause);
   }
-
 }

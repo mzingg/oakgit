@@ -149,5 +149,4 @@ public abstract class UnsupportedOakGitStatement implements Statement {
   public boolean isWrapperFor(Class<?> iface) {
     throw new UnsupportedOperationException();
   }
-
 }

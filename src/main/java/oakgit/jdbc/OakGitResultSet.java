@@ -1,15 +1,14 @@
 package oakgit.jdbc;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import oakgit.jdbc.util.SqlType;
-
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import oakgit.jdbc.util.SqlType;
 
 @Getter
 @Setter
@@ -58,8 +57,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
   }
 
   @Override
-  public void close() {
-  }
+  public void close() {}
 
   @Override
   public ResultSetMetaData getMetaData() {
@@ -73,7 +71,9 @@ public class OakGitResultSet extends UnsupportedResultSet {
 
   @Override
   public int findColumn(String columnLabel) throws SQLException {
-    return getInternalColumnIndexForColumnName(columnLabel).map(internalIndex -> internalIndex + 1).orElseThrow(() -> new SQLException("column not found"));
+    return getInternalColumnIndexForColumnName(columnLabel)
+        .map(internalIndex -> internalIndex + 1)
+        .orElseThrow(() -> new SQLException("column not found"));
   }
 
   @Override
@@ -217,7 +217,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
   }
 
   @RequiredArgsConstructor
-  public final static class Column {
+  public static final class Column {
     private final String name;
     private final int type;
     private final int precision;
@@ -227,5 +227,4 @@ public class OakGitResultSet extends UnsupportedResultSet {
       return new Column(name, type, precision, new ArrayList<>());
     }
   }
-
 }

@@ -1,20 +1,18 @@
 package oakgit.engine;
 
+import java.sql.ResultSet;
 import lombok.NonNull;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.jdbc.OakGitResultSet;
 
-import java.sql.ResultSet;
-
 public interface ContainerCommandResult<T extends ContainerEntry<T>> extends CommandResult {
 
-  static <T extends ContainerEntry<T>> ContainerCommandResult<T> emptyResult(@NonNull String tableName, Class<T> entryType) {
+  static <T extends ContainerEntry<T>> ContainerCommandResult<T> emptyResult(
+      @NonNull String tableName, Class<T> entryType) {
     return new ContainerCommandResult<T>() {
       @Override
       public ResultSet toResultSet(@NonNull OakGitResultSet result, @NonNull T emptyType) {
-        emptyType
-            .getResultSetTypeModifier()
-            .accept(result);
+        emptyType.getResultSetTypeModifier().accept(result);
 
         return result;
       }
@@ -42,7 +40,8 @@ public interface ContainerCommandResult<T extends ContainerEntry<T>> extends Com
   }
 
   default ResultSet toResultSet() {
-    return toResultSet(new OakGitResultSet(getContainerName()), ContainerEntry.emptyOf(getEntryType()));
+    return toResultSet(
+        new OakGitResultSet(getContainerName()), ContainerEntry.emptyOf(getEntryType()));
   }
 
   Class<T> getEntryType();
@@ -50,5 +49,4 @@ public interface ContainerCommandResult<T extends ContainerEntry<T>> extends Com
   String getContainerName();
 
   ResultSet toResultSet(@NonNull OakGitResultSet result, @NonNull T emptyType);
-
 }

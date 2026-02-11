@@ -1,15 +1,14 @@
 package oakgit.processor.inmemory;
 
+import static oakgit.util.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
+import java.util.Arrays;
 import oakgit.UnitTest;
 import oakgit.engine.model.DocumentEntry;
 import oakgit.engine.model.test.BlueTestEntry;
 import oakgit.engine.model.test.RedTestEntry;
-
-import java.util.Arrays;
-
-import static oakgit.util.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 class InMemoryContainerTest {
 
@@ -30,8 +29,7 @@ class InMemoryContainerTest {
   @UnitTest
   void findByIdWithExistingEntryButWrongClassReturnsEmpty() {
     BlueTestEntry expectedValue = new BlueTestEntry("test-id");
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(expectedValue);
+    InMemoryContainer testObj = new InMemoryContainer("testcontainer").setEntry(expectedValue);
 
     assertThat(testObj.findById("test-id", RedTestEntry.class), isEmpty());
   }
@@ -39,65 +37,67 @@ class InMemoryContainerTest {
   @UnitTest
   void findByIdWithExistingEntryAndCorrectClassReturnsEntry() {
     BlueTestEntry expectedValue = new BlueTestEntry("test-id");
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(expectedValue);
+    InMemoryContainer testObj = new InMemoryContainer("testcontainer").setEntry(expectedValue);
 
     assertThat(testObj.findById("test-id", BlueTestEntry.class), isPresent());
   }
 
   @UnitTest
   void findByIdRangeReturnsUnsortedSublistBetweenBoundsBasedOnLexicalOrder() {
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(new RedTestEntry("0"))
-        .setEntry(new RedTestEntry("b"))
-        .setEntry(new RedTestEntry("a"))
-        .setEntry(new RedTestEntry("2"))
-        .setEntry(new RedTestEntry("zzzz"))
-        .setEntry(new RedTestEntry("aaaa"))
-        .setEntry(new RedTestEntry("76"));
+    InMemoryContainer testObj =
+        new InMemoryContainer("testcontainer")
+            .setEntry(new RedTestEntry("0"))
+            .setEntry(new RedTestEntry("b"))
+            .setEntry(new RedTestEntry("a"))
+            .setEntry(new RedTestEntry("2"))
+            .setEntry(new RedTestEntry("zzzz"))
+            .setEntry(new RedTestEntry("aaaa"))
+            .setEntry(new RedTestEntry("76"));
 
-    assertThat(testObj.findByIdRange("0", "a", RedTestEntry.class, Integer.MAX_VALUE), containsInRelativeOrder(
-        entryWithId("0"), entryWithId("a"), entryWithId("2"), entryWithId("76")
-    ));
+    assertThat(
+        testObj.findByIdRange("0", "a", RedTestEntry.class, Integer.MAX_VALUE),
+        containsInRelativeOrder(
+            entryWithId("0"), entryWithId("a"), entryWithId("2"), entryWithId("76")));
   }
 
   @UnitTest
   void findByIdRangeWithLimitReturnsUnsortedSublistBetweenBoundsBasedOnLexicalOrder() {
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(new RedTestEntry("0"))
-        .setEntry(new RedTestEntry("b"))
-        .setEntry(new RedTestEntry("a"))
-        .setEntry(new RedTestEntry("2"))
-        .setEntry(new RedTestEntry("zzzz"))
-        .setEntry(new RedTestEntry("aaaa"))
-        .setEntry(new RedTestEntry("76"));
+    InMemoryContainer testObj =
+        new InMemoryContainer("testcontainer")
+            .setEntry(new RedTestEntry("0"))
+            .setEntry(new RedTestEntry("b"))
+            .setEntry(new RedTestEntry("a"))
+            .setEntry(new RedTestEntry("2"))
+            .setEntry(new RedTestEntry("zzzz"))
+            .setEntry(new RedTestEntry("aaaa"))
+            .setEntry(new RedTestEntry("76"));
 
-    assertThat(testObj.findByIdRange("0", "a", RedTestEntry.class, 2), containsInRelativeOrder(
-        entryWithId("0"), entryWithId("a")
-    ));
+    assertThat(
+        testObj.findByIdRange("0", "a", RedTestEntry.class, 2),
+        containsInRelativeOrder(entryWithId("0"), entryWithId("a")));
   }
 
   @UnitTest
   void findByIdsWithGivenIdListReturnsListInGivenIdOrder() {
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(new RedTestEntry("0"))
-        .setEntry(new RedTestEntry("b"))
-        .setEntry(new RedTestEntry("a"))
-        .setEntry(new RedTestEntry("2"))
-        .setEntry(new RedTestEntry("zzzz"))
-        .setEntry(new RedTestEntry("aaaa"))
-        .setEntry(new RedTestEntry("76"));
+    InMemoryContainer testObj =
+        new InMemoryContainer("testcontainer")
+            .setEntry(new RedTestEntry("0"))
+            .setEntry(new RedTestEntry("b"))
+            .setEntry(new RedTestEntry("a"))
+            .setEntry(new RedTestEntry("2"))
+            .setEntry(new RedTestEntry("zzzz"))
+            .setEntry(new RedTestEntry("aaaa"))
+            .setEntry(new RedTestEntry("76"));
 
-    assertThat(testObj.findByIds(Arrays.asList("0", "zzzz", "2", "non-existing"), RedTestEntry.class), containsInRelativeOrder(
-        entryWithId("0"), entryWithId("zzzz"), entryWithId("2")
-    ));
+    assertThat(
+        testObj.findByIds(Arrays.asList("0", "zzzz", "2", "non-existing"), RedTestEntry.class),
+        containsInRelativeOrder(entryWithId("0"), entryWithId("zzzz"), entryWithId("2")));
   }
 
   @UnitTest
   void findByIdAndModCountWithGivenIdAndModCountSupportWithGivenModCountReturnsEntry() {
     DocumentEntry expected = new DocumentEntry().setId("testid").setModCount(100L);
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(expected);
+    InMemoryContainer testObj = new InMemoryContainer("testcontainer").setEntry(expected);
 
     assertThat(testObj.findByIdAndModCount("testid", 100, DocumentEntry.class), isPresent());
   }
@@ -105,8 +105,7 @@ class InMemoryContainerTest {
   @UnitTest
   void findByIdAndModCountWithGivenIdAndModCountSupportWithWrongModCountReturnsEmpty() {
     DocumentEntry expected = new DocumentEntry().setId("testid").setModCount(101L);
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(expected);
+    InMemoryContainer testObj = new InMemoryContainer("testcontainer").setEntry(expected);
 
     assertThat(testObj.findByIdAndModCount("testid", 100, DocumentEntry.class), isEmpty());
   }
@@ -114,8 +113,7 @@ class InMemoryContainerTest {
   @UnitTest
   void findByIdAndModCountWithGivenIdAndNoModCountSupportReturnsEntry() {
     RedTestEntry expected = new RedTestEntry("testid");
-    InMemoryContainer testObj = new InMemoryContainer("testcontainer")
-        .setEntry(expected);
+    InMemoryContainer testObj = new InMemoryContainer("testcontainer").setEntry(expected);
 
     assertThat(testObj.findByIdAndModCount("testid", 100, RedTestEntry.class), isPresent());
   }

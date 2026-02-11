@@ -1,12 +1,7 @@
 package oakgit.processor.inmemory;
 
-import oakgit.engine.Command;
-import oakgit.engine.CommandProcessor;
-import oakgit.engine.CommandResult;
-import oakgit.engine.ContainerCommand;
-import oakgit.engine.commands.*;
-import oakgit.engine.model.ContainerEntry;
-import oakgit.engine.model.DocumentEntry;
+import static oakgit.engine.CommandResult.NO_RESULT;
+import static oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import static oakgit.engine.CommandResult.NO_RESULT;
-import static oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
+import oakgit.engine.Command;
+import oakgit.engine.CommandProcessor;
+import oakgit.engine.CommandResult;
+import oakgit.engine.ContainerCommand;
+import oakgit.engine.commands.*;
+import oakgit.engine.model.ContainerEntry;
+import oakgit.engine.model.DocumentEntry;
 
 public final class InMemoryCommandProcessor implements CommandProcessor {
 
@@ -51,9 +50,11 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       if (containerCommand instanceof InsertIntoContainerCommand) {
         lock.writeLock().lock();
         try {
-          InsertIntoContainerCommand<?> insertCommand = (InsertIntoContainerCommand<?>) containerCommand;
+          InsertIntoContainerCommand<?> insertCommand =
+              (InsertIntoContainerCommand<?>) containerCommand;
 
-          container.orElseThrow(IllegalStateException::new)
+          container
+              .orElseThrow(IllegalStateException::new)
               .setEntry(insertCommand.getData().copy());
 
           return SUCCESSFULL_RESULT_WITHOUT_DATA;
@@ -63,11 +64,14 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       } else if (containerCommand instanceof SelectFromContainerByIdCommand) {
         lock.readLock().lock();
         try {
-          SelectFromContainerByIdCommand<?> selectCommand = (SelectFromContainerByIdCommand<?>) containerCommand;
+          SelectFromContainerByIdCommand<?> selectCommand =
+              (SelectFromContainerByIdCommand<?>) containerCommand;
 
-          ContainerEntry<?> foundEntry = container.orElseThrow(IllegalStateException::new)
-              .findById(selectCommand.getId(), selectCommand.getEntryType())
-              .orElse(null);
+          ContainerEntry<?> foundEntry =
+              container
+                  .orElseThrow(IllegalStateException::new)
+                  .findById(selectCommand.getId(), selectCommand.getEntryType())
+                  .orElse(null);
 
           return selectCommand.buildResult(foundEntry);
         } finally {
@@ -76,10 +80,17 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       } else if (containerCommand instanceof SelectFromContainerByIdRangeCommand) {
         lock.readLock().lock();
         try {
-          SelectFromContainerByIdRangeCommand<?> selectCommand = (SelectFromContainerByIdRangeCommand<?>) containerCommand;
+          SelectFromContainerByIdRangeCommand<?> selectCommand =
+              (SelectFromContainerByIdRangeCommand<?>) containerCommand;
 
-          List<?> foundEntries = container.orElseThrow(IllegalStateException::new)
-              .findByIdRange(selectCommand.getIdMin(), selectCommand.getIdMax(), selectCommand.getEntryType(), selectCommand.getLimit());
+          List<?> foundEntries =
+              container
+                  .orElseThrow(IllegalStateException::new)
+                  .findByIdRange(
+                      selectCommand.getIdMin(),
+                      selectCommand.getIdMax(),
+                      selectCommand.getEntryType(),
+                      selectCommand.getLimit());
 
           return selectCommand.buildResult(foundEntries);
         } finally {
@@ -88,10 +99,13 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       } else if (containerCommand instanceof SelectFromContainerByMultipleIdsCommand) {
         lock.readLock().lock();
         try {
-          SelectFromContainerByMultipleIdsCommand<?> selectCommand = (SelectFromContainerByMultipleIdsCommand<?>) containerCommand;
+          SelectFromContainerByMultipleIdsCommand<?> selectCommand =
+              (SelectFromContainerByMultipleIdsCommand<?>) containerCommand;
 
-          List<?> foundEntries = container.orElseThrow(IllegalStateException::new)
-              .findByIds(selectCommand.getIds(), selectCommand.getEntryType());
+          List<?> foundEntries =
+              container
+                  .orElseThrow(IllegalStateException::new)
+                  .findByIds(selectCommand.getIds(), selectCommand.getEntryType());
 
           return selectCommand.buildResult(foundEntries);
         } finally {
@@ -100,14 +114,16 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       } else if (containerCommand instanceof UpdateDocumentDataInContainerCommand) {
         lock.writeLock().lock();
         try {
-          UpdateDocumentDataInContainerCommand updateCommand = (UpdateDocumentDataInContainerCommand) containerCommand;
+          UpdateDocumentDataInContainerCommand updateCommand =
+              (UpdateDocumentDataInContainerCommand) containerCommand;
 
           InMemoryContainer containerToUpdate = container.orElseThrow(IllegalStateException::new);
           Optional<DocumentEntry> existingEntry;
           lock.readLock().lock();
           try {
-            existingEntry = containerToUpdate
-                .findByIdAndModCount(updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
+            existingEntry =
+                containerToUpdate.findByIdAndModCount(
+                    updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
           } finally {
             lock.readLock().unlock();
           }
@@ -142,5 +158,4 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
 
     return Optional.empty();
   }
-
 }

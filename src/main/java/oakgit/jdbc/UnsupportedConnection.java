@@ -53,7 +53,8 @@ public abstract class UnsupportedConnection implements Connection {
   }
 
   @Override
-  public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) {
+  public PreparedStatement prepareStatement(
+      String sql, int resultSetType, int resultSetConcurrency) {
     throw new UnsupportedOperationException();
   }
 
@@ -103,17 +104,20 @@ public abstract class UnsupportedConnection implements Connection {
   }
 
   @Override
-  public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
+  public Statement createStatement(
+      int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
+  public PreparedStatement prepareStatement(
+      String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
+  public CallableStatement prepareCall(
+      String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) {
     throw new UnsupportedOperationException();
   }
 
@@ -221,5 +225,4 @@ public abstract class UnsupportedConnection implements Connection {
   public boolean isWrapperFor(Class<?> iface) {
     throw new UnsupportedOperationException();
   }
-
 }

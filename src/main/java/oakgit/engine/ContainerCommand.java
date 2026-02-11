@@ -7,5 +7,4 @@ public interface ContainerCommand<T extends ContainerEntry<T>> extends Command {
   String getContainerName();
 
   Class<T> getEntryType();
-
 }

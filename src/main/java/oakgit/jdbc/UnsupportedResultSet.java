@@ -10,7 +10,6 @@ import java.util.Map;
 
 public abstract class UnsupportedResultSet implements ResultSet, ResultSetMetaData {
 
-
   @Override
   public boolean getBoolean(int columnIndex) {
     throw new UnsupportedOperationException();
@@ -30,7 +29,6 @@ public abstract class UnsupportedResultSet implements ResultSet, ResultSetMetaDa
   public int getInt(int columnIndex) {
     throw new UnsupportedOperationException();
   }
-
 
   @Override
   public float getFloat(int columnIndex) {

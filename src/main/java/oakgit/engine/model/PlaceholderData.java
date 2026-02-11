@@ -74,7 +74,8 @@ public class PlaceholderData {
       } else if (targetClass.equals(Long.class) && element instanceof Integer) {
         return Optional.of((T) Long.valueOf(((Integer) element).longValue()));
       } else {
-        throw new IllegalArgumentException("Element [" + element + "] with index [" + index + "] is not of type " + targetClass);
+        throw new IllegalArgumentException(
+            "Element [" + element + "] with index [" + index + "] is not of type " + targetClass);
       }
     }
     return Optional.empty();
@@ -82,9 +83,6 @@ public class PlaceholderData {
 
   @Override
   public String toString() {
-    return "PlaceholderData{" +
-        "delegate=" + delegate +
-        ", maxIndex=" + maxIndex +
-        '}';
+    return "PlaceholderData{" + "delegate=" + delegate + ", maxIndex=" + maxIndex + '}';
   }
 }

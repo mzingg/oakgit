@@ -1,17 +1,16 @@
 package oakgit.engine.commands;
 
-import oakgit.UnitTest;
-import oakgit.engine.model.DocumentEntry;
-import oakgit.jdbc.OakGitResultSet;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import oakgit.UnitTest;
+import oakgit.engine.model.DocumentEntry;
+import oakgit.jdbc.OakGitResultSet;
 
 class MultipleEntriesResultTest {
 
@@ -20,8 +19,9 @@ class MultipleEntriesResultTest {
   void ctorWithNullContainerNameThrowsException() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> new MultipleEntriesResult<>(null, DocumentEntry.class, Collections.emptyList(), Collections.emptyList())
-    );
+        () ->
+            new MultipleEntriesResult<>(
+                null, DocumentEntry.class, Collections.emptyList(), Collections.emptyList()));
   }
 
   @SuppressWarnings("ConstantConditions")
@@ -29,8 +29,9 @@ class MultipleEntriesResultTest {
   void ctorWithNullTypeThrowsException() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> new MultipleEntriesResult<DocumentEntry>("NODES", null, Collections.emptyList(), Collections.emptyList())
-    );
+        () ->
+            new MultipleEntriesResult<DocumentEntry>(
+                "NODES", null, Collections.emptyList(), Collections.emptyList()));
   }
 
   @SuppressWarnings("ConstantConditions")
@@ -38,8 +39,9 @@ class MultipleEntriesResultTest {
   void ctorWithNullFoundEntriesThrowsException() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> new MultipleEntriesResult<>("NODES", DocumentEntry.class, null, Collections.emptyList())
-    );
+        () ->
+            new MultipleEntriesResult<>(
+                "NODES", DocumentEntry.class, null, Collections.emptyList()));
   }
 
   @SuppressWarnings("ConstantConditions")
@@ -47,14 +49,16 @@ class MultipleEntriesResultTest {
   void ctorWithNullFieldListThrowsException() {
     assertThrows(
         IllegalArgumentException.class,
-        () -> new MultipleEntriesResult<>("NODES", DocumentEntry.class, Collections.emptyList(), null)
-    );
+        () ->
+            new MultipleEntriesResult<>(
+                "NODES", DocumentEntry.class, Collections.emptyList(), null));
   }
-  
+
   @UnitTest
   void wasSuccessfullWithEmptyFoundEntriesReturnsFalse() {
     MultipleEntriesResult<DocumentEntry> testObj =
-        new MultipleEntriesResult<>("NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList());
+        new MultipleEntriesResult<>(
+            "NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList());
 
     assertThat(testObj.wasSuccessfull(), is(false));
   }
@@ -63,7 +67,8 @@ class MultipleEntriesResultTest {
   void wasSuccessfullWithNonEmptyFoundEntriesReturnsTrue() {
     List<DocumentEntry> foundEntries = Collections.singletonList(new DocumentEntry());
     MultipleEntriesResult<DocumentEntry> testObj =
-        new MultipleEntriesResult<>("NODES", DocumentEntry.class, foundEntries, Collections.emptyList());
+        new MultipleEntriesResult<>(
+            "NODES", DocumentEntry.class, foundEntries, Collections.emptyList());
 
     assertThat(testObj.wasSuccessfull(), is(true));
   }
@@ -71,7 +76,8 @@ class MultipleEntriesResultTest {
   @UnitTest
   void affectedCountWithEmptyFoundEntriesReturnsZero() {
     MultipleEntriesResult<DocumentEntry> testObj =
-        new MultipleEntriesResult<>("NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList());
+        new MultipleEntriesResult<>(
+            "NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList());
 
     assertThat(testObj.affectedCount(), is(0));
   }
@@ -80,7 +86,8 @@ class MultipleEntriesResultTest {
   void affectedCountWithNonEmptyFoundEntriesReturnsAmountOfFoundEntries() {
     List<DocumentEntry> foundEntries = List.of(new DocumentEntry(), new DocumentEntry());
     MultipleEntriesResult<DocumentEntry> testObj =
-        new MultipleEntriesResult<>("NODES", DocumentEntry.class, foundEntries, Collections.emptyList());
+        new MultipleEntriesResult<>(
+            "NODES", DocumentEntry.class, foundEntries, Collections.emptyList());
 
     assertThat(testObj.affectedCount(), is(2));
   }
@@ -90,7 +97,9 @@ class MultipleEntriesResultTest {
     DocumentEntry emptyType = spy(new DocumentEntry());
     List<String> resultFieldList = Collections.emptyList();
     MultipleEntriesResult<DocumentEntry> testObj =
-        spy(new MultipleEntriesResult<>("NODES", DocumentEntry.class, Collections.emptyList(), resultFieldList));
+        spy(
+            new MultipleEntriesResult<>(
+                "NODES", DocumentEntry.class, Collections.emptyList(), resultFieldList));
 
     testObj.toResultSet(new OakGitResultSet("NODES"), emptyType);
 
@@ -106,7 +115,9 @@ class MultipleEntriesResultTest {
     DocumentEntry aFoundEntry = spy(new DocumentEntry().setId(UUID.randomUUID().toString()));
     List<DocumentEntry> foundEntries = Collections.singletonList(aFoundEntry);
     MultipleEntriesResult<DocumentEntry> testObj =
-        spy(new MultipleEntriesResult<>("NODES", DocumentEntry.class, foundEntries, resultFieldList));
+        spy(
+            new MultipleEntriesResult<>(
+                "NODES", DocumentEntry.class, foundEntries, resultFieldList));
 
     testObj.toResultSet(new OakGitResultSet("NODES"), emptyType);
 
@@ -119,11 +130,12 @@ class MultipleEntriesResultTest {
   @UnitTest
   void toResultSetWithNoArgumentsCallsArgumentVariantWithNewValues() {
     MultipleEntriesResult<DocumentEntry> testObj =
-        spy(new MultipleEntriesResult<>("NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList()));
+        spy(
+            new MultipleEntriesResult<>(
+                "NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList()));
 
     testObj.toResultSet();
 
     verify(testObj, times(1)).toResultSet(any(), any());
   }
-
 }

@@ -1,18 +1,17 @@
 package oakgit.jdbc;
 
-import oakgit.UnitTest;
-import oakgit.util.TestHelpers;
-import org.eclipse.jgit.api.Git;
-import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import oakgit.UnitTest;
+import oakgit.util.TestHelpers;
+import org.eclipse.jgit.api.Git;
+import org.junit.jupiter.api.AfterEach;
 
 class OakGitDriverTest {
 
@@ -27,7 +26,8 @@ class OakGitDriverTest {
   }
 
   @UnitTest
-  void driverInitialisationWithValidPathReturnsConnectionConfiguredForTheGivenPath() throws Exception {
+  void driverInitialisationWithValidPathReturnsConnectionConfiguredForTheGivenPath()
+      throws Exception {
     Path gitDirectory = TestHelpers.aCleanTestDirectory("driver-init-test");
     String absoluteDirectoryPath = gitDirectory.toAbsolutePath().toString();
     Git.init().setDirectory(gitDirectory.toFile()).call();
@@ -36,7 +36,8 @@ class OakGitDriverTest {
     Connection connection = DriverManager.getConnection("jdbc:oakgit://" + absoluteDirectoryPath);
 
     assertTrue(connection instanceof OakGitConnection);
-    assertEquals(absoluteDirectoryPath, ((OakGitConnection) connection).getGit().getRepository().getWorkTree().getAbsolutePath());
+    assertEquals(
+        absoluteDirectoryPath,
+        ((OakGitConnection) connection).getGit().getRepository().getWorkTree().getAbsolutePath());
   }
-
 }

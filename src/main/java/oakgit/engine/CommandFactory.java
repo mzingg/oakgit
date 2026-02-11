@@ -1,5 +1,9 @@
 package oakgit.engine;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import oakgit.engine.commands.ErrorCommand;
@@ -7,11 +11,6 @@ import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
 import oakgit.engine.query.analyzer.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -48,12 +47,13 @@ public class CommandFactory {
   /**
    * Returns a {@link Command} for a given SQL using placeholder data from prepared statement.
    *
-   * @param sqlCommand      {@link String}
+   * @param sqlCommand {@link String}
    * @param placeholderData {@link Map}
-   * @param selectionLimit  int
+   * @param selectionLimit int
    * @return {@link Command}, {@link ErrorCommand} in case the SQL was not recognized as a command.
    */
-  public Command getCommandForSql(String sqlCommand, PlaceholderData placeholderData, int selectionLimit) {
+  public Command getCommandForSql(
+      String sqlCommand, PlaceholderData placeholderData, int selectionLimit) {
     return match(sqlCommand)
         .map(matchResult -> matchResult.getCommandSupplier().apply(placeholderData, selectionLimit))
         .orElse(new ErrorCommand("Error while parsing the query " + sqlCommand));
@@ -69,5 +69,4 @@ public class CommandFactory {
 
     return Optional.empty();
   }
-
 }

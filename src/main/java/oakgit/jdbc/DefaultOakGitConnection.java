@@ -23,8 +23,5 @@ public abstract class DefaultOakGitConnection extends UnsupportedConnection {
   }
 
   @Override
-  public void clearWarnings() {
-
-  }
-
+  public void clearWarnings() {}
 }

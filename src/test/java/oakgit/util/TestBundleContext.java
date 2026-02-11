@@ -1,11 +1,10 @@
 package oakgit.util;
 
-import org.osgi.framework.*;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Dictionary;
+import org.osgi.framework.*;
 
 public class TestBundleContext implements BundleContext {
   @Override
@@ -39,67 +38,60 @@ public class TestBundleContext implements BundleContext {
   }
 
   @Override
-  public void addServiceListener(ServiceListener listener, String filter) throws InvalidSyntaxException {
-
-  }
-
-  @Override
-  public void addServiceListener(ServiceListener listener) {
-
-  }
+  public void addServiceListener(ServiceListener listener, String filter)
+      throws InvalidSyntaxException {}
 
   @Override
-  public void removeServiceListener(ServiceListener listener) {
-
-  }
+  public void addServiceListener(ServiceListener listener) {}
 
   @Override
-  public void addBundleListener(BundleListener listener) {
-
-  }
+  public void removeServiceListener(ServiceListener listener) {}
 
   @Override
-  public void removeBundleListener(BundleListener listener) {
-
-  }
+  public void addBundleListener(BundleListener listener) {}
 
   @Override
-  public void addFrameworkListener(FrameworkListener listener) {
-
-  }
+  public void removeBundleListener(BundleListener listener) {}
 
   @Override
-  public void removeFrameworkListener(FrameworkListener listener) {
-
-  }
+  public void addFrameworkListener(FrameworkListener listener) {}
 
   @Override
-  public ServiceRegistration<?> registerService(String[] clazzes, Object service, Dictionary<String, ?> properties) {
+  public void removeFrameworkListener(FrameworkListener listener) {}
+
+  @Override
+  public ServiceRegistration<?> registerService(
+      String[] clazzes, Object service, Dictionary<String, ?> properties) {
     return null;
   }
 
   @Override
-  public ServiceRegistration<?> registerService(String clazz, Object service, Dictionary<String, ?> properties) {
+  public ServiceRegistration<?> registerService(
+      String clazz, Object service, Dictionary<String, ?> properties) {
     return null;
   }
 
   @Override
-  public <S> ServiceRegistration<S> registerService(Class<S> clazz, S service, Dictionary<String, ?> properties) {
+  public <S> ServiceRegistration<S> registerService(
+      Class<S> clazz, S service, Dictionary<String, ?> properties) {
     return null;
   }
 
   @Override
-  public <S> ServiceRegistration<S> registerService(Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
+  public <S> ServiceRegistration<S> registerService(
+      Class<S> clazz, ServiceFactory<S> factory, Dictionary<String, ?> properties) {
     return null;
   }
 
   @Override
-  public ServiceReference<?>[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+  public ServiceReference<?>[] getServiceReferences(String clazz, String filter)
+      throws InvalidSyntaxException {
     return new ServiceReference[0];
   }
 
   @Override
-  public ServiceReference<?>[] getAllServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
+  public ServiceReference<?>[] getAllServiceReferences(String clazz, String filter)
+      throws InvalidSyntaxException {
     return new ServiceReference[0];
   }
 
@@ -114,7 +106,8 @@ public class TestBundleContext implements BundleContext {
   }
 
   @Override
-  public <S> Collection<ServiceReference<S>> getServiceReferences(Class<S> clazz, String filter) throws InvalidSyntaxException {
+  public <S> Collection<ServiceReference<S>> getServiceReferences(Class<S> clazz, String filter)
+      throws InvalidSyntaxException {
     return null;
   }
 

@@ -1,7 +1,5 @@
 package oakgit.engine.query;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -9,12 +7,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 public interface QueryAnalyzer {
 
   QueryMatchResult matchAndCollect(String sqlQuery);
 
-  default QueryMatchResult withPatternMatch(String sqlQuery, Pattern pattern, BiFunction<QueryMatchResult, Matcher, QueryMatchResult> transformer) {
+  default QueryMatchResult withPatternMatch(
+      String sqlQuery,
+      Pattern pattern,
+      BiFunction<QueryMatchResult, Matcher, QueryMatchResult> transformer) {
     QueryMatchResult result = new QueryMatchResult();
     if (StringUtils.isNotBlank(sqlQuery)) {
       Matcher matcher = pattern.matcher(sqlQuery);
@@ -37,5 +39,4 @@ public interface QueryAnalyzer {
     // empty list implies all fields
     return Collections.emptyList();
   }
-
 }

@@ -1,5 +1,9 @@
 package oakgit.engine.query.analyzer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+
 import oakgit.UnitTest;
 import oakgit.engine.Command;
 import oakgit.engine.commands.UpdateDocumentDataInContainerCommand;
@@ -8,42 +12,48 @@ import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryMatchResult;
 import oakgit.util.TestHelpers;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-
 class UpdateAnalyzerTest {
 
   @UnitTest
   void matchAndCollectWithNodesReturnsInterestedMatch() {
-    // update CLUSTERNODES set MODIFIED = ?, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = ?, DATA = ?,  VERSION = 2, BDATA = ? where ID = ? and MODCOUNT = ?
-    QueryMatchResult target = TestHelpers.testValidQueryMatch(
-        new UpdateAnalyzer(),
-        "update NODES set MODIFIED = ?, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = ?, DATA = ?,  VERSION = 2, BDATA = ? where ID = ? and MODCOUNT = ?"
-    );
+    // update CLUSTERNODES set MODIFIED = ?, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT
+    // = ?, DSIZE = ?, DATA = ?,  VERSION = 2, BDATA = ? where ID = ? and MODCOUNT = ?
+    QueryMatchResult target =
+        TestHelpers.testValidQueryMatch(
+            new UpdateAnalyzer(),
+            "update NODES set MODIFIED = ?, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT"
+                + " = ?, DSIZE = ?, DATA = ?,  VERSION = 2, BDATA = ? where ID = ? and MODCOUNT ="
+                + " ?");
   }
 
   @UnitTest
   void matchAndCollectWithNodesAndMultipleInExpressionsReturnsCommandWithCorrectUpdateSet() {
-    // update CLUSTERNODES set MODIFIED = case when ? > MODIFIED then ? else MODIFIED end, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = DSIZE + ?, VERSION = 2, DATA = DATA || CAST(? AS varchar(16384)) where ID = ? and MODCOUNT = ?
-    QueryMatchResult target = TestHelpers.testValidQueryMatch(
-        new UpdateAnalyzer(),
-        "update NODES set MODIFIED = case when ? > MODIFIED then ? else MODIFIED end, HASBINARY = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = DSIZE + ?, VERSION = 2, DATA = DATA || CAST(? AS varchar(16384)) where ID = ? and MODCOUNT = ?"
-    );
-    PlaceholderData placeholderData = new PlaceholderData()
-        .set(1, 1636643795L)
-        .set(2, 1636643795L)
-        .set(3, null)
-        .set(4, null)
-        .set(5, 2)
-        .set(6, 0)
-        .set(7, 132)
-        .set(8, ",[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]".getBytes())
-        .set(9, "0:/")
-        .set(10, 1L);
-    DocumentEntry existing = new DocumentEntry()
-        .setDSize(20L)
-        .setData("12345678901234567890".getBytes());
+    // update CLUSTERNODES set MODIFIED = case when ? > MODIFIED then ? else MODIFIED end, HASBINARY
+    // = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = DSIZE + ?, VERSION = 2, DATA =
+    // DATA || CAST(? AS varchar(16384)) where ID = ? and MODCOUNT = ?
+    QueryMatchResult target =
+        TestHelpers.testValidQueryMatch(
+            new UpdateAnalyzer(),
+            "update NODES set MODIFIED = case when ? > MODIFIED then ? else MODIFIED end, HASBINARY"
+                + " = ?, DELETEDONCE = ?, MODCOUNT = ?, CMODCOUNT = ?, DSIZE = DSIZE + ?, VERSION ="
+                + " 2, DATA = DATA || CAST(? AS varchar(16384)) where ID = ? and MODCOUNT = ?");
+    PlaceholderData placeholderData =
+        new PlaceholderData()
+            .set(1, 1636643795L)
+            .set(2, 1636643795L)
+            .set(3, null)
+            .set(4, null)
+            .set(5, 2)
+            .set(6, 0)
+            .set(7, 132)
+            .set(
+                8,
+                ",[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]"
+                    .getBytes())
+            .set(9, "0:/")
+            .set(10, 1L);
+    DocumentEntry existing =
+        new DocumentEntry().setDSize(20L).setData("12345678901234567890".getBytes());
 
     Command command = target.getCommandSupplier().apply(placeholderData, Integer.MAX_VALUE);
     ((UpdateDocumentDataInContainerCommand) command).getData().update(existing);
@@ -51,9 +61,11 @@ class UpdateAnalyzerTest {
     assertThat(command, is(instanceOf(UpdateDocumentDataInContainerCommand.class)));
     assertThat(existing.getDSize(), is(152L));
     assertThat(existing.getData().length, is(152));
-    assertThat(new String(existing.getData()), is("12345678901234567890,[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]"));
+    assertThat(
+        new String(existing.getData()),
+        is(
+            "12345678901234567890,[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]"));
     assertThat(existing.getModified(), is(1636643795L));
     assertThat(existing.getVersion(), is(2));
   }
-
 }

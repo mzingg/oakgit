@@ -1,10 +1,9 @@
 package oakgit.engine.model;
 
-import oakgit.jdbc.OakGitResultSet;
-
 import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.UUID;
+import oakgit.jdbc.OakGitResultSet;
 
 public class VoidEntry implements ContainerEntry<VoidEntry> {
 
@@ -27,5 +26,4 @@ public class VoidEntry implements ContainerEntry<VoidEntry> {
   public VoidEntry copy() {
     return new VoidEntry();
   }
-
 }

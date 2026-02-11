@@ -1,10 +1,9 @@
 package oakgit.engine.query;
 
+import java.util.function.BiFunction;
 import lombok.Data;
 import oakgit.engine.Command;
 import oakgit.engine.model.PlaceholderData;
-
-import java.util.function.BiFunction;
 
 @Data
 public class QueryMatchResult {

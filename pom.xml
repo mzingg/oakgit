@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.1.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
 
   <groupId>oakgit</groupId>
   <artifactId>oakgit-persistence</artifactId>
@@ -15,14 +13,17 @@
     <encoding>UTF-8</encoding>
     <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
 
     <aem.version>6.5.0.0002</aem.version><!-- has to correspond to aem.version - version taken from wcm.io pom -->
     <oak.version>1.10.8</oak.version><!-- has to correspond to aem.version - version taken from org.apache.sling.datasource dependency -->
     <sling.base.version>3.0.4</sling.base.version><!-- has to correspond to aem.version - version taken from org.apache.sling.jcr.base dependency -->
     <sling.threads.version>3.2.18</sling.threads.version><!-- has to correspond to aem.version - version taken from org.apache.sling.commons.threads dependency -->
     <sling.discovery.version>1.0.4</sling.discovery.version><!-- has to correspond to aem.version - version taken from org.apache.sling.discovery dependency -->
-    <tomcat.version>7.0.92</tomcat.version>
-    <junit.version>5.8.1</junit.version>
+
+    <junit.version>5.11.4</junit.version>
+    <mockito.version>5.15.2</mockito.version>
+    <lombok.version>1.18.36</lombok.version>
 
     <localdev.aem.root>../run/author</localdev.aem.root>
     <localdev.aem.jar>aem-author-p4502.jar</localdev.aem.jar>
@@ -33,13 +34,13 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>5.1.2</version>
+        <version>5.1.9</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
             <Export-Package>oakgit.jdbc</Export-Package>
             <Import-Package>
-              !javax.net.ssl
+              !javax.net.ssl,
               *
             </Import-Package>
             <Embed-Dependency>
@@ -53,12 +54,99 @@
         </configuration>
       </plugin>
 
-      <!-- Reset local AEM - make sure server is not running -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>dependency-properties</id>
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>copy-database-drivers</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${localdev.aem.root}/crx-quickstart/install/9</outputDirectory>
+              <includeArtifactIds>
+                postgresql,
+                mysql-connector-j
+              </includeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
-      <!--Unpack AEM distro -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <basedir/>
+          <mainOutputDirectory/>
+          <mojoStatusPath/>
+          <outputDirectory/>
+          <projectArtifact/>
+          <proc>full</proc>
+          <testExcludes>
+            <!-- Sandbox tests require proprietary Adobe JARs and Java 8-era APIs (java.security.acl.Group) -->
+            <testExclude>**/OakDatabaseDriverSandboxTest.java</testExclude>
+            <testExclude>**/TestRepositoryCreator.java</testExclude>
+            <testExclude>**/TestSecurityProvider.java</testExclude>
+          </testExcludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <properties>
+            <groups>unit</groups>
+          </properties>
+          <!--suppress UnresolvedMavenProperty -->
+          <argLine>@{argLine} -Xshare:off -javaagent:${org.mockito:mockito-core:jar}</argLine>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[4.0.0-rc-5,)</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[21,)</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- AEM local deployment plugins (integration-test phase) -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.0</version>
         <executions>
           <execution>
             <phase>integration-test</phase>
@@ -77,10 +165,11 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Copy configuration and oakgit release -->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
         <executions>
           <execution>
             <id>remove-aem-dir</id>
@@ -114,100 +203,98 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- copy database drivers -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <id>copy-database-drivers</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${localdev.aem.root}/crx-quickstart/install/9</outputDirectory>
-              <includeArtifactIds>
-                postgresql,
-                mysql-connector-java
-              </includeArtifactIds>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
+
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.9.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
-          <configuration>
-            <release>11</release>
-          </configuration>
+          <version>4.0.0-beta-3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>3.0.0-M1</version>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>3.9.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.0.0-M1</version>
-        </plugin>
-        <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M5</version>
-          <configuration>
-            <properties>
-              <groups>unit</groups>
-            </properties>
-            <argLine>
-              --illegal-access=permit
-            </argLine>
-          </configuration>
+          <version>3.5.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.0.0-M5</version>
-          <configuration>
-            <properties>
-              <groups>integration</groups>
-            </properties>
-            <argLine>
-              --illegal-access=permit
-            </argLine>
-          </configuration>
+          <version>3.5.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>3.0.0</version>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>4.0.0-beta-2</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>3.0.0</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>4.0.0-beta-2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>4.0.0-beta-2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>4.0.0-M16</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.4.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.6.0</version>
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>10.21.2</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <configLocation>${project.basedir}/.mvn/parent_java/checkstyle.xml</configLocation>
+            <consoleOutput>true</consoleOutput>
+            <failsOnError>true</failsOnError>
+            <linkXRef>false</linkXRef>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.12</version>
+          <executions>
+            <execution>
+              <id>prepare-agent</id>
+              <phase>initialize</phase>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>report</id>
+              <phase>test</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -231,32 +318,39 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.22</version>
+      <version>${lombok.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <type>classpath-processor</type>
     </dependency>
 
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
-      <version>5.13.0.202109080827-r</version>
+      <version>7.1.0.202411261347-r</version>
     </dependency>
 
-    <!-- needed to read the project version form the pom file in META-INF -->
+    <!-- needed to read the project version from the pom file in META-INF -->
     <dependency>
       <groupId>com.github.zafarkhaja</groupId>
       <artifactId>java-semver</artifactId>
-      <version>0.9.0</version>
+      <version>0.10.2</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.8.1</version>
+      <version>3.9.9</version>
     </dependency>
 
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>3.4.1</version>
+      <version>3.5.1</version>
     </dependency>
 
     <!-- Transitive dependencies -->
@@ -281,6 +375,48 @@
     </dependency>
 
     <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.27.3</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.service.component</artifactId>
@@ -360,60 +496,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- local dependencies -->
-    <dependency>
-      <groupId>com.adobe.granite</groupId>
-      <artifactId>com.adobe.granite.repository</artifactId>
-      <version>1.6.28</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/ops/lib/com.adobe.granite.repository-1.6.28.jar</systemPath>
-    </dependency>
-
-    <dependency>
-      <groupId>com.adobe.granite</groupId>
-      <artifactId>com.adobe.granite.license</artifactId>
-      <version>1.2.10</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/ops/lib/com.adobe.granite.license-1.2.10.jar</systemPath>
-    </dependency>
-
-    <dependency>
-      <groupId>com.adobe</groupId>
-      <artifactId>crx-api</artifactId>
-      <version>2.6.6</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/ops/lib/crx-api-2.6.6.jar</systemPath>
-    </dependency>
-
-    <!-- junit-platform-launcher Public API for configuring and launching test plans — typically used by IDEs and build tools.
-     See JUnit Platform Launcher API for details.https://junit.org/junit5/docs/current/user-guide/#launcher-api
-     We are facing this issue mainly in older version of Intellij (2017)
-     -->
-    <!-- Some times Junit5 test cases are not recognised in IntelliJ. Getting the Warning error when trying to run the test cases.
-     WARNING: TestEngine with ID 'junit-jupiter' failed to discover tests
-     To fix this issue we need to add the junit-platform-launcher in pom file.
-     -->
-    <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-launcher</artifactId>
-      <version>1.8.1</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
       <version>2.2</version>
@@ -421,47 +503,99 @@
     </dependency>
 
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>4.0.0</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jdbc</artifactId>
-      <version>${tomcat.version}</version>
+      <version>9.0.102</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
-      <version>10.15.2.0</version>
+      <version>10.16.1.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbytools</artifactId>
+      <version>10.16.1.1</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.3.3</version>
+      <version>42.7.5</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.27</version>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>9.1.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.32</version>
+      <version>1.7.36</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Adobe dependencies (installed to local repo from ops/lib/) -->
+    <dependency>
+      <groupId>com.adobe.granite</groupId>
+      <artifactId>com.adobe.granite.repository</artifactId>
+      <version>1.6.28</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.adobe.granite</groupId>
+      <artifactId>com.adobe.granite.license</artifactId>
+      <version>1.2.10</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.adobe</groupId>
+      <artifactId>crx-api</artifactId>
+      <version>2.6.6</version>
       <scope>test</scope>
     </dependency>
 
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>linting-check-checkstyle</id>
+      <activation>
+        <property>
+          <name>withLinting</name>
+        </property>
+        <file>
+          <exists>src/main/java</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>validate</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

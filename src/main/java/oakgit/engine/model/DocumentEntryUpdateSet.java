@@ -1,20 +1,18 @@
 package oakgit.engine.model;
 
-import lombok.NonNull;
-import lombok.Setter;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import lombok.NonNull;
+import lombok.Setter;
 
 public class DocumentEntryUpdateSet {
 
   private final Map<String, Object> updatedValues = new HashMap<>();
-  @Setter
-  private List<String> setExpressions = Collections.emptyList();
+  @Setter private List<String> setExpressions = Collections.emptyList();
 
   public DocumentEntryUpdateSet withValue(@NonNull String name, Object value) {
     updatedValues.put(name, value);
@@ -37,7 +35,8 @@ public class DocumentEntryUpdateSet {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> DocumentEntryUpdateSet whenHasValue(@NonNull String name, Class<T> targetType, DocumentEntry entityToUpdate, Consumer<T> setter) {
+  private <T> DocumentEntryUpdateSet whenHasValue(
+      @NonNull String name, Class<T> targetType, DocumentEntry entityToUpdate, Consumer<T> setter) {
     if (updatedValues.containsKey(name)) {
       Object value = updatedValues.get(name);
       if (value instanceof Function) {

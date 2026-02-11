@@ -1,13 +1,12 @@
 package oakgit.util;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.ComponentInstance;
-
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 public class TestComponentContext implements ComponentContext {
 
@@ -55,14 +54,10 @@ public class TestComponentContext implements ComponentContext {
   }
 
   @Override
-  public void enableComponent(String name) {
-
-  }
+  public void enableComponent(String name) {}
 
   @Override
-  public void disableComponent(String name) {
-
-  }
+  public void disableComponent(String name) {}
 
   @Override
   public ServiceReference<?> getServiceReference() {

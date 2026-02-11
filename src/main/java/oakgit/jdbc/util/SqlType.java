@@ -12,8 +12,8 @@ import java.util.*;
 /**
  * Extends the information in {@link java.sql.Types}.
  *
- * <p>The information in the following conversions tables
- * (from the JDBC 4.1 specification) is held in members of this class.
+ * <p>The information in the following conversions tables (from the JDBC 4.1 specification) is held
+ * in members of this class.
  *
  * <p>Table B-1: JDBC Types Mapped to Java Types
  *
@@ -162,11 +162,12 @@ import java.util.*;
  * java.util.Date       TIMESTAMP
  * </pre>
  *
- * <p><a id="B5">TABLE B-5</a>: Conversions performed by {@code setObject} and
- * {@code setNull} between Java object types and target JDBC types
+ * <p><a id="B5">TABLE B-5</a>: Conversions performed by {@code setObject} and {@code setNull}
+ * between Java object types and target JDBC types
  * <!--
  * CHECKSTYLE: OFF
  * -->
+ *
  * <pre>
  *                      T S I B R F D D N B B C V L B V L D T T A B C S R D J R N N L N S
  *                      I M N I E L O E U I O H A O I A O A I I R L L T E A A O C V O C Q
@@ -206,15 +207,16 @@ import java.util.*;
  * java.util.Calendar   . . . . . . . . . . . x x x . . . x x x . . . . . . . . . . . . .
  * java.util.Date       . . . . . . . . . . . x x x . . . x x x . . . . . . . . . . . . .
  * </pre>
+ *
  * <!--
  * CHECKSTYLE: ON
  * -->
  *
- * <p><a id="B6">TABLE B-6</a>: Use of {@code ResultSet} getter methods to
- * retrieve JDBC data types
+ * <p><a id="B6">TABLE B-6</a>: Use of {@code ResultSet} getter methods to retrieve JDBC data types
  * <!--
  * CHECKSTYLE: OFF
  * -->
+ *
  * <pre>
  *                      T S I B R F D D N B B C V L B V L D T T C B A R D S J R N N L N S
  *                      I M N I E L O E U I O H A O I A O A I I L L R E A T A O C V O C Q
@@ -255,6 +257,7 @@ import java.util.*;
  * getRowId             . . . . . . . . . . . . . . . . . . . . . . . . . . . X . . . . .
  * getSQLXML            . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . X
  * </pre>
+ *
  * <!--
  * CHECKSTYLE: ON
  * -->
@@ -281,8 +284,7 @@ public enum SqlType {
   LONGVARCHAR(Types.LONGVARCHAR, String.class),
   BINARY(Types.BINARY, byte[].class, ByteString.class, String.class),
   VARBINARY(Types.VARBINARY, byte[].class, ByteString.class, String.class),
-  LONGVARBINARY(Types.LONGVARBINARY, byte[].class, ByteString.class,
-      String.class),
+  LONGVARBINARY(Types.LONGVARBINARY, byte[].class, ByteString.class, String.class),
   NULL(Types.NULL, Void.class),
   ANY(Types.JAVA_OBJECT, Object.class),
   SYMBOL(Types.OTHER, Object.class),
@@ -323,31 +325,34 @@ public enum SqlType {
     SET_LIST = new HashMap<>();
     GET_LIST = new HashMap<>();
 
-    EnumSet<SqlType> numericTypes = EnumSet.of(TINYINT, SMALLINT, INTEGER,
-        BIGINT, REAL, FLOAT, DOUBLE, DECIMAL, NUMERIC, BIT, BOOLEAN);
+    EnumSet<SqlType> numericTypes =
+        EnumSet.of(
+            TINYINT, SMALLINT, INTEGER, BIGINT, REAL, FLOAT, DOUBLE, DECIMAL, NUMERIC, BIT,
+            BOOLEAN);
     Class[] numericClasses = {
-        BigDecimal.class, Boolean.class, Byte.class, Short.class, Integer.class,
-        Long.class, Float.class, Double.class
+      BigDecimal.class,
+      Boolean.class,
+      Byte.class,
+      Short.class,
+      Integer.class,
+      Long.class,
+      Float.class,
+      Double.class
     };
     EnumSet<SqlType> charTypes = EnumSet.of(CHAR, VARCHAR, LONGVARCHAR);
     EnumSet<SqlType> ncharTypes = EnumSet.of(NCHAR, NVARCHAR, LONGNVARCHAR);
     EnumSet<SqlType> binaryTypes = EnumSet.of(BINARY, VARBINARY, LONGVARBINARY);
     EnumSet<SqlType> dateTimeTypes = EnumSet.of(DATE, TIME, TIMESTAMP);
     final EnumSet<SqlType> numericCharTypes = concat(numericTypes, charTypes);
-    SET_LIST.put(String.class,
-        concat(numericCharTypes, binaryTypes, dateTimeTypes, ncharTypes));
+    SET_LIST.put(String.class, concat(numericCharTypes, binaryTypes, dateTimeTypes, ncharTypes));
     for (Class clazz : numericClasses) {
       SET_LIST.put(clazz, numericCharTypes);
     }
     SET_LIST.put(byte[].class, binaryTypes);
-    SET_LIST.put(BigInteger.class,
-        EnumSet.of(BIGINT, CHAR, VARCHAR, LONGVARCHAR));
-    SET_LIST.put(java.sql.Date.class,
-        concat(charTypes, EnumSet.of(DATE, TIMESTAMP)));
-    SET_LIST.put(Time.class,
-        concat(charTypes, EnumSet.of(TIME, TIMESTAMP)));
-    SET_LIST.put(Timestamp.class,
-        concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
+    SET_LIST.put(BigInteger.class, EnumSet.of(BIGINT, CHAR, VARCHAR, LONGVARCHAR));
+    SET_LIST.put(java.sql.Date.class, concat(charTypes, EnumSet.of(DATE, TIMESTAMP)));
+    SET_LIST.put(Time.class, concat(charTypes, EnumSet.of(TIME, TIMESTAMP)));
+    SET_LIST.put(Timestamp.class, concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
     SET_LIST.put(Array.class, EnumSet.of(ARRAY));
     SET_LIST.put(Blob.class, EnumSet.of(BLOB));
     SET_LIST.put(Clob.class, EnumSet.of(CLOB));
@@ -358,41 +363,40 @@ public enum SqlType {
     SET_LIST.put(RowId.class, EnumSet.of(ROWID));
     SET_LIST.put(NClob.class, EnumSet.of(NCLOB));
     SET_LIST.put(java.sql.SQLXML.class, EnumSet.of(SQLXML));
-    SET_LIST.put(Calendar.class,
-        concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
-    SET_LIST.put(java.util.Date.class,
-        concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
+    SET_LIST.put(Calendar.class, concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
+    SET_LIST.put(java.util.Date.class, concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
 
     EnumSet<Method> numericMethods =
-        EnumSet.of(Method.GET_BYTE, Method.GET_SHORT, Method.GET_INT,
-            Method.GET_LONG, Method.GET_FLOAT, Method.GET_DOUBLE,
-            Method.GET_BIG_DECIMAL, Method.GET_BOOLEAN);
+        EnumSet.of(
+            Method.GET_BYTE,
+            Method.GET_SHORT,
+            Method.GET_INT,
+            Method.GET_LONG,
+            Method.GET_FLOAT,
+            Method.GET_DOUBLE,
+            Method.GET_BIG_DECIMAL,
+            Method.GET_BOOLEAN);
     for (Method method : numericMethods) {
       GET_LIST.put(method, numericCharTypes);
     }
     GET_LIST.put(Method.GET_BYTE, EnumSet.of(ROWID));
     for (Method method : EnumSet.of(Method.GET_STRING, Method.GET_N_STRING)) {
-      GET_LIST.put(method,
-          concat(numericCharTypes, binaryTypes, dateTimeTypes,
-              EnumSet.of(DATALINK), ncharTypes));
+      GET_LIST.put(
+          method,
+          concat(numericCharTypes, binaryTypes, dateTimeTypes, EnumSet.of(DATALINK), ncharTypes));
     }
     GET_LIST.put(Method.GET_BYTES, binaryTypes);
-    GET_LIST.put(Method.GET_DATE,
-        concat(charTypes, EnumSet.of(DATE, TIMESTAMP)));
-    GET_LIST.put(Method.GET_TIME,
-        concat(charTypes, EnumSet.of(TIME, TIMESTAMP)));
-    GET_LIST.put(Method.GET_TIMESTAMP,
-        concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
-    GET_LIST.put(Method.GET_ASCII_STREAM,
-        concat(charTypes, binaryTypes, EnumSet.of(CLOB, NCLOB)));
-    GET_LIST.put(Method.GET_BINARY_STREAM,
-        concat(binaryTypes, EnumSet.of(BLOB, SQLXML)));
-    GET_LIST.put(Method.GET_CHARACTER_STREAM,
-        concat(charTypes, binaryTypes, ncharTypes,
-            EnumSet.of(CLOB, NCLOB, SQLXML)));
-    GET_LIST.put(Method.GET_N_CHARACTER_STREAM,
-        concat(
-            charTypes, binaryTypes, ncharTypes, EnumSet.of(CLOB, NCLOB, SQLXML)));
+    GET_LIST.put(Method.GET_DATE, concat(charTypes, EnumSet.of(DATE, TIMESTAMP)));
+    GET_LIST.put(Method.GET_TIME, concat(charTypes, EnumSet.of(TIME, TIMESTAMP)));
+    GET_LIST.put(Method.GET_TIMESTAMP, concat(charTypes, EnumSet.of(DATE, TIME, TIMESTAMP)));
+    GET_LIST.put(Method.GET_ASCII_STREAM, concat(charTypes, binaryTypes, EnumSet.of(CLOB, NCLOB)));
+    GET_LIST.put(Method.GET_BINARY_STREAM, concat(binaryTypes, EnumSet.of(BLOB, SQLXML)));
+    GET_LIST.put(
+        Method.GET_CHARACTER_STREAM,
+        concat(charTypes, binaryTypes, ncharTypes, EnumSet.of(CLOB, NCLOB, SQLXML)));
+    GET_LIST.put(
+        Method.GET_N_CHARACTER_STREAM,
+        concat(charTypes, binaryTypes, ncharTypes, EnumSet.of(CLOB, NCLOB, SQLXML)));
     GET_LIST.put(Method.GET_CLOB, EnumSet.of(CLOB, NCLOB));
     GET_LIST.put(Method.GET_N_CLOB, EnumSet.of(CLOB, NCLOB));
     GET_LIST.put(Method.GET_BLOB, EnumSet.of(BLOB));
@@ -405,22 +409,16 @@ public enum SqlType {
     GET_LIST.put(Method.GET_SQLXML, EnumSet.of(SQLXML));
   }
 
-  /**
-   * Type id as appears in {@link java.sql.Types},
-   * e.g. {@link java.sql.Types#INTEGER}.
-   */
+  /** Type id as appears in {@link java.sql.Types}, e.g. {@link java.sql.Types#INTEGER}. */
   public final int id;
-  /**
-   * Default Java type for this SQL type, as described in table B-1.
-   */
+
+  /** Default Java type for this SQL type, as described in table B-1. */
   public final Class clazz;
-  /**
-   * Class used internally in Calcite to represent instances of this type.
-   */
+
+  /** Class used internally in Calcite to represent instances of this type. */
   public final Class internal;
-  /**
-   * Class used to serialize values of this type as JSON.
-   */
+
+  /** Class used to serialize values of this type as JSON. */
   public final Class serial;
 
   SqlType(int id, Class clazz, Class internal, Class serial) {
@@ -446,9 +444,7 @@ public enum SqlType {
     return sqlType;
   }
 
-  /**
-   * Returns the entries in JDBC table B-5.
-   */
+  /** Returns the entries in JDBC table B-5. */
   public static Iterable<Map.Entry<Class, SqlType>> getSetConversions() {
     final ArrayList<Map.Entry<Class, SqlType>> list = new ArrayList<>();
     for (Map.Entry<Class, EnumSet<SqlType>> entry : SET_LIST.entrySet()) {
@@ -469,9 +465,9 @@ public enum SqlType {
   }
 
   /**
-   * Returns whether {@link java.sql.PreparedStatement#setObject} and
-   * {@link PreparedStatement#setNull} can assign a value of a particular class
-   * to a column of a particular SQL type.
+   * Returns whether {@link java.sql.PreparedStatement#setObject} and {@link
+   * PreparedStatement#setNull} can assign a value of a particular class to a column of a particular
+   * SQL type.
    *
    * <p>The JDBC standard describes the mapping in table <a href="#B5">B-5</a>.
    */
@@ -481,8 +477,8 @@ public enum SqlType {
   }
 
   /**
-   * Returns whether {@link java.sql.ResultSet#getInt(int)} and similar methods
-   * can convert a value to a particular SQL type.
+   * Returns whether {@link java.sql.ResultSet#getInt(int)} and similar methods can convert a value
+   * to a particular SQL type.
    *
    * <p>The JDBC standard describes the mapping in table <a href="#B6">B-6</a>.
    */
@@ -491,9 +487,7 @@ public enum SqlType {
     return sqlTypes != null && sqlTypes.contains(sqlType);
   }
 
-  /**
-   * Getter methods in {@link java.sql.ResultSet}.
-   */
+  /** Getter methods in {@link java.sql.ResultSet}. */
   public enum Method {
     GET_BYTE("getByte"),
     GET_SHORT("getShort"),

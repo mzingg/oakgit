@@ -1,23 +1,21 @@
 package oakgit.processor.inmemory;
 
+import java.util.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.engine.model.ModCountSupport;
 
-import java.util.*;
-
 @RequiredArgsConstructor
 public class InMemoryContainer {
 
-  @NonNull
-  @Getter
-  private final String name;
+  @NonNull @Getter private final String name;
 
   private final Map<String, ContainerEntry<?>> entries = new HashMap<>();
 
-  public <T extends ContainerEntry<T>> InMemoryContainer setEntry(@NonNull ContainerEntry<T> entry) {
+  public <T extends ContainerEntry<T>> InMemoryContainer setEntry(
+      @NonNull ContainerEntry<T> entry) {
     entries.put(entry.getId(), entry);
     return this;
   }
@@ -34,7 +32,8 @@ public class InMemoryContainer {
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends ContainerEntry<T>> Optional<T> findByIdAndModCount(String id, long modCount, Class<T> resultType) {
+  public <T extends ContainerEntry<T>> Optional<T> findByIdAndModCount(
+      String id, long modCount, Class<T> resultType) {
     if (entries.containsKey(id)) {
       ContainerEntry<?> entry = entries.get(id);
       if (resultType.isAssignableFrom(entry.getClass())) {
@@ -51,7 +50,8 @@ public class InMemoryContainer {
   }
 
   @SuppressWarnings("unchecked")
-  public <T extends ContainerEntry<T>> List<T> findByIdRange(String idMin, String idMax, Class<T> resultType, int limit) {
+  public <T extends ContainerEntry<T>> List<T> findByIdRange(
+      String idMin, String idMax, Class<T> resultType, int limit) {
     ArrayList<T> result = new ArrayList<>();
 
     int count = 0;

@@ -1,10 +1,10 @@
 package oakgit.engine.model;
 
-import oakgit.UnitTest;
-import oakgit.engine.model.test.RedTestEntry;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+
+import oakgit.UnitTest;
+import oakgit.engine.model.test.RedTestEntry;
 
 class ContainerEntryTest {
 
@@ -14,5 +14,4 @@ class ContainerEntryTest {
 
     assertThat(actual, is(not(nullValue())));
   }
-
 }

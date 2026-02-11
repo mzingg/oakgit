@@ -1,10 +1,9 @@
 package oakgit.engine.query.analyzer;
 
+import java.util.regex.Pattern;
 import oakgit.engine.commands.CreateContainerCommand;
 import oakgit.engine.query.QueryAnalyzer;
 import oakgit.engine.query.QueryMatchResult;
-
-import java.util.regex.Pattern;
 
 public class CreateAnalyzer implements QueryAnalyzer {
 
@@ -13,11 +12,14 @@ public class CreateAnalyzer implements QueryAnalyzer {
   @SuppressWarnings("rawtypes")
   @Override
   public QueryMatchResult matchAndCollect(String sqlQuery) {
-    return withPatternMatch(sqlQuery, CREATE_PATTERN, (result, matcher) -> {
-      String tableName = matcher.group(1);
-      result.setCommandSupplier((placeholderData, selectionLimit) -> new CreateContainerCommand(tableName));
-      return result;
-    });
+    return withPatternMatch(
+        sqlQuery,
+        CREATE_PATTERN,
+        (result, matcher) -> {
+          String tableName = matcher.group(1);
+          result.setCommandSupplier(
+              (placeholderData, selectionLimit) -> new CreateContainerCommand(tableName));
+          return result;
+        });
   }
-
 }

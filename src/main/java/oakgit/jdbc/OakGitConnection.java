@@ -1,12 +1,5 @@
 package oakgit.jdbc;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import oakgit.engine.CommandFactory;
-import oakgit.engine.CommandProcessor;
-import org.eclipse.jgit.api.Git;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,19 +7,22 @@ import java.nio.file.StandardOpenOption;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import oakgit.engine.CommandFactory;
+import oakgit.engine.CommandProcessor;
+import org.eclipse.jgit.api.Git;
 
 @RequiredArgsConstructor
 @Getter
 public class OakGitConnection extends DefaultOakGitConnection {
 
-  @NonNull
-  private final OakGitDriverConfiguration configuration;
+  @NonNull private final OakGitDriverConfiguration configuration;
 
-  @NonNull
-  private final CommandProcessor processor;
+  @NonNull private final CommandProcessor processor;
 
-  @NonNull
-  private final CommandFactory commandFactory;
+  @NonNull private final CommandFactory commandFactory;
 
   private Git git;
 
@@ -43,8 +39,8 @@ public class OakGitConnection extends DefaultOakGitConnection {
           getConfiguration().getGitDirectory().resolve("query.log"),
           sql + "\r\n",
           StandardCharsets.UTF_8,
-          StandardOpenOption.CREATE, StandardOpenOption.APPEND
-      );
+          StandardOpenOption.CREATE,
+          StandardOpenOption.APPEND);
     } catch (IOException ioException) {
       throw new IllegalStateException(ioException);
     }
@@ -52,7 +48,8 @@ public class OakGitConnection extends DefaultOakGitConnection {
 
   @Override
   public DatabaseMetaData getMetaData() {
-    return new OakGitDatabaseMetadata(configuration.getUrl(), configuration.getArtifactId(), configuration.getVersion());
+    return new OakGitDatabaseMetadata(
+        configuration.getUrl(), configuration.getArtifactId(), configuration.getVersion());
   }
 
   @Override
@@ -71,13 +68,8 @@ public class OakGitConnection extends DefaultOakGitConnection {
   }
 
   @Override
-  public void commit() {
-
-  }
+  public void commit() {}
 
   @Override
-  public void rollback() {
-
-  }
-
+  public void rollback() {}
 }

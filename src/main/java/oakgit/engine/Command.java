@@ -1,6 +1,3 @@
 package oakgit.engine;
 
-public interface Command {
-
-
-}
+public interface Command {}

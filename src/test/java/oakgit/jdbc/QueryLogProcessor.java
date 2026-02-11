@@ -1,11 +1,9 @@
 package oakgit.jdbc;
 
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import oakgit.SandboxTest;
-import oakgit.engine.CommandFactory;
-import oakgit.engine.query.QueryMatchResult;
-import org.apache.commons.lang3.StringUtils;
+import static oakgit.util.Matchers.isPresent;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,11 +16,12 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import static oakgit.util.Matchers.isPresent;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import oakgit.SandboxTest;
+import oakgit.engine.CommandFactory;
+import oakgit.engine.query.QueryMatchResult;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class QueryLogProcessor {
@@ -45,13 +44,20 @@ public class QueryLogProcessor {
     log.info("Validating coverage");
     log.info("------------------------------------------------------------");
     CommandFactory factory = new CommandFactory();
-    queryCounterIndex.keySet().forEach(query -> {
-      log.info(query);
-      Optional<QueryMatchResult> queryMatchResult = factory.match(query);
-      assertThat(queryMatchResult, isPresent());
-      assertTrue(queryIsCoveredByTestIn(query, testDir.resolve("engine/query/analyzer")), "Query is not covered by Analyzer Test");
-//      assertTrue(queryIsCoveredByTestIn(query, testDir.resolve("engine/CommandFactoryTest.java")), "Query is not covered by CommandFactory Test");
-    });
+    queryCounterIndex
+        .keySet()
+        .forEach(
+            query -> {
+              log.info(query);
+              Optional<QueryMatchResult> queryMatchResult = factory.match(query);
+              assertThat(queryMatchResult, isPresent());
+              assertTrue(
+                  queryIsCoveredByTestIn(query, testDir.resolve("engine/query/analyzer")),
+                  "Query is not covered by Analyzer Test");
+              //      assertTrue(queryIsCoveredByTestIn(query,
+              // testDir.resolve("engine/CommandFactoryTest.java")), "Query is not covered by
+              // CommandFactory Test");
+            });
 
     log.info("------------------------------------------------------------");
     log.info("Checking tests for unindexed queries");
@@ -61,16 +67,18 @@ public class QueryLogProcessor {
 
   private void logObsoleteQueriesIn(Path testDir, Map<String, Integer> queryCounterIndex) {
     try (Stream<Path> paths = Files.walk(testDir)) {
-      paths.filter(Files::isRegularFile)
+      paths
+          .filter(Files::isRegularFile)
           .filter(path -> path.getFileName().toString().endsWith(".java"))
           .peek(path -> log.info(path.toString()))
-          .flatMap(path -> {
-            try {
-              return Files.lines(path);
-            } catch (IOException e) {
-              return Stream.of();
-            }
-          })
+          .flatMap(
+              path -> {
+                try {
+                  return Files.lines(path);
+                } catch (IOException e) {
+                  return Stream.of();
+                }
+              })
           .map(this::isProbablyAQuery)
           .filter(query -> query.isPresent() && !queryCounterIndex.containsKey(query.get()))
           .forEach(query -> log.warn("ATTENTION (not indexed): {}", query.get()));
@@ -80,43 +88,49 @@ public class QueryLogProcessor {
   }
 
   private Optional<String> isProbablyAQuery(String line) {
-    Pattern queryPattern = Pattern.compile(".*\"((?:create|select|update|insert).+)\".*", Pattern.CASE_INSENSITIVE);
+    Pattern queryPattern =
+        Pattern.compile(".*\"((?:create|select|update|insert).+)\".*", Pattern.CASE_INSENSITIVE);
     Matcher matcher = queryPattern.matcher(line);
-    return matcher.matches() && !line.contains("// this is fine") ? Optional.of(matcher.group(1)) : Optional.empty();
+    return matcher.matches() && !line.contains("// this is fine")
+        ? Optional.of(matcher.group(1))
+        : Optional.empty();
   }
 
   @NonNull
   private Path readIndex(Path logDir, Map<String, Integer> queryIndexCounter) throws IOException {
     Path queryIndex = logDir.resolve("query.index");
     if (queryIndex.toFile().exists()) {
-      Files.lines(queryIndex).forEach(line -> {
-        String query = StringUtils.substringAfterLast(line, ">>");
-        Integer count = Integer.parseInt(StringUtils.substringBefore(line, ">>"));
-        queryIndexCounter.put(query, count);
-      });
+      Files.lines(queryIndex)
+          .forEach(
+              line -> {
+                String query = StringUtils.substringAfterLast(line, ">>");
+                Integer count = Integer.parseInt(StringUtils.substringBefore(line, ">>"));
+                queryIndexCounter.put(query, count);
+              });
     }
     return queryIndex;
   }
 
-  private void readQueryLogAndUpdateIndex(Path queryIndex, Path logDir, Map<String, Integer> queryIndexCounter) throws IOException {
+  private void readQueryLogAndUpdateIndex(
+      Path queryIndex, Path logDir, Map<String, Integer> queryIndexCounter) throws IOException {
     Path queryLog = logDir.resolve("query.log");
     if (queryLog.toFile().exists()) {
       String timeStamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
       Path queryLogSnapshot = logDir.resolve(String.format("query.%s.log", timeStamp));
 
-      Files.lines(queryLog).forEach(line ->
-          {
-            String query = StringUtils.substringAfterLast(line, ">>");
-            if (!query.isBlank() && !query.contains("PlaceholderData")) {
-              int count = 1;
-              if (queryIndexCounter.containsKey(query)) {
-                count = queryIndexCounter.get(query) + 1;
-              }
-              queryIndexCounter.put(query, count);
-            }
-            writeToFile(line, queryLogSnapshot);
-          }
-      );
+      Files.lines(queryLog)
+          .forEach(
+              line -> {
+                String query = StringUtils.substringAfterLast(line, ">>");
+                if (!query.isBlank() && !query.contains("PlaceholderData")) {
+                  int count = 1;
+                  if (queryIndexCounter.containsKey(query)) {
+                    count = queryIndexCounter.get(query) + 1;
+                  }
+                  queryIndexCounter.put(query, count);
+                }
+                writeToFile(line, queryLogSnapshot);
+              });
 
       Files.deleteIfExists(queryIndex);
       queryIndexCounter.entrySet().stream()
@@ -129,15 +143,17 @@ public class QueryLogProcessor {
 
   private boolean queryIsCoveredByTestIn(String query, Path testDir) {
     try (Stream<Path> paths = Files.walk(testDir)) {
-      return paths.filter(Files::isRegularFile)
+      return paths
+          .filter(Files::isRegularFile)
           .filter(path -> path.getFileName().toString().endsWith(".java"))
-          .flatMap(path -> {
-            try {
-              return Files.lines(path);
-            } catch (IOException e) {
-              return Stream.of();
-            }
-          })
+          .flatMap(
+              path -> {
+                try {
+                  return Files.lines(path);
+                } catch (IOException e) {
+                  return Stream.of();
+                }
+              })
           .anyMatch(line -> line.contains(query));
     } catch (IOException ignored) {
       // falls through to default false return
@@ -151,8 +167,8 @@ public class QueryLogProcessor {
           path,
           query + "\r\n",
           StandardCharsets.UTF_8,
-          StandardOpenOption.CREATE, StandardOpenOption.APPEND
-      );
+          StandardOpenOption.CREATE,
+          StandardOpenOption.APPEND);
     } catch (IOException ioException) {
       throw new IllegalStateException(ioException);
     }

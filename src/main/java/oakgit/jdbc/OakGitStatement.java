@@ -1,12 +1,11 @@
 package oakgit.jdbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import oakgit.engine.CommandFactory;
 import oakgit.engine.CommandProcessor;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 @Getter
 @RequiredArgsConstructor
@@ -46,8 +45,7 @@ public class OakGitStatement extends UnsupportedOakGitStatement {
   }
 
   @Override
-  public void close() {
-  }
+  public void close() {}
 
   @Override
   public boolean isPoolable() {
@@ -55,7 +53,5 @@ public class OakGitStatement extends UnsupportedOakGitStatement {
   }
 
   @Override
-  public void setPoolable(boolean poolable) {
-
-  }
+  public void setPoolable(boolean poolable) {}
 }

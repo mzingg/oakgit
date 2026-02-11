@@ -1,13 +1,12 @@
 package oakgit.util;
 
+import static org.hamcrest.Matchers.equalTo;
+
+import java.util.Optional;
 import oakgit.engine.model.ContainerEntry;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-
-import java.util.Optional;
-
-import static org.hamcrest.Matchers.equalTo;
 
 public class Matchers {
 
@@ -24,7 +23,8 @@ public class Matchers {
       }
 
       @Override
-      protected void describeMismatchSafely(ContainerEntry<?> item, Description mismatchDescription) {
+      protected void describeMismatchSafely(
+          ContainerEntry<?> item, Description mismatchDescription) {
         if (item == null) {
           mismatchDescription.appendText("is null");
         } else {
@@ -86,8 +86,7 @@ public class Matchers {
               mismatchDescription.appendText("value ");
               matcher.describeMismatch(value, mismatchDescription);
             },
-            () -> mismatchDescription.appendText("was empty")
-        );
+            () -> mismatchDescription.appendText("was empty"));
       }
     };
   }

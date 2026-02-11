@@ -1,11 +1,10 @@
 package oakgit.engine.model.test;
 
+import java.util.LinkedHashMap;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.jdbc.OakGitResultSet;
-
-import java.util.LinkedHashMap;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class BlueTestEntry implements ContainerEntry<BlueTestEntry> {

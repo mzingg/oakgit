@@ -2,6 +2,15 @@ package oakgit.util;
 
 import com.adobe.granite.repository.impl.CommitStats;
 import com.adobe.granite.repository.impl.GraniteContent;
+import java.io.IOException;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import javax.jcr.RepositoryException;
+import javax.jcr.security.AccessControlManager;
+import javax.jcr.security.AccessControlPolicy;
+import javax.jcr.security.AccessControlPolicyIterator;
+import javax.jcr.security.Privilege;
+import javax.security.auth.Subject;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.api.security.JackrabbitAccessControlList;
 import org.apache.jackrabbit.commons.jackrabbit.authorization.AccessControlUtils;
@@ -46,16 +55,6 @@ import org.apache.jackrabbit.oak.spi.security.user.util.UserUtil;
 import org.apache.jackrabbit.oak.spi.whiteboard.DefaultWhiteboard;
 import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.security.AccessControlManager;
-import javax.jcr.security.AccessControlPolicy;
-import javax.jcr.security.AccessControlPolicyIterator;
-import javax.jcr.security.Privilege;
-import javax.security.auth.Subject;
-import java.io.IOException;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-
 public class TestRepositoryCreator {
 
   private final DocumentNodeStore nodeStore;
@@ -95,7 +94,8 @@ public class TestRepositoryCreator {
     privilegeConfiguration.setRootProvider(rootProvider);
     privilegeConfiguration.setTreeProvider(treeProvider);
 
-    AuthorizationConfigurationImpl authorizationConfiguration = new AuthorizationConfigurationImpl();
+    AuthorizationConfigurationImpl authorizationConfiguration =
+        new AuthorizationConfigurationImpl();
     authorizationConfiguration.setSecurityProvider(testSecurityProvider);
     authorizationConfiguration.setRootProvider(rootProvider);
     authorizationConfiguration.setTreeProvider(treeProvider);
@@ -105,7 +105,8 @@ public class TestRepositoryCreator {
     tokenConfiguration.setRootProvider(rootProvider);
     tokenConfiguration.setTreeProvider(treeProvider);
 
-    AuthenticationConfigurationImpl authenticationConfiguration = new AuthenticationConfigurationImpl();
+    AuthenticationConfigurationImpl authenticationConfiguration =
+        new AuthenticationConfigurationImpl();
     authenticationConfiguration.setSecurityProvider(testSecurityProvider);
     authenticationConfiguration.setRootProvider(rootProvider);
     authenticationConfiguration.setTreeProvider(treeProvider);
@@ -126,22 +127,22 @@ public class TestRepositoryCreator {
   }
 
   public JackrabbitRepository create() {
-    Oak oak = new Oak(nodeStore)
-        .withFailOnMissingIndexProvider();
+    Oak oak = new Oak(nodeStore).withFailOnMissingIndexProvider();
 
-    Jcr jcr = new Jcr(oak, false)
-        .with(Runnable::run)
-        .with(whiteboard)
-        .with(new InitialContent())
-        .with(createGraniteContent())
-        .with(JcrConflictHandler.createJcrConflictHandler())
-        .with(new VersionHook())
-        .with(securityProvider)
-        .with(new NameValidatorProvider())
-        .with(new NamespaceEditorProvider())
-        .with(new TypeEditorProvider())
-        .with(new ConflictValidatorProvider())
-        .with(new AtomicCounterEditorProvider());
+    Jcr jcr =
+        new Jcr(oak, false)
+            .with(Runnable::run)
+            .with(whiteboard)
+            .with(new InitialContent())
+            .with(createGraniteContent())
+            .with(JcrConflictHandler.createJcrConflictHandler())
+            .with(new VersionHook())
+            .with(securityProvider)
+            .with(new NameValidatorProvider())
+            .with(new NamespaceEditorProvider())
+            .with(new TypeEditorProvider())
+            .with(new ConflictValidatorProvider())
+            .with(new AtomicCounterEditorProvider());
 
     if (this.changeCollectorProvider != null) {
       jcr.with(this.changeCollectorProvider);
@@ -167,52 +168,63 @@ public class TestRepositoryCreator {
     jcr.with(BundlingConfigInitializer.INSTANCE);
     ContentRepository contentRepository = jcr.createContentRepository();
     setupPermissions(contentRepository, securityProvider);
-//    if (this.componentContext != null) {
-//      this.oakRepositoryRegistration = this.componentContext.getBundleContext().registerService(ContentRepository.class, contentRepository, (Dictionary) null);
-//    }
+    //    if (this.componentContext != null) {
+    //      this.oakRepositoryRegistration =
+    // this.componentContext.getBundleContext().registerService(ContentRepository.class,
+    // contentRepository, (Dictionary) null);
+    //    }
 
     return (JackrabbitRepository) jcr.createRepository();
   }
 
   private GraniteContent createGraniteContent() {
     GraniteContent gc = new GraniteContent(true);
-    String userRoot = UserUtil.getAuthorizableRootPath(securityProvider.getConfiguration(UserConfiguration.class).getParameters(), AuthorizableType.USER);
+    String userRoot =
+        UserUtil.getAuthorizableRootPath(
+            securityProvider.getConfiguration(UserConfiguration.class).getParameters(),
+            AuthorizableType.USER);
     gc.setUserHomePath(userRoot);
     return gc;
   }
 
-  private static void setupPermissions(final ContentRepository repo, SecurityProvider securityProvider) {
-    try (ContentSession contentSession = Subject.doAsPrivileged(
-        SystemSubject.INSTANCE,
-        (PrivilegedExceptionAction<ContentSession>) () -> repo.login(null, null),
-        null
-    )) {
+  private static void setupPermissions(
+      final ContentRepository repo, SecurityProvider securityProvider) {
+    try (ContentSession contentSession =
+        Subject.doAsPrivileged(
+            SystemSubject.INSTANCE,
+            (PrivilegedExceptionAction<ContentSession>) () -> repo.login(null, null),
+            null)) {
       Root root = contentSession.getLatestRoot();
-      AuthorizationConfiguration config = securityProvider.getConfiguration(AuthorizationConfiguration.class);
+      AuthorizationConfiguration config =
+          securityProvider.getConfiguration(AuthorizationConfiguration.class);
       AccessControlManager acMgr = config.getAccessControlManager(root, NamePathMapper.DEFAULT);
       setupPolicy("/oak:index", acMgr);
       setupPolicy("/jcr:system", acMgr);
       if (root.hasPendingChanges()) {
         root.commit();
       }
-    } catch (RepositoryException | CommitFailedException | PrivilegedActionException | IOException exception) {
+    } catch (RepositoryException
+        | CommitFailedException
+        | PrivilegedActionException
+        | IOException exception) {
       throw new RuntimeException(exception);
     }
   }
 
-  private static void setupPolicy(String path, AccessControlManager acMgr) throws RepositoryException {
+  private static void setupPolicy(String path, AccessControlManager acMgr)
+      throws RepositoryException {
     AccessControlPolicyIterator it = acMgr.getApplicablePolicies(path);
 
     while (it.hasNext()) {
       AccessControlPolicy policy = it.nextAccessControlPolicy();
       if (policy instanceof JackrabbitAccessControlList) {
         JackrabbitAccessControlList acl = (JackrabbitAccessControlList) policy;
-        Privilege[] jcrAll = AccessControlUtils.privilegesFromNames(acMgr, new String[]{"jcr:all"});
+        Privilege[] jcrAll =
+            AccessControlUtils.privilegesFromNames(acMgr, new String[] {"jcr:all"});
         acl.addEntry(EveryonePrincipal.getInstance(), jcrAll, false);
         acMgr.setPolicy(path, acl);
         break;
       }
     }
   }
-
 }

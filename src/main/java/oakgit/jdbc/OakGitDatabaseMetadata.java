@@ -1,25 +1,21 @@
 package oakgit.jdbc;
 
 import com.github.zafarkhaja.semver.Version;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 @AllArgsConstructor
 public class OakGitDatabaseMetadata implements DatabaseMetaData {
 
-  @NonNull
-  private final String url;
+  @NonNull private final String url;
 
-  @NonNull
-  private final String artifactId;
+  @NonNull private final String artifactId;
 
-  @NonNull
-  private final Version version;
+  @NonNull private final Version version;
 
   @Override
   public String getURL() {
@@ -612,17 +608,20 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getProcedures(String catalog, String schemaPattern, String procedureNamePattern) {
+  public ResultSet getProcedures(
+      String catalog, String schemaPattern, String procedureNamePattern) {
     return null;
   }
 
   @Override
-  public ResultSet getProcedureColumns(String catalog, String schemaPattern, String procedureNamePattern, String columnNamePattern) {
+  public ResultSet getProcedureColumns(
+      String catalog, String schemaPattern, String procedureNamePattern, String columnNamePattern) {
     return null;
   }
 
   @Override
-  public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) {
+  public ResultSet getTables(
+      String catalog, String schemaPattern, String tableNamePattern, String[] types) {
     return null;
   }
 
@@ -642,22 +641,26 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) {
+  public ResultSet getColumns(
+      String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) {
     return null;
   }
 
   @Override
-  public ResultSet getColumnPrivileges(String catalog, String schema, String table, String columnNamePattern) {
+  public ResultSet getColumnPrivileges(
+      String catalog, String schema, String table, String columnNamePattern) {
     return null;
   }
 
   @Override
-  public ResultSet getTablePrivileges(String catalog, String schemaPattern, String tableNamePattern) {
+  public ResultSet getTablePrivileges(
+      String catalog, String schemaPattern, String tableNamePattern) {
     return null;
   }
 
   @Override
-  public ResultSet getBestRowIdentifier(String catalog, String schema, String table, int scope, boolean nullable) {
+  public ResultSet getBestRowIdentifier(
+      String catalog, String schema, String table, int scope, boolean nullable) {
     return null;
   }
 
@@ -682,7 +685,13 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getCrossReference(String parentCatalog, String parentSchema, String parentTable, String foreignCatalog, String foreignSchema, String foreignTable) {
+  public ResultSet getCrossReference(
+      String parentCatalog,
+      String parentSchema,
+      String parentTable,
+      String foreignCatalog,
+      String foreignSchema,
+      String foreignTable) {
     return null;
   }
 
@@ -692,7 +701,8 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getIndexInfo(String catalog, String schema, String table, boolean unique, boolean approximate) {
+  public ResultSet getIndexInfo(
+      String catalog, String schema, String table, boolean unique, boolean approximate) {
     return OakGitResultSet.EMPTY_RESULT_SET;
   }
 
@@ -757,7 +767,8 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getUDTs(String catalog, String schemaPattern, String typeNamePattern, int[] types) {
+  public ResultSet getUDTs(
+      String catalog, String schemaPattern, String typeNamePattern, int[] types) {
     return null;
   }
 
@@ -797,7 +808,8 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getAttributes(String catalog, String schemaPattern, String typeNamePattern, String attributeNamePattern) {
+  public ResultSet getAttributes(
+      String catalog, String schemaPattern, String typeNamePattern, String attributeNamePattern) {
     return null;
   }
 
@@ -877,12 +889,14 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getFunctionColumns(String catalog, String schemaPattern, String functionNamePattern, String columnNamePattern) {
+  public ResultSet getFunctionColumns(
+      String catalog, String schemaPattern, String functionNamePattern, String columnNamePattern) {
     return null;
   }
 
   @Override
-  public ResultSet getPseudoColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) {
+  public ResultSet getPseudoColumns(
+      String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) {
     return null;
   }
 

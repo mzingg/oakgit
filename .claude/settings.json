@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "claude-opus-4-6",
+  "permissions": {
+    "allow": ["Read", "Write", "Edit", "Bash", "Grep", "Glob", "WebFetch", "WebSearch"],
+    "deny": ["Read(.env)", "Read(**/.env*)", "Read(**/secrets/**)"]
+  },
+  "env": {
+    "PROJECT_TYPE": "java-maven-monorepo",
+    "COLORTERM": "truecolor"
+  },
+  "hooks": {},
+  "attribution": {
+    "name": "Claude Code",
+    "email": "noreply@anthropic.com"
+  },
+  "ignorePaths": ["node_modules", "target", "dist", "build", ".git", ".idea", ".direnv", "result"]
+}

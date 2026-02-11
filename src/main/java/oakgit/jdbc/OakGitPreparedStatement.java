@@ -1,17 +1,15 @@
 package oakgit.jdbc;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import oakgit.engine.CommandFactory;
 import oakgit.engine.CommandProcessor;
 import oakgit.engine.model.PlaceholderData;
 import org.apache.commons.io.IOUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
 public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
 
@@ -32,7 +30,9 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     connection.queryLog("P/U>>" + getSql());
     connection.queryLog("P/U>>" + placeholderData);
 
-    return processor.execute(factory.getCommandForSql(getSql(), placeholderData, maxRows)).affectedCount();
+    return processor
+        .execute(factory.getCommandForSql(getSql(), placeholderData, maxRows))
+        .affectedCount();
   }
 
   @Override
@@ -49,7 +49,9 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     connection.queryLog("P/Q>>" + getSql());
     connection.queryLog("P/Q>>" + placeholderData);
 
-    return processor.execute(factory.getCommandForSql(getSql(), placeholderData, maxRows)).toResultSet();
+    return processor
+        .execute(factory.getCommandForSql(getSql(), placeholderData, maxRows))
+        .toResultSet();
   }
 
   @Override
@@ -71,7 +73,10 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
       connection.queryLog("P/B(" + i + ")>>" + dataList.get(i));
 
       try {
-        result[i] = processor.execute(factory.getCommandForSql(getSql(), dataList.get(i), maxRows)).affectedCount();
+        result[i] =
+            processor
+                .execute(factory.getCommandForSql(getSql(), dataList.get(i), maxRows))
+                .affectedCount();
       } catch (IllegalStateException stateException) {
         result[i] = Statement.EXECUTE_FAILED;
       }

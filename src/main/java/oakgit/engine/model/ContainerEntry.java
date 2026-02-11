@@ -1,19 +1,18 @@
 package oakgit.engine.model;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.function.Consumer;
 import lombok.Data;
 import lombok.NonNull;
 import oakgit.jdbc.OakGitResultSet;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.function.Consumer;
-
 public interface ContainerEntry<T extends ContainerEntry<T>> {
 
   /**
-   * Returns an instance of an empty container typed to the given class.
-   * Always returns a new object instance. Calls the ctor(String) of the given type class.
-   * Use {@link ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is empty.
+   * Returns an instance of an empty container typed to the given class. Always returns a new object
+   * instance. Calls the ctor(String) of the given type class. Use {@link
+   * ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is empty.
    *
    * @param entryClass
    * @param <T>
@@ -22,7 +21,10 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
   static <T extends ContainerEntry<T>> T emptyOf(Class<T> entryClass) {
     try {
       return entryClass.getConstructor().newInstance();
-    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+    } catch (InstantiationException
+        | IllegalAccessException
+        | NoSuchMethodException
+        | InvocationTargetException e) {
       throw new IllegalArgumentException("no empty ctor found for ContainerEntry implementation");
     }
   }
@@ -38,9 +40,9 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
   }
 
   /**
-   * Returns an instance of an invalid container typed to the given class.
-   * Always returns a new object instance. Use {@link ContainerEntry#isInvalid(ContainerEntry)}
-   * to test if a given object is invalid.
+   * Returns an instance of an invalid container typed to the given class. Always returns a new
+   * object instance. Use {@link ContainerEntry#isInvalid(ContainerEntry)} to test if a given object
+   * is invalid.
    *
    * @param entryClass
    * @param <T>
@@ -61,7 +63,8 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
   }
 
   /**
-   * Combines !{@link ContainerEntry#isEmpty(ContainerEntry)} and !{@link ContainerEntry#isInvalid(ContainerEntry)}
+   * Combines !{@link ContainerEntry#isEmpty(ContainerEntry)} and !{@link
+   * ContainerEntry#isInvalid(ContainerEntry)}
    *
    * @param containerEntry
    * @return
@@ -87,8 +90,12 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
     return result -> {
       List<String> fields = expandOrReturnFieldList(fieldList);
       for (String specialFieldName : fields) {
-        String fieldName = typeGetter(specialFieldName)
-            .orElseThrow(() -> new IllegalStateException("could not assign column type to fieldName: " + specialFieldName));
+        String fieldName =
+            typeGetter(specialFieldName)
+                .orElseThrow(
+                    () ->
+                        new IllegalStateException(
+                            "could not assign column type to fieldName: " + specialFieldName));
         result.addColumn(getAvailableColumnsByName().get(fieldName).copy());
       }
     };
@@ -113,8 +120,12 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
     return result -> {
       List<String> fields = expandOrReturnFieldList(fieldList);
       for (String specialFieldName : fields) {
-        ColumnGetterResult getterResult = entryGetter(specialFieldName)
-            .orElseThrow(() -> new IllegalStateException("could not assign entry to fieldName: " + specialFieldName));
+        ColumnGetterResult getterResult =
+            entryGetter(specialFieldName)
+                .orElseThrow(
+                    () ->
+                        new IllegalStateException(
+                            "could not assign entry to fieldName: " + specialFieldName));
         result.addValue(getterResult.getFieldName(), getterResult.getValue());
       }
     };
@@ -124,11 +135,9 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
 
   T copy();
 
-
   @Data
   class ColumnGetterResult {
-    @NonNull
-    private final String fieldName;
+    @NonNull private final String fieldName;
 
     private final Object value;
   }
@@ -159,6 +168,5 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
     public T copy() {
       throw new UnsupportedOperationException();
     }
-
   }
 }

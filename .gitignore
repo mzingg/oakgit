@@ -75,3 +75,7 @@ hs_err_pid*
 /sqlCommand.log
 /.idea/dataSources/
 /.idea/dataSources.local.xml
+
+# Nix tooling symlinks
+.nix/tools/
+result

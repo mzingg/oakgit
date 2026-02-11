@@ -1,5 +1,13 @@
 package oakgit.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import lombok.Data;
 import oakgit.engine.model.PlaceholderData;
 import oakgit.engine.query.QueryAnalyzer;
@@ -9,21 +17,12 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 public class TestHelpers {
 
-  public static final OutputStream DERBY_DEV_NULL = new OutputStream() {
-    public void write(int b) {
-    }
-  };
+  public static final OutputStream DERBY_DEV_NULL =
+      new OutputStream() {
+        public void write(int b) {}
+      };
 
   public static Path aCleanTestDirectory(String directoryName) throws IOException {
     Path target = aCleanTestDirectory().resolve(directoryName);
@@ -36,7 +35,8 @@ public class TestHelpers {
     return Files.createDirectories(target);
   }
 
-  public static GitEnv aCleanGitEnvironment(String directoryName) throws GitAPIException, IOException {
+  public static GitEnv aCleanGitEnvironment(String directoryName)
+      throws GitAPIException, IOException {
     Path workspaceDirectory = aCleanTestDirectory(directoryName);
     Git git = Git.init().setDirectory(workspaceDirectory.toFile()).call();
     PersonIdent committer = new PersonIdent("Oak Git", "oak-git@somewhere.com");
@@ -70,5 +70,4 @@ public class TestHelpers {
     private final Path path;
     private final PersonIdent personIdent;
   }
-
 }
