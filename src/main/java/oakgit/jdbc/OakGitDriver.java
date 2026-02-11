@@ -1,23 +1,20 @@
 package oakgit.jdbc;
 
-import com.github.zafarkhaja.semver.Version;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Logger;
 import oakgit.engine.CommandFactory;
 import oakgit.processor.inmemory.InMemoryCommandProcessor;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 public class OakGitDriver implements Driver {
 
+  private static final String DEFAULT_VERSION = "0.1.0";
+  private static final String ARTIFACT_ID = "oakgit-persistence";
   private static final InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor();
+  private static final DriverVersion VERSION =
+      DriverVersion.parse(
+          Optional.ofNullable(System.getenv("OAKGIT_VERSION")).orElse(DEFAULT_VERSION));
 
   static {
     try {
@@ -27,37 +24,11 @@ public class OakGitDriver implements Driver {
     }
   }
 
-  private static Version readMavenVersion() {
-    return Version.valueOf(StringUtils.substringBefore(readMavenModel().getVersion(), "-"));
-  }
-
-  private static Model readMavenModel() {
-    MavenXpp3Reader reader = new MavenXpp3Reader();
-    Model model = new Model();
-    try {
-      if ((new File("pom.xml")).exists()) {
-        model = reader.read(new FileReader("pom.xml"));
-      } else {
-        model =
-            reader.read(
-                new InputStreamReader(
-                    OakGitDriver.class.getResourceAsStream(
-                        "/META-INF/maven/oakgit/oakgit-persistence/pom.xml")));
-      }
-    } catch (IOException | XmlPullParserException | NullPointerException ignored) {
-      // fall through to empty model
-    }
-
-    return model;
-  }
-
   @Override
   public Connection connect(String url, Properties info) throws SQLException {
     OakGitDriverConfiguration configuration =
-        OakGitDriverConfiguration.fromUrl(
-            url, readMavenVersion(), readMavenModel().getArtifactId());
+        OakGitDriverConfiguration.fromUrl(url, VERSION, ARTIFACT_ID);
     if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
-
       return new OakGitConnection(configuration, PROCESSOR, new CommandFactory());
     }
 
@@ -66,8 +37,7 @@ public class OakGitDriver implements Driver {
 
   @Override
   public boolean acceptsURL(String url) {
-    return OakGitDriverConfiguration.fromUrl(
-            url, readMavenVersion(), readMavenModel().getArtifactId())
+    return OakGitDriverConfiguration.fromUrl(url, VERSION, ARTIFACT_ID)
         != OakGitDriverConfiguration.INVALID_CONFIGURATION;
   }
 
@@ -78,12 +48,12 @@ public class OakGitDriver implements Driver {
 
   @Override
   public int getMajorVersion() {
-    return readMavenVersion().getMajorVersion();
+    return VERSION.major();
   }
 
   @Override
   public int getMinorVersion() {
-    return readMavenVersion().getMinorVersion();
+    return VERSION.minor();
   }
 
   @Override

@@ -1,6 +1,5 @@
 package oakgit.jdbc;
 
-import com.github.zafarkhaja.semver.Version;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -15,7 +14,7 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
 
   @NonNull private final String artifactId;
 
-  @NonNull private final Version version;
+  @NonNull private final DriverVersion version;
 
   @Override
   public String getURL() {
@@ -49,12 +48,12 @@ public class OakGitDatabaseMetadata implements DatabaseMetaData {
 
   @Override
   public int getDriverMajorVersion() {
-    return version.getMajorVersion();
+    return version.major();
   }
 
   @Override
   public int getDriverMinorVersion() {
-    return version.getMinorVersion();
+    return version.minor();
   }
 
   @Override
