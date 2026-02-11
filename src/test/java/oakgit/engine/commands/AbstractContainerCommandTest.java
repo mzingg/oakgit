@@ -1,7 +1,6 @@
 package oakgit.engine.commands;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import oakgit.UnitTest;
@@ -23,28 +22,28 @@ class AbstractContainerCommandTest {
   void ctorWithClusterNodesHasDocumentEntryType() {
     ContainerCommand<DocumentEntry> target = new AbstractContainerCommand<>("CLUSTERNODES") {};
 
-    assertThat(target.getEntryType(), is(DocumentEntry.class));
+    assertThat(target.getEntryType()).isEqualTo(DocumentEntry.class);
   }
 
   @UnitTest
   void ctorWithJournalHasDocumentEntryType() {
     ContainerCommand<DocumentEntry> target = new AbstractContainerCommand<>("JOURNAL") {};
 
-    assertThat(target.getEntryType(), is(DocumentEntry.class));
+    assertThat(target.getEntryType()).isEqualTo(DocumentEntry.class);
   }
 
   @UnitTest
   void ctorWithNodesHasDocumentEntryType() {
     ContainerCommand<DocumentEntry> target = new AbstractContainerCommand<>("NODES") {};
 
-    assertThat(target.getEntryType(), is(DocumentEntry.class));
+    assertThat(target.getEntryType()).isEqualTo(DocumentEntry.class);
   }
 
   @UnitTest
   void ctorWithSettingsHasDocumentEntryType() {
     ContainerCommand<DocumentEntry> target = new AbstractContainerCommand<>("SETTINGS") {};
 
-    assertThat(target.getEntryType(), is(DocumentEntry.class));
+    assertThat(target.getEntryType()).isEqualTo(DocumentEntry.class);
   }
 
   @UnitTest
@@ -52,7 +51,7 @@ class AbstractContainerCommandTest {
     ContainerCommand<DatastoreDataEntry> target =
         new AbstractContainerCommand<>("DATASTORE_DATA") {};
 
-    assertThat(target.getEntryType(), is(DatastoreDataEntry.class));
+    assertThat(target.getEntryType()).isEqualTo(DatastoreDataEntry.class);
   }
 
   @UnitTest
@@ -60,7 +59,7 @@ class AbstractContainerCommandTest {
     ContainerCommand<DatastoreMetaEntry> target =
         new AbstractContainerCommand<>("DATASTORE_META") {};
 
-    assertThat(target.getEntryType(), is(DatastoreMetaEntry.class));
+    assertThat(target.getEntryType()).isEqualTo(DatastoreMetaEntry.class);
   }
 
   @UnitTest
@@ -74,6 +73,6 @@ class AbstractContainerCommandTest {
   void getContainerNameReturnsPassedContainerName() {
     ContainerCommand<DocumentEntry> target = new AbstractContainerCommand<>("NODES") {};
 
-    assertThat(target.getContainerName(), is("NODES"));
+    assertThat(target.getContainerName()).isEqualTo("NODES");
   }
 }

@@ -1,7 +1,6 @@
 package oakgit.util;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -56,10 +55,10 @@ public class TestHelpers {
   public static QueryMatchResult testValidQueryMatch(QueryAnalyzer analyzer, String sqlQuery) {
     QueryMatchResult actual = analyzer.matchAndCollect(sqlQuery);
 
-    assertThat(actual, is(not(nullValue())));
-    assertThat(actual.isInterested(), is(true));
-    assertThat(actual.getOriginQuery(), is(sqlQuery));
-    assertThat(actual.getCommandSupplier(), is(not(nullValue())));
+    assertThat(actual).isNotNull();
+    assertThat(actual.isInterested()).isTrue();
+    assertThat(actual.getOriginQuery()).isEqualTo(sqlQuery);
+    assertThat(actual.getCommandSupplier()).isNotNull();
 
     return actual;
   }

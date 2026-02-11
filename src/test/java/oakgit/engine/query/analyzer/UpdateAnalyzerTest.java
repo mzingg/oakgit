@@ -1,8 +1,6 @@
 package oakgit.engine.query.analyzer;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import oakgit.UnitTest;
 import oakgit.engine.Command;
@@ -58,14 +56,13 @@ class UpdateAnalyzerTest {
     Command command = target.getCommandSupplier().apply(placeholderData, Integer.MAX_VALUE);
     ((UpdateDocumentDataInContainerCommand) command).getData().update(existing);
 
-    assertThat(command, is(instanceOf(UpdateDocumentDataInContainerCommand.class)));
-    assertThat(existing.getDSize(), is(152L));
-    assertThat(existing.getData().length, is(152));
-    assertThat(
-        new String(existing.getData()),
-        is(
-            "12345678901234567890,[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]"));
-    assertThat(existing.getModified(), is(1636643795L));
-    assertThat(existing.getVersion(), is(2));
+    assertThat(command).isInstanceOf(UpdateDocumentDataInContainerCommand.class);
+    assertThat(existing.getDSize()).isEqualTo(152L);
+    assertThat(existing.getData()).hasSize(152);
+    assertThat(new String(existing.getData()))
+        .isEqualTo(
+            "12345678901234567890,[[\"*\",\"_commitRoot\",\"r1722714ffe0-0-1\",null],[\"=\",\"_deleted\",\"r1722714ffe0-0-1\",\"false\"],[\"=\",\"_revisions\",\"r1722714ffe0-0-1\",\"c\"]]");
+    assertThat(existing.getModified()).isEqualTo(1636643795L);
+    assertThat(existing.getVersion()).isEqualTo(2);
   }
 }

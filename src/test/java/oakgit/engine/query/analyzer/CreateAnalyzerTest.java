@@ -1,7 +1,6 @@
 package oakgit.engine.query.analyzer;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import oakgit.UnitTest;
 import oakgit.engine.Command;
@@ -17,7 +16,7 @@ class CreateAnalyzerTest {
     TestHelpers.testValidQueryMatch(
         new CreateAnalyzer(),
         "create table DATASTORE_DATA (ID varchar(64) not null primary key, DATA blob)" // this is
-                                                                                       // fine
+        // fine
         );
   }
 
@@ -79,18 +78,18 @@ class CreateAnalyzerTest {
     QueryMatchResult actual =
         new CreateAnalyzer().matchAndCollect("select * from CLUSTERNODES where ID = '0'");
 
-    assertThat(actual, is(not(nullValue())));
-    assertThat(actual.isInterested(), is(false));
-    assertThat(actual.getCommandSupplier(), is(nullValue()));
+    assertThat(actual).isNotNull();
+    assertThat(actual.isInterested()).isFalse();
+    assertThat(actual.getCommandSupplier()).isNull();
   }
 
   @UnitTest
   void matchAndCollectWithNullQueryReturnsNotInterestedMatch() {
     QueryMatchResult actual = new CreateAnalyzer().matchAndCollect(null);
 
-    assertThat(actual, is(not(nullValue())));
-    assertThat(actual.isInterested(), is(false));
-    assertThat(actual.getCommandSupplier(), is(nullValue()));
+    assertThat(actual).isNotNull();
+    assertThat(actual.isInterested()).isFalse();
+    assertThat(actual.getCommandSupplier()).isNull();
   }
 
   @UnitTest
@@ -105,7 +104,7 @@ class CreateAnalyzerTest {
 
     Command actual = target.getCommandSupplier().apply(new PlaceholderData(), Integer.MAX_VALUE);
 
-    assertThat(actual, is(instanceOf(CreateContainerCommand.class)));
-    assertThat(((CreateContainerCommand) actual).getContainerName(), is("NODES"));
+    assertThat(actual).isInstanceOf(CreateContainerCommand.class);
+    assertThat(((CreateContainerCommand) actual).getContainerName()).isEqualTo("NODES");
   }
 }

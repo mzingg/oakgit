@@ -1,7 +1,6 @@
 package oakgit.jdbc;
 
-import static oakgit.util.Matchers.isPresent;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -50,7 +49,7 @@ public class QueryLogProcessor {
             query -> {
               log.info(query);
               Optional<QueryMatchResult> queryMatchResult = factory.match(query);
-              assertThat(queryMatchResult, isPresent());
+              assertThat(queryMatchResult).isPresent();
               assertTrue(
                   queryIsCoveredByTestIn(query, testDir.resolve("engine/query/analyzer")),
                   "Query is not covered by Analyzer Test");

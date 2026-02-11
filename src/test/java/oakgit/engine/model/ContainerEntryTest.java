@@ -1,7 +1,6 @@
 package oakgit.engine.model;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import oakgit.UnitTest;
 import oakgit.engine.model.test.RedTestEntry;
@@ -12,6 +11,6 @@ class ContainerEntryTest {
   void emptyOfWithValidClassCreatesObjectOfGivenType() {
     RedTestEntry actual = ContainerEntry.emptyOf(RedTestEntry.class);
 
-    assertThat(actual, is(not(nullValue())));
+    assertThat(actual).isNotNull();
   }
 }

@@ -1,8 +1,6 @@
 package oakgit.jdbc;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -53,8 +51,8 @@ public class OakDatabaseDriverSandboxTest {
     session.save();
 
     Node actual = session.getNode("/jcr:system/hello");
-    assertThat(actual.getProperty("velo").getString(), is("velo"));
-    assertThat(actual.getPrimaryNodeType().getName(), is("nt:unstructured"));
+    assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+    assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
     store.dispose();
   }
 
@@ -76,8 +74,8 @@ public class OakDatabaseDriverSandboxTest {
     session.save();
 
     Node actual = session.getNode("/jcr:system/hello");
-    assertThat(actual.getProperty("velo").getString(), is("velo"));
-    assertThat(actual.getPrimaryNodeType().getName(), is("nt:unstructured"));
+    assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+    assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
     store.dispose();
   }
 
@@ -95,7 +93,7 @@ public class OakDatabaseDriverSandboxTest {
         contentRepository.login(
             new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
-    assertThat(session, is(instanceOf(ContentSession.class)));
+    assertThat(session).isInstanceOf(ContentSession.class);
     store.dispose();
   }
 
@@ -114,7 +112,7 @@ public class OakDatabaseDriverSandboxTest {
         contentRepository.login(
             new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
 
-    assertThat(session, is(instanceOf(ContentSession.class)));
+    assertThat(session).isInstanceOf(ContentSession.class);
     store.dispose();
   }
 
@@ -136,8 +134,8 @@ public class OakDatabaseDriverSandboxTest {
     session.save();
 
     Node actual = session.getNode("/jcr:system/hello");
-    assertThat(actual.getProperty("velo").getString(), is("velo"));
-    assertThat(actual.getPrimaryNodeType().getName(), is("nt:unstructured"));
+    assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+    assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
     store.dispose();
   }
 
@@ -153,7 +151,7 @@ public class OakDatabaseDriverSandboxTest {
 
     JackrabbitRepository repository = testRepositoryCreator.create();
 
-    assertThat(repository, is(instanceOf(Repository.class)));
+    assertThat(repository).isInstanceOf(Repository.class);
     nodeStore.dispose();
   }
 

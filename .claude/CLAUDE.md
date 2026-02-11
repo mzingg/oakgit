@@ -34,7 +34,9 @@ This is a **single-module** project with OSGi bundle packaging. There is no mult
 - `src/test/java/oakgit/` - Test code
 - `.mvn/parent_java/checkstyle.xml` - Checkstyle configuration (Google Java Style)
 - `.nix/` - Nix packages and utility scripts
-- `ops/` - Operational files (local AEM deployment config, Adobe stub JARs)
+- `ops/` - Operational files (local AEM deployment config, SDK zip, version properties)
+- `ops/deps/` - AEM SDK zip (gitignored binary)
+- `ops/deps/aem-versions-*.properties` - SDK-extracted dependency versions (tracked in git)
 
 ## Build System
 
@@ -43,15 +45,32 @@ This is a **single-module** project with OSGi bundle packaging. There is no mult
 - **OSGi bundle** packaging via felix maven-bundle-plugin
 - Exported package: `oakgit.jdbc`
 - Embedded dependencies: JGit, java-semver, maven-model, plexus-utils, commons-lang3
+- **AEM SDK sync**: `nix run .#sync-aem-sdk` extracts versions from `ops/deps/aem-sdk-*.zip`, writes `ops/deps/aem-versions-<version>.properties`, installs proprietary Adobe JARs to local Maven repo, and generates a Maven profile `aem-<version>` in `pom.xml`. Use `--set-default` to also update the top-level POM `<properties>`.
+
+## Multi-SDK Build Support
+
+Multiple AEM SDK versions can coexist via Maven profiles. The top-level `<properties>` in `pom.xml` define the default SDK. Each synced SDK also gets a profile (`aem-<SHORT_VERSION>`) that overrides these properties when activated.
+
+```bash
+# Default build (uses top-level properties = latest SDK)
+mvn test
+
+# Build against a specific SDK version
+mvn test -Paem-2026.2.24288
+
+# Sync a new SDK and make it the default
+nix run .#sync-aem-sdk -- --set-default
+```
+
+**Why profiles?** Maven 4 resolves dependency versions during POM parsing, before lifecycle phases. Properties from `properties-maven-plugin` or external files are too late. Maven profiles are resolved at parse time alongside top-level `<properties>`.
 
 ## Testing
 
-- **JUnit 5** with tag-based test classification:
+- **JUnit 6** with tag-based test classification:
   - `@UnitTest` (tag: "unit") - runs via maven-surefire-plugin
   - `@SandboxTest` (tag: "sandbox") - isolated integration tests
 - **Mockito** for mocking
-- **Hamcrest** for assertions in existing tests
-- **AssertJ** preferred for new test code (migration from Hamcrest will happen separately)
+- **AssertJ** for all assertions
 - Surefire runs tests tagged "unit" by default
 
 ## Key Dependencies

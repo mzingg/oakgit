@@ -1,7 +1,7 @@
 package oakgit.processor.git;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -18,28 +18,22 @@ class GitFilesystemTest {
   void createDirectoryWithNullPathArgumentThrowsException() throws Exception {
     GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
 
-    try {
-      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent()).createDirectory((Path) null);
-
-    } catch (GitFilesystemException expectedException) {
-      return;
-    }
-
-    fail("Expected GitFilesystemException");
+    assertThatThrownBy(
+            () ->
+                new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
+                    .createDirectory((Path) null))
+        .isInstanceOf(GitFilesystemException.class);
   }
 
   @UnitTest
   void createDirectoryWithNullStringArgumentThrowsException() throws Exception {
     GitEnv gitEnv = TestHelpers.aCleanGitEnvironment("git-filesystem-test");
 
-    try {
-      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent()).createDirectory((String) null);
-
-    } catch (GitFilesystemException expectedException) {
-      return;
-    }
-
-    fail("Expected GitFilesystemException");
+    assertThatThrownBy(
+            () ->
+                new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
+                    .createDirectory((String) null))
+        .isInstanceOf(GitFilesystemException.class);
   }
 
   @UnitTest
@@ -48,18 +42,14 @@ class GitFilesystemTest {
     Path testPath = Files.createTempDirectory("aTestPath");
 
     try {
-
-      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
-          .createDirectory(testPath.resolve("aDirectoryName"));
-
-    } catch (GitFilesystemException expectedException) {
-      return;
+      assertThatThrownBy(
+              () ->
+                  new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
+                      .createDirectory(testPath.resolve("aDirectoryName")))
+          .isInstanceOf(GitFilesystemException.class);
     } finally {
-      // always clean up temp directory
       FileUtils.deleteQuietly(testPath.toFile());
     }
-
-    fail("Expected GitFilesystemException");
   }
 
   @UnitTest
@@ -70,16 +60,14 @@ class GitFilesystemTest {
     try {
       Files.write(existingFilePath, new byte[0]);
 
-      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent()).createDirectory(existingFilePath);
-
-    } catch (GitFilesystemException expectedException) {
-      return;
+      assertThatThrownBy(
+              () ->
+                  new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
+                      .createDirectory(existingFilePath))
+          .isInstanceOf(GitFilesystemException.class);
     } finally {
-      // always clean up temp directory
       FileUtils.deleteQuietly(existingFilePath.toFile());
     }
-
-    fail("Expected GitFilesystemException");
   }
 
   @UnitTest
@@ -90,17 +78,14 @@ class GitFilesystemTest {
     try {
       Files.createDirectory(existingDirectoryPath);
 
-      new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
-          .createDirectory(existingDirectoryPath);
-
-    } catch (GitFilesystemException expectedException) {
-      return;
+      assertThatThrownBy(
+              () ->
+                  new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
+                      .createDirectory(existingDirectoryPath))
+          .isInstanceOf(GitFilesystemException.class);
     } finally {
-      // always clean up temp directory
       FileUtils.deleteQuietly(existingDirectoryPath.toFile());
     }
-
-    fail("Expected GitFilesystemException");
   }
 
   @UnitTest
@@ -114,9 +99,7 @@ class GitFilesystemTest {
     new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent())
         .createDirectory("aParentDirectory/aDirectoryName");
 
-    assertThat(
-        "directory exists in git workspace path",
-        expectedDirectory.exists() && expectedDirectory.isDirectory());
+    assertThat(expectedDirectory).exists().isDirectory();
   }
 
   @UnitTest
@@ -129,9 +112,7 @@ class GitFilesystemTest {
 
     new GitFilesystem(gitEnv.getGit(), gitEnv.getPersonIdent()).createDirectory(directoryName);
 
-    assertThat(
-        "directory exists in git workspace path",
-        expectedDirectory.exists() && expectedDirectory.isDirectory());
+    assertThat(expectedDirectory).exists().isDirectory();
   }
 
   @UnitTest
@@ -144,8 +125,8 @@ class GitFilesystemTest {
 
     File gitIgnoreFile = actualDirectoryPath.resolve(GitFilesystem.GIT_IGNORE_FILENAME).toFile();
     Status status = gitEnv.getGit().status().call();
-    assertThat(".gitignore exists", gitIgnoreFile.exists() && gitIgnoreFile.isFile());
-    assertThat("git status has no untracked files", status.getUntracked().isEmpty());
-    assertThat("git status is clean", status.isClean());
+    assertThat(gitIgnoreFile).exists().isFile();
+    assertThat(status.getUntracked()).isEmpty();
+    assertThat(status.isClean()).isTrue();
   }
 }

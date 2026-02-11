@@ -57,6 +57,16 @@
               ''
             );
           };
+          sync-aem-sdk = {
+            type = "app";
+            program = toString (
+              pkgs.writeShellScript "sync-aem-sdk-wrapper" ''
+                export PATH="${maven4}/bin:${pkgs.jdk21}/bin:${pkgs.findutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin:${pkgs.gawk}/bin:${pkgs.unzip}/bin:${pkgs.coreutils}/bin:$PATH"
+                export JAVA_HOME="${pkgs.jdk21}"
+                exec ${pkgs.bash}/bin/bash ${./.nix/apps/sync-aem-sdk.sh}
+              ''
+            );
+          };
         }
       );
 

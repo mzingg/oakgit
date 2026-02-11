@@ -1,7 +1,6 @@
 package oakgit.engine.commands;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +59,7 @@ class MultipleEntriesResultTest {
         new MultipleEntriesResult<>(
             "NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList());
 
-    assertThat(testObj.wasSuccessfull(), is(false));
+    assertThat(testObj.wasSuccessfull()).isFalse();
   }
 
   @UnitTest
@@ -70,7 +69,7 @@ class MultipleEntriesResultTest {
         new MultipleEntriesResult<>(
             "NODES", DocumentEntry.class, foundEntries, Collections.emptyList());
 
-    assertThat(testObj.wasSuccessfull(), is(true));
+    assertThat(testObj.wasSuccessfull()).isTrue();
   }
 
   @UnitTest
@@ -79,7 +78,7 @@ class MultipleEntriesResultTest {
         new MultipleEntriesResult<>(
             "NODES", DocumentEntry.class, Collections.emptyList(), Collections.emptyList());
 
-    assertThat(testObj.affectedCount(), is(0));
+    assertThat(testObj.affectedCount()).isEqualTo(0);
   }
 
   @UnitTest
@@ -89,7 +88,7 @@ class MultipleEntriesResultTest {
         new MultipleEntriesResult<>(
             "NODES", DocumentEntry.class, foundEntries, Collections.emptyList());
 
-    assertThat(testObj.affectedCount(), is(2));
+    assertThat(testObj.affectedCount()).isEqualTo(2);
   }
 
   @UnitTest

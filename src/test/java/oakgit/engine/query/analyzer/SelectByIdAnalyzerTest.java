@@ -1,7 +1,6 @@
 package oakgit.engine.query.analyzer;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.ResultSet;
 import java.util.List;
@@ -92,21 +91,19 @@ class SelectByIdAnalyzerTest {
     Command command = target.getCommandSupplier().apply(placeholderData, Integer.MAX_VALUE);
     List<String> actual = ((SelectFromContainerByIdCommand<?>) command).getResultFieldList();
 
-    assertThat(actual.size(), is(10));
-    assertThat(actual.get(0), is("MODIFIED"));
-    assertThat(actual.get(1), is("MODCOUNT"));
-    assertThat(actual.get(2), is("CMODCOUNT"));
-    assertThat(actual.get(3), is("HASBINARY"));
-    assertThat(actual.get(4), is("DELETEDONCE"));
-    assertThat(actual.get(5), is("VERSION"));
-    assertThat(actual.get(6), is("SDTYPE"));
-    assertThat(actual.get(7), is("SDMAXREVTIME"));
-    assertThat(
-        actual.get(8),
-        is("case when (MODCOUNT = 1 and MODIFIED = 1589793585) then null else DATA end as DATA"));
-    assertThat(
-        actual.get(9),
-        is("case when (MODCOUNT = 1 and MODIFIED = 1589793585) then null else BDATA end as BDATA"));
+    assertThat(actual).hasSize(10);
+    assertThat(actual)
+        .containsExactly(
+            "MODIFIED",
+            "MODCOUNT",
+            "CMODCOUNT",
+            "HASBINARY",
+            "DELETEDONCE",
+            "VERSION",
+            "SDTYPE",
+            "SDMAXREVTIME",
+            "case when (MODCOUNT = 1 and MODIFIED = 1589793585) then null else DATA end as DATA",
+            "case when (MODCOUNT = 1 and MODIFIED = 1589793585) then null else BDATA end as BDATA");
   }
 
   @UnitTest
@@ -139,11 +136,11 @@ class SelectByIdAnalyzerTest {
     ResultSet actual =
         ((SelectFromContainerByIdCommand<?>) command).buildResult(referenceEntry).toResultSet();
 
-    assertThat(actual.next(), is(true));
-    assertThat(actual.getLong(1), is(1589793585L));
-    assertThat(actual.getLong(2), is(2L));
-    assertThat(new String(actual.getBytes(9)), is("testData"));
-    assertThat(new String(actual.getBytes(10)), is("testBigData"));
+    assertThat(actual.next()).isTrue();
+    assertThat(actual.getLong(1)).isEqualTo(1589793585L);
+    assertThat(actual.getLong(2)).isEqualTo(2L);
+    assertThat(new String(actual.getBytes(9))).isEqualTo("testData");
+    assertThat(new String(actual.getBytes(10))).isEqualTo("testBigData");
   }
 
   @UnitTest
@@ -176,11 +173,11 @@ class SelectByIdAnalyzerTest {
     ResultSet actual =
         ((SelectFromContainerByIdCommand<?>) command).buildResult(referenceEntry).toResultSet();
 
-    assertThat(actual.next(), is(true));
-    assertThat(actual.getLong(1), is(1589793585L));
-    assertThat(actual.getLong(2), is(1L));
-    assertThat(actual.getBytes(9), is(nullValue()));
-    assertThat(actual.getBytes(10), is(nullValue()));
+    assertThat(actual.next()).isTrue();
+    assertThat(actual.getLong(1)).isEqualTo(1589793585L);
+    assertThat(actual.getLong(2)).isEqualTo(1L);
+    assertThat(actual.getBytes(9)).isNull();
+    assertThat(actual.getBytes(10)).isNull();
   }
 
   @UnitTest
@@ -192,17 +189,17 @@ class SelectByIdAnalyzerTest {
                     + " SDMAXREVTIME, DATA, BDATA from CLUSTERNODES where ID > ? and ID < ? order"
                     + " by ID");
 
-    assertThat(actual, is(not(nullValue())));
-    assertThat(actual.isInterested(), is(false));
-    assertThat(actual.getCommandSupplier(), is(nullValue()));
+    assertThat(actual).isNotNull();
+    assertThat(actual.isInterested()).isFalse();
+    assertThat(actual.getCommandSupplier()).isNull();
   }
 
   @UnitTest
   void matchAndCollectWithNullQueryReturnsNotInterestedMatch() {
     QueryMatchResult actual = new SelectByIdAnalyzer().matchAndCollect(null);
 
-    assertThat(actual, is(not(nullValue())));
-    assertThat(actual.isInterested(), is(false));
-    assertThat(actual.getCommandSupplier(), is(nullValue()));
+    assertThat(actual).isNotNull();
+    assertThat(actual.isInterested()).isFalse();
+    assertThat(actual.getCommandSupplier()).isNull();
   }
 }

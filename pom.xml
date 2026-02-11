@@ -15,15 +15,19 @@
     <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
     <maven.compiler.release>21</maven.compiler.release>
 
-    <aem.version>6.5.0.0002</aem.version><!-- has to correspond to aem.version - version taken from wcm.io pom -->
-    <oak.version>1.10.8</oak.version><!-- has to correspond to aem.version - version taken from org.apache.sling.datasource dependency -->
-    <sling.base.version>3.0.4</sling.base.version><!-- has to correspond to aem.version - version taken from org.apache.sling.jcr.base dependency -->
-    <sling.threads.version>3.2.18</sling.threads.version><!-- has to correspond to aem.version - version taken from org.apache.sling.commons.threads dependency -->
-    <sling.discovery.version>1.0.4</sling.discovery.version><!-- has to correspond to aem.version - version taken from org.apache.sling.discovery dependency -->
+    <!-- AEM SDK-dependent versions — default SDK; override with -Paem-<version> -->
+    <!-- Synced from ops/deps/aem-versions-*.properties by: nix run .#sync-aem-sdk -->
+    <aem.sdk.version>2026.2.24288.20260204T121510Z-260100.0000</aem.sdk.version>
+    <oak.version>1.90.0</oak.version>
+    <sling.base.version>3.2.0</sling.base.version>
+    <sling.discovery.version>1.0.6</sling.discovery.version>
+    <vendor.granite.repository.version>2.0.4</vendor.granite.repository.version>
+    <vendor.granite.license.version>1.5.0</vendor.granite.license.version>
+    <vendor.crx.api.version>2.6.14</vendor.crx.api.version>
 
-    <junit.version>5.11.4</junit.version>
-    <mockito.version>5.15.2</mockito.version>
-    <lombok.version>1.18.36</lombok.version>
+    <junit.version>6.0.2</junit.version>
+    <mockito.version>5.21.0</mockito.version>
+    <lombok.version>1.18.42</lombok.version>
 
     <localdev.aem.root>../run/author</localdev.aem.root>
     <localdev.aem.jar>aem-author-p4502.jar</localdev.aem.jar>
@@ -63,20 +67,6 @@
             <goals>
               <goal>properties</goal>
             </goals>
-          </execution>
-          <execution>
-            <id>copy-database-drivers</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${localdev.aem.root}/crx-quickstart/install/9</outputDirectory>
-              <includeArtifactIds>
-                postgresql,
-                mysql-connector-j
-              </includeArtifactIds>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -142,67 +132,6 @@
         </executions>
       </plugin>
 
-      <!-- AEM local deployment plugins (integration-test phase) -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.5.0</version>
-        <executions>
-          <execution>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>java</executable>
-              <workingDirectory>${localdev.aem.root}</workingDirectory>
-              <arguments>
-                <argument>-jar</argument>
-                <argument>${localdev.aem.jar}</argument>
-                <argument>-unpack</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>remove-aem-dir</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <delete dir="${localdev.aem.root}/crx-quickstart" verbose="true"/>
-              </target>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-config-and-artifact</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <copy todir="${localdev.aem.root}/crx-quickstart" overwrite="true" verbose="true">
-                  <fileset dir="${project.basedir}/ops/localdev/crx-quickstart"/>
-                </copy>
-                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
-                      todir="${localdev.aem.root}/crx-quickstart/install/9"
-                      overwrite="true"
-                      verbose="true"/>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -302,11 +231,11 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Import Maven dependencies from AEM -->
+      <!-- Import Maven dependencies from AEM (WCM.io Cloud BOM) -->
       <dependency>
         <groupId>io.wcm.maven</groupId>
-        <artifactId>io.wcm.maven.aem-dependencies</artifactId>
-        <version>${aem.version}</version>
+        <artifactId>io.wcm.maven.aem-cloud-dependencies</artifactId>
+        <version>${aem.sdk.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -331,7 +260,7 @@
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
-      <version>7.1.0.202411261347-r</version>
+      <version>7.5.0.202512021534-r</version>
     </dependency>
 
     <!-- needed to read the project version from the pom file in META-INF -->
@@ -344,7 +273,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>3.9.9</version>
+      <version>3.9.12</version>
     </dependency>
 
     <dependency>
@@ -357,6 +286,7 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi.core</artifactId>
+      <version>8.0.0</version>
     </dependency>
 
     <dependency>
@@ -413,7 +343,7 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.27.3</version>
+      <version>3.27.6</version>
       <scope>test</scope>
     </dependency>
 
@@ -457,7 +387,6 @@
     <dependency>
       <groupId>org.apache.sling</groupId>
       <artifactId>org.apache.sling.commons.threads</artifactId>
-      <version>${sling.threads.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -478,6 +407,7 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-jcr</artifactId>
+      <version>${oak.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -496,44 +426,37 @@
     </dependency>
 
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <version>2.2</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jdbc</artifactId>
-      <version>9.0.102</version>
+      <version>11.0.18</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
-      <version>10.16.1.1</version>
+      <version>10.17.1.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbytools</artifactId>
-      <version>10.16.1.1</version>
+      <version>10.17.1.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.7.5</version>
+      <version>42.7.9</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
-      <version>9.1.0</version>
+      <version>9.6.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -544,25 +467,25 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Adobe dependencies (installed to local repo from ops/lib/) -->
+    <!-- Adobe dependencies (installed to local repo by: nix run .#sync-aem-sdk) -->
     <dependency>
       <groupId>com.adobe.granite</groupId>
       <artifactId>com.adobe.granite.repository</artifactId>
-      <version>1.6.28</version>
+      <version>${vendor.granite.repository.version}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.adobe.granite</groupId>
       <artifactId>com.adobe.granite.license</artifactId>
-      <version>1.2.10</version>
+      <version>${vendor.granite.license.version}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>com.adobe</groupId>
       <artifactId>crx-api</artifactId>
-      <version>2.6.6</version>
+      <version>${vendor.crx.api.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -595,6 +518,110 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <!-- AEM local deployment: mvn install -Plocaldev -->
+    <profile>
+      <id>localdev</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-database-drivers</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${localdev.aem.root}/crx-quickstart/install/9</outputDirectory>
+                  <includeArtifactIds>
+                    postgresql,
+                    mysql-connector-j
+                  </includeArtifactIds>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.5.0</version>
+            <executions>
+              <execution>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>java</executable>
+                  <workingDirectory>${localdev.aem.root}</workingDirectory>
+                  <arguments>
+                    <argument>-jar</argument>
+                    <argument>${localdev.aem.jar}</argument>
+                    <argument>-unpack</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>remove-aem-dir</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <delete dir="${localdev.aem.root}/crx-quickstart" verbose="true"/>
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>copy-config-and-artifact</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <copy todir="${localdev.aem.root}/crx-quickstart" overwrite="true" verbose="true">
+                      <fileset dir="${project.basedir}/ops/localdev/crx-quickstart"/>
+                    </copy>
+                    <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
+                          todir="${localdev.aem.root}/crx-quickstart/install/9"
+                          overwrite="true"
+                          verbose="true"/>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- AEM SDK 2026.2.24288 (generated by: nix run .#sync-aem-sdk) -->
+    <profile>
+      <id>aem-2026.2.24288</id>
+      <properties>
+        <aem.sdk.version>2026.2.24288.20260204T121510Z-260100.0000</aem.sdk.version>
+        <oak.version>1.90.0</oak.version>
+        <sling.base.version>3.2.0</sling.base.version>
+        <sling.discovery.version>1.0.6</sling.discovery.version>
+        <vendor.granite.repository.version>2.0.4</vendor.granite.repository.version>
+        <vendor.granite.license.version>1.5.0</vendor.granite.license.version>
+        <vendor.crx.api.version>2.6.14</vendor.crx.api.version>
+      </properties>
     </profile>
   </profiles>
 

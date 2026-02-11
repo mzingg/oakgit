@@ -1,8 +1,7 @@
 package oakgit.engine.query.analyzer;
 
 import static oakgit.util.TestHelpers.testValidQueryMatch;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import oakgit.UnitTest;
 import oakgit.engine.query.QueryMatchResult;
@@ -50,17 +49,17 @@ class DocumentInsertAnalyzerTest {
     QueryMatchResult actual =
         new DocumentInsertAnalyzer().matchAndCollect("select * from CLUSTERNODES where ID = '0'");
 
-    assertThat(actual, is(not(nullValue())));
-    assertThat(actual.isInterested(), is(false));
-    assertThat(actual.getCommandSupplier(), is(nullValue()));
+    assertThat(actual).isNotNull();
+    assertThat(actual.isInterested()).isFalse();
+    assertThat(actual.getCommandSupplier()).isNull();
   }
 
   @UnitTest
   void matchAndCollectWithNullQueryReturnsNotInterestedMatch() {
     QueryMatchResult actual = new DocumentInsertAnalyzer().matchAndCollect(null);
 
-    assertThat(actual, is(not(nullValue())));
-    assertThat(actual.isInterested(), is(false));
-    assertThat(actual.getCommandSupplier(), is(nullValue()));
+    assertThat(actual).isNotNull();
+    assertThat(actual.isInterested()).isFalse();
+    assertThat(actual.getCommandSupplier()).isNull();
   }
 }
