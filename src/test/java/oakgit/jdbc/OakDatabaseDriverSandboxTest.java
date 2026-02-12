@@ -24,148 +24,144 @@ import org.apache.jackrabbit.oak.plugins.document.rdb.RDBDocumentNodeStoreBuilde
 import org.apache.jackrabbit.oak.plugins.document.rdb.RDBDocumentStoreDB;
 import org.apache.jackrabbit.oak.spi.security.OpenSecurityProvider;
 import org.eclipse.jgit.api.Git;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
 public class OakDatabaseDriverSandboxTest {
 
-  @Container
-  private static final MySQLContainer<?> mysql =
-      new MySQLContainer<>("mysql:8.0").withDatabaseName("oak");
+  @Nested
+  @Testcontainers
+  class MySqlTests {
 
-  @Container
-  private static final PostgreSQLContainer<?> postgres =
-      new PostgreSQLContainer<>("postgres:16").withDatabaseName("oak");
+    @Container
+    private final MySQLContainer<?> mysql =
+        new MySQLContainer<>("mysql:8.0").withDatabaseName("oak");
 
-  @BeforeAll
-  private static void configureDerby() {
-    System.setProperty("derby.stream.error.field", "oakgit.util.TestHelpers.DERBY_DEV_NULL");
+    @SandboxTest
+    void canSaveAndReadJcrProperties() throws Exception {
+      DataSource dataSource =
+          RDBDataSourceFactory.forJdbcUrl(
+              mysql.getJdbcUrl(), mysql.getUsername(), mysql.getPassword());
+
+      DocumentNodeStore store =
+          aNewNodeStore(dataSource, RDBDocumentStoreDB.MYSQL, RDBBlobStoreDB.MYSQL);
+      Repository contentRepository =
+          new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
+      Session session =
+          contentRepository.login(
+              new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+      Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
+      hello.setProperty("velo", "velo");
+      session.save();
+
+      Node actual = session.getNode("/jcr:system/hello");
+      assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+      assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
+      store.dispose();
+    }
   }
 
-  @SandboxTest
-  void createContentRepositoryWithMySqlDriverInstantiatesJcrSession() throws Exception {
-    DataSource dataSource =
-        RDBDataSourceFactory.forJdbcUrl(
-            mysql.getJdbcUrl(), mysql.getUsername(), mysql.getPassword());
+  @Nested
+  @Testcontainers
+  class PostgresTests {
 
-    DocumentNodeStore store =
-        aNewNodeStore(dataSource, RDBDocumentStoreDB.MYSQL, RDBBlobStoreDB.MYSQL);
-    Repository contentRepository =
-        new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
-    Session session =
-        contentRepository.login(
-            new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
-    Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
-    hello.setProperty("velo", "velo");
-    session.save();
+    @Container
+    private final PostgreSQLContainer<?> postgres =
+        new PostgreSQLContainer<>("postgres:16").withDatabaseName("oak");
 
-    Node actual = session.getNode("/jcr:system/hello");
-    assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
-    assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
-    store.dispose();
+    @SandboxTest
+    void canSaveAndReadJcrProperties() throws Exception {
+      DataSource dataSource =
+          RDBDataSourceFactory.forJdbcUrl(
+              postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+
+      DocumentNodeStore store =
+          aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES);
+      Repository contentRepository =
+          new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
+      Session session =
+          contentRepository.login(
+              new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+      Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
+      hello.setProperty("velo", "velo");
+      session.save();
+
+      Node actual = session.getNode("/jcr:system/hello");
+      assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+      assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
+      store.dispose();
+    }
   }
 
-  @SandboxTest
-  void createContentRepositoryWithPostgresDriverInstantiatesJcrSession() throws Exception {
-    DataSource dataSource =
-        RDBDataSourceFactory.forJdbcUrl(
-            postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+  @Nested
+  class DerbyTests {
 
-    DocumentNodeStore store =
-        aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES);
-    Repository contentRepository =
-        new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
-    Session session =
-        contentRepository.login(
-            new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
-    Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
-    hello.setProperty("velo", "velo");
-    session.save();
+    @SandboxTest
+    void canCreateOakSession() throws Exception {
+      System.setProperty("derby.stream.error.field", "oakgit.util.TestHelpers.DERBY_DEV_NULL");
+      DataSource dataSource =
+          RDBDataSourceFactory.forJdbcUrl(
+              "jdbc:derby:memory:derby-oak-connection-test;create=true", "SA", "");
 
-    Node actual = session.getNode("/jcr:system/hello");
-    assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
-    assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
-    store.dispose();
+      DocumentNodeStore store =
+          aNewNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY);
+      ContentRepository contentRepository =
+          new Oak(store).with(new OpenSecurityProvider()).createContentRepository();
+      ContentSession session =
+          contentRepository.login(
+              new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+
+      assertThat(session).isInstanceOf(ContentSession.class);
+      store.dispose();
+    }
   }
 
-  @SandboxTest
-  void createContentRepositoryWithDerbyDriverInstantiatesOakSession() throws Exception {
-    DataSource dataSource =
-        RDBDataSourceFactory.forJdbcUrl(
-            "jdbc:derby:memory:derby-oak-connection-test;create=true", "SA", "");
+  @Nested
+  class OakGitTests {
 
-    DocumentNodeStore store =
-        aNewNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY);
-    ContentRepository contentRepository =
-        new Oak(store).with(new OpenSecurityProvider()).createContentRepository();
-    ContentSession session =
-        contentRepository.login(
-            new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+    @SandboxTest
+    void canSaveAndReadJcrProperties() throws Exception {
+      Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
+      Git.init().setDirectory(gitDirectory.toFile()).call();
+      String jdbcUrl = "jdbc:oakgit://" + gitDirectory.toAbsolutePath();
+      OakGitDriver.resetProcessor(jdbcUrl);
+      DataSource dataSource = RDBDataSourceFactory.forJdbcUrl(jdbcUrl, "", "");
 
-    assertThat(session).isInstanceOf(ContentSession.class);
-    store.dispose();
-  }
+      DocumentNodeStore store =
+          aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
+      Repository contentRepository =
+          new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
+      Session session =
+          contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()));
+      Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
+      hello.setProperty("velo", "velo");
+      session.save();
 
-  @SandboxTest
-  void createContentRepositoryWithOakGitDriverInstantiatesOakSession() throws Exception {
-    Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
-    Git.init().setDirectory(gitDirectory.toFile()).call();
-    DataSource dataSource =
-        RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
+      Node actual = session.getNode("/jcr:system/hello");
+      assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+      assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
+      store.dispose();
+    }
 
-    DocumentNodeStore store =
-        aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
-    ContentRepository contentRepository =
-        new Oak(store).with(new OpenSecurityProvider()).createContentRepository();
-    ContentSession session =
-        contentRepository.login(
-            new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+    @SandboxTest
+    void canInstantiateWithAemInitializer() throws Exception {
+      Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
+      Git.init().setDirectory(gitDirectory.toFile()).call();
+      String jdbcUrl = "jdbc:oakgit://" + gitDirectory.toAbsolutePath();
+      OakGitDriver.resetProcessor(jdbcUrl);
+      DataSource dataSource = RDBDataSourceFactory.forJdbcUrl(jdbcUrl, "", "");
+      DocumentNodeStore nodeStore =
+          aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
+      TestRepositoryCreator testRepositoryCreator = new TestRepositoryCreator(nodeStore);
 
-    assertThat(session).isInstanceOf(ContentSession.class);
-    store.dispose();
-  }
+      JackrabbitRepository repository = testRepositoryCreator.create();
 
-  @SandboxTest
-  void oakWithOakGitDriverCanInstantiateJcr() throws Exception {
-    Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
-    Git.init().setDirectory(gitDirectory.toFile()).call();
-    DataSource dataSource =
-        RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
-
-    DocumentNodeStore store =
-        aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
-    Repository contentRepository =
-        new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
-    Session session =
-        contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()));
-    Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
-    hello.setProperty("velo", "velo");
-    session.save();
-
-    Node actual = session.getNode("/jcr:system/hello");
-    assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
-    assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
-    store.dispose();
-  }
-
-  @SandboxTest
-  void oakWithAemInitializerCanInstantiateJcr() throws Exception {
-    Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
-    Git.init().setDirectory(gitDirectory.toFile()).call();
-    DataSource dataSource =
-        RDBDataSourceFactory.forJdbcUrl("jdbc:oakgit://" + gitDirectory.toAbsolutePath(), "", "");
-    DocumentNodeStore nodeStore =
-        aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
-    TestRepositoryCreator testRepositoryCreator = new TestRepositoryCreator(nodeStore);
-
-    JackrabbitRepository repository = testRepositoryCreator.create();
-
-    assertThat(repository).isInstanceOf(Repository.class);
-    nodeStore.dispose();
+      assertThat(repository).isInstanceOf(Repository.class);
+      nodeStore.dispose();
+    }
   }
 
   private DocumentNodeStore aNewNodeStore(

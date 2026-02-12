@@ -65,11 +65,12 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
         try {
           InsertIntoContainerCommand<?> insertCommand =
               (InsertIntoContainerCommand<?>) containerCommand;
-
-          container
-              .orElseThrow(IllegalStateException::new)
-              .setEntry(insertCommand.getData().copy());
-
+          InMemoryContainer target = container.orElseThrow(IllegalStateException::new);
+          String entryId = insertCommand.getData().getId();
+          if (target.containsEntry(entryId)) {
+            throw new IllegalStateException("Duplicate key: " + entryId);
+          }
+          target.setEntry(insertCommand.getData().copy());
           return SUCCESSFULL_RESULT_WITHOUT_DATA;
         } finally {
           lock.writeLock().unlock();
@@ -131,15 +132,9 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
               (UpdateDocumentDataInContainerCommand) containerCommand;
 
           InMemoryContainer containerToUpdate = container.orElseThrow(IllegalStateException::new);
-          Optional<DocumentEntry> existingEntry;
-          lock.readLock().lock();
-          try {
-            existingEntry =
-                containerToUpdate.findByIdAndModCount(
-                    updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
-          } finally {
-            lock.readLock().unlock();
-          }
+          Optional<DocumentEntry> existingEntry =
+              containerToUpdate.findByIdAndModCount(
+                  updateCommand.getId(), updateCommand.getModCount(), DocumentEntry.class);
 
           if (existingEntry.isPresent()) {
             final DocumentEntry entityToUpdate = existingEntry.get();

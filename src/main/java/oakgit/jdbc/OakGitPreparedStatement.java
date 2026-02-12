@@ -2,7 +2,9 @@ package oakgit.jdbc;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.BatchUpdateException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +62,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     placeholderData = new PlaceholderData();
   }
 
-  public int[] executeBatch() {
+  public int[] executeBatch() throws SQLException {
     OakGitConnection connection = getConnection();
     CommandProcessor processor = connection.getProcessor();
     CommandFactory factory = connection.getCommandFactory();
@@ -80,6 +82,16 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
       } catch (IllegalStateException stateException) {
         result[i] = Statement.EXECUTE_FAILED;
       }
+    }
+    boolean hasFailures = false;
+    for (int r : result) {
+      if (r == Statement.EXECUTE_FAILED) {
+        hasFailures = true;
+        break;
+      }
+    }
+    if (hasFailures) {
+      throw new BatchUpdateException("Batch contained failed operations", result);
     }
     return result;
   }

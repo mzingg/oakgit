@@ -14,6 +14,10 @@ public class InMemoryContainer {
 
   private final Map<String, ContainerEntry<?>> entries = new HashMap<>();
 
+  public boolean containsEntry(String id) {
+    return entries.containsKey(id);
+  }
+
   public <T extends ContainerEntry<T>> InMemoryContainer setEntry(
       @NonNull ContainerEntry<T> entry) {
     entries.put(entry.getId(), entry);

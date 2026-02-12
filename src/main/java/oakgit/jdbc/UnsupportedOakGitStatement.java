@@ -1,6 +1,7 @@
 package oakgit.jdbc;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -94,7 +95,7 @@ public abstract class UnsupportedOakGitStatement implements Statement {
     throw new UnsupportedOperationException();
   }
 
-  public int[] executeBatch() {
+  public int[] executeBatch() throws SQLException {
     throw new UnsupportedOperationException();
   }
 

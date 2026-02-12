@@ -3,6 +3,7 @@ package oakgit.jdbc;
 import java.sql.*;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import oakgit.engine.CommandFactory;
 import oakgit.processor.inmemory.InMemoryCommandProcessor;
@@ -11,7 +12,8 @@ public class OakGitDriver implements Driver {
 
   private static final String DEFAULT_VERSION = "0.1.0";
   private static final String ARTIFACT_ID = "oakgit-persistence";
-  private static final InMemoryCommandProcessor PROCESSOR = new InMemoryCommandProcessor();
+  private static final ConcurrentHashMap<String, InMemoryCommandProcessor> PROCESSORS =
+      new ConcurrentHashMap<>();
   private static final DriverVersion VERSION =
       DriverVersion.parse(
           Optional.ofNullable(System.getenv("OAKGIT_VERSION")).orElse(DEFAULT_VERSION));
@@ -29,10 +31,20 @@ public class OakGitDriver implements Driver {
     OakGitDriverConfiguration configuration =
         OakGitDriverConfiguration.fromUrl(url, VERSION, ARTIFACT_ID);
     if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
-      return new OakGitConnection(configuration, PROCESSOR, new CommandFactory());
+      InMemoryCommandProcessor processor =
+          PROCESSORS.computeIfAbsent(configuration.getUrl(), k -> new InMemoryCommandProcessor());
+      return new OakGitConnection(configuration, processor, new CommandFactory());
     }
 
     throw new SQLException("Invalid connection url");
+  }
+
+  /**
+   * Resets the processor for the given URL, discarding all in-memory state. Subsequent connections
+   * to the same URL will use a fresh processor.
+   */
+  public static void resetProcessor(String url) {
+    PROCESSORS.remove(url);
   }
 
   @Override

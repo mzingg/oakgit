@@ -10,9 +10,8 @@
   <description>Git persistence layer for OAK</description>
 
   <properties>
-    <encoding>UTF-8</encoding>
-    <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.release>21</maven.compiler.release>
 
     <!-- AEM SDK-dependent versions — default SDK; override with -Paem-<version> -->
@@ -115,7 +114,7 @@
                 <groups>sandbox</groups>
               </properties>
               <!--suppress UnresolvedMavenProperty -->
-              <argLine>@{argLine} -Xshare:off -javaagent:${org.mockito:mockito-core:jar}</argLine>
+              <argLine>@{argLine} -Xshare:off -javaagent:${org.mockito:mockito-core:jar} -Djava.util.logging.config.file=src/test/resources/logging.properties</argLine>
             </configuration>
           </execution>
         </executions>
