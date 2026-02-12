@@ -186,6 +186,21 @@ EOF
 echo -e "${GREEN}Properties written to: ${PROPS_FILE}${NC}"
 echo ""
 
+# --- Warn if OAK version changed from any existing properties file ---
+NEW_OAK_VERSION="${FOUND_VERSIONS["oak-core"]}"
+for existing_props in "$DEPS_DIR"/aem-versions-*.properties; do
+  [ -f "$existing_props" ] || continue
+  [ "$existing_props" = "$PROPS_FILE" ] && continue
+  existing_oak=$(grep '^oak.version=' "$existing_props" 2>/dev/null | cut -d= -f2)
+  if [ -n "$existing_oak" ] && [ "$existing_oak" != "$NEW_OAK_VERSION" ]; then
+    echo -e "${YELLOW}${BOLD}WARNING: OAK version changed: ${existing_oak} -> ${NEW_OAK_VERSION}${NC}"
+    echo -e "${YELLOW}  A new SQL pattern catalog may be needed for OAK ${NEW_OAK_VERSION}.${NC}"
+    echo -e "${YELLOW}  Check: src/test/resources/oak-sql-catalog/oak-${NEW_OAK_VERSION}.json${NC}"
+    echo ""
+    break
+  fi
+done
+
 # --- Install proprietary JARs to local Maven repo ---
 echo -e "${BOLD}${CYAN}Installing proprietary JARs to local Maven repo...${NC}"
 

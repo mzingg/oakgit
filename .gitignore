@@ -47,7 +47,8 @@ buildNumber.properties
 hs_err_pid*
 
 
-/src/test/resources
+/src/test/resources/*
+!/src/test/resources/oak-sql-catalog/
 /sqlCommand.log
 
 # Nix tooling symlinks

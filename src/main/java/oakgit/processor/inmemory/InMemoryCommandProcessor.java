@@ -16,8 +16,12 @@ import oakgit.engine.ContainerCommand;
 import oakgit.engine.commands.*;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.engine.model.DocumentEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class InMemoryCommandProcessor implements CommandProcessor {
+
+  private static final Logger LOG = LoggerFactory.getLogger(InMemoryCommandProcessor.class);
 
   private final Map<String, InMemoryContainer> containerMap = new HashMap<>();
 
@@ -25,6 +29,11 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
 
   @Override
   public CommandResult execute(Command command) {
+
+    if (command instanceof ErrorCommand errorCommand) {
+      LOG.warn("Unrecognized SQL: {}", errorCommand.getErrorMessage());
+      return NO_RESULT;
+    }
 
     if (!(command instanceof ContainerCommand<?>)) {
       return NO_RESULT;
@@ -138,8 +147,6 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
         } finally {
           lock.writeLock().unlock();
         }
-      } else if (containerCommand instanceof ErrorCommand) {
-        System.err.println(containerCommand);
       }
     }
 
