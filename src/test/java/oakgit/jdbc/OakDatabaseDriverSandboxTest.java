@@ -25,8 +25,21 @@ import org.apache.jackrabbit.oak.plugins.document.rdb.RDBDocumentStoreDB;
 import org.apache.jackrabbit.oak.spi.security.OpenSecurityProvider;
 import org.eclipse.jgit.api.Git;
 import org.junit.jupiter.api.BeforeAll;
+import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Testcontainers
 public class OakDatabaseDriverSandboxTest {
+
+  @Container
+  private static final MySQLContainer<?> mysql =
+      new MySQLContainer<>("mysql:8.0").withDatabaseName("oak");
+
+  @Container
+  private static final PostgreSQLContainer<?> postgres =
+      new PostgreSQLContainer<>("postgres:16").withDatabaseName("oak");
 
   @BeforeAll
   private static void configureDerby() {
@@ -37,7 +50,7 @@ public class OakDatabaseDriverSandboxTest {
   void createContentRepositoryWithMySqlDriverInstantiatesJcrSession() throws Exception {
     DataSource dataSource =
         RDBDataSourceFactory.forJdbcUrl(
-            "jdbc:mysql://localhost:15010/oak", "root", "admin", "com.mysql.jdbc.Driver");
+            mysql.getJdbcUrl(), mysql.getUsername(), mysql.getPassword());
 
     DocumentNodeStore store =
         aNewNodeStore(dataSource, RDBDocumentStoreDB.MYSQL, RDBBlobStoreDB.MYSQL);
@@ -60,7 +73,7 @@ public class OakDatabaseDriverSandboxTest {
   void createContentRepositoryWithPostgresDriverInstantiatesJcrSession() throws Exception {
     DataSource dataSource =
         RDBDataSourceFactory.forJdbcUrl(
-            "jdbc:postgresql://localhost:15020/oak", "postgres", "admin", "org.postgresql.Driver");
+            postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 
     DocumentNodeStore store =
         aNewNodeStore(dataSource, RDBDocumentStoreDB.POSTGRES, RDBBlobStoreDB.POSTGRES);

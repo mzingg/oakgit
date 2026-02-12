@@ -1,10 +1,6 @@
 package oakgit.util;
 
-import com.adobe.granite.repository.impl.CommitStats;
-import com.adobe.granite.repository.impl.GraniteContent;
 import java.io.IOException;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import javax.jcr.RepositoryException;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.AccessControlPolicy;
@@ -26,7 +22,7 @@ import org.apache.jackrabbit.oak.plugins.atomic.AtomicCounterEditorProvider;
 import org.apache.jackrabbit.oak.plugins.commit.ConflictValidatorProvider;
 import org.apache.jackrabbit.oak.plugins.commit.JcrConflictHandler;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
-import org.apache.jackrabbit.oak.plugins.document.bundlor.BundlingConfigInitializer;
+import org.apache.jackrabbit.oak.plugins.document.init.BundlingConfigInitializer;
 import org.apache.jackrabbit.oak.plugins.index.WhiteboardIndexEditorProvider;
 import org.apache.jackrabbit.oak.plugins.name.NameValidatorProvider;
 import org.apache.jackrabbit.oak.plugins.name.NamespaceEditorProvider;
@@ -49,9 +45,6 @@ import org.apache.jackrabbit.oak.spi.security.SecurityProvider;
 import org.apache.jackrabbit.oak.spi.security.authentication.SystemSubject;
 import org.apache.jackrabbit.oak.spi.security.authorization.AuthorizationConfiguration;
 import org.apache.jackrabbit.oak.spi.security.principal.EveryonePrincipal;
-import org.apache.jackrabbit.oak.spi.security.user.AuthorizableType;
-import org.apache.jackrabbit.oak.spi.security.user.UserConfiguration;
-import org.apache.jackrabbit.oak.spi.security.user.util.UserUtil;
 import org.apache.jackrabbit.oak.spi.whiteboard.DefaultWhiteboard;
 import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 
@@ -61,7 +54,6 @@ public class TestRepositoryCreator {
   private final SecurityProvider securityProvider;
   private final Whiteboard whiteboard;
   private EditorProvider changeCollectorProvider;
-  private final CommitStats commitStats;
   private final CommitRateLimiter commitRateLimiter;
   private int observationQueueLength;
   private final WhiteboardIndexProvider indexProvider;
@@ -72,7 +64,6 @@ public class TestRepositoryCreator {
     this.nodeStore = nodeStore;
     this.whiteboard = new DefaultWhiteboard();
     this.changeCollectorProvider = new ChangeCollectorProvider();
-    this.commitStats = new CommitStats();
     this.commitRateLimiter = new CommitRateLimiter();
     this.observationQueueLength = 1000;
     this.indexProvider = new WhiteboardIndexProvider();
@@ -134,7 +125,6 @@ public class TestRepositoryCreator {
             .with(Runnable::run)
             .with(whiteboard)
             .with(new InitialContent())
-            .with(createGraniteContent())
             .with(JcrConflictHandler.createJcrConflictHandler())
             .with(new VersionHook())
             .with(securityProvider)
@@ -157,10 +147,6 @@ public class TestRepositoryCreator {
       jcr.withObservationQueueLength(this.observationQueueLength);
     }
 
-    if (this.commitStats != null) {
-      jcr.with(this.commitStats);
-    }
-
     if (this.commitRateLimiter != null) {
       jcr.with(this.commitRateLimiter);
     }
@@ -177,23 +163,10 @@ public class TestRepositoryCreator {
     return (JackrabbitRepository) jcr.createRepository();
   }
 
-  private GraniteContent createGraniteContent() {
-    GraniteContent gc = new GraniteContent(true);
-    String userRoot =
-        UserUtil.getAuthorizableRootPath(
-            securityProvider.getConfiguration(UserConfiguration.class).getParameters(),
-            AuthorizableType.USER);
-    gc.setUserHomePath(userRoot);
-    return gc;
-  }
-
   private static void setupPermissions(
       final ContentRepository repo, SecurityProvider securityProvider) {
     try (ContentSession contentSession =
-        Subject.doAsPrivileged(
-            SystemSubject.INSTANCE,
-            (PrivilegedExceptionAction<ContentSession>) () -> repo.login(null, null),
-            null)) {
+        Subject.callAs(SystemSubject.INSTANCE, () -> repo.login(null, null))) {
       Root root = contentSession.getLatestRoot();
       AuthorizationConfiguration config =
           securityProvider.getConfiguration(AuthorizationConfiguration.class);
@@ -203,10 +176,7 @@ public class TestRepositoryCreator {
       if (root.hasPendingChanges()) {
         root.commit();
       }
-    } catch (RepositoryException
-        | CommitFailedException
-        | PrivilegedActionException
-        | IOException exception) {
+    } catch (RepositoryException | CommitFailedException | IOException exception) {
       throw new RuntimeException(exception);
     }
   }

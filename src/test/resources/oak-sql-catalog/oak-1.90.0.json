@@ -289,36 +289,47 @@
       "priority": "P1"
     },
     {
-      "id": "create-index-primary",
+      "id": "create-index-modified",
       "operation": "CREATE_INDEX",
-      "description": "Create index on document table (schema upgrade)",
+      "description": "Create index on MODIFIED column",
       "sqlTemplate": "create index {T}_MOD on {T} (MODIFIED)",
       "exampleSql": "create index NODES_MOD on NODES (MODIFIED)",
       "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "CreateIndexAnalyzer",
+      "implemented": true,
       "priority": "P3"
     },
     {
-      "id": "create-index-version-sdtype",
+      "id": "create-index-version",
       "operation": "CREATE_INDEX",
-      "description": "Create composite index on VERSION and SDTYPE (schema upgrade)",
-      "sqlTemplate": "create index {T}_VSN on {T} (VERSION, SDTYPE)",
-      "exampleSql": "create index NODES_VSN on NODES (VERSION, SDTYPE)",
+      "description": "Create index on VERSION column",
+      "sqlTemplate": "create index {T}_VSN on {T} (VERSION)",
+      "exampleSql": "create index NODES_VSN on NODES (VERSION)",
       "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "CreateIndexAnalyzer",
+      "implemented": true,
       "priority": "P3"
     },
     {
-      "id": "create-index-sdtype-sdmaxrevtime",
+      "id": "create-index-sdtype",
       "operation": "CREATE_INDEX",
-      "description": "Create composite index on SDTYPE and SDMAXREVTIME (schema upgrade)",
-      "sqlTemplate": "create index {T}_SDT on {T} (SDTYPE, SDMAXREVTIME)",
-      "exampleSql": "create index NODES_SDT on NODES (SDTYPE, SDMAXREVTIME)",
+      "description": "Create index on SDTYPE column",
+      "sqlTemplate": "create index {T}_SDT on {T} (SDTYPE)",
+      "exampleSql": "create index NODES_SDT on NODES (SDTYPE)",
       "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "CreateIndexAnalyzer",
+      "implemented": true,
+      "priority": "P3"
+    },
+    {
+      "id": "create-index-sdmaxrevtime",
+      "operation": "CREATE_INDEX",
+      "description": "Create index on SDMAXREVTIME column",
+      "sqlTemplate": "create index {T}_SDM on {T} (SDMAXREVTIME)",
+      "exampleSql": "create index NODES_SDM on NODES (SDMAXREVTIME)",
+      "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
+      "expectedAnalyzer": "CreateIndexAnalyzer",
+      "implemented": true,
       "priority": "P3"
     }
   ]

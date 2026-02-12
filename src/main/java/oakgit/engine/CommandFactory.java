@@ -20,6 +20,7 @@ public class CommandFactory {
 
   static {
     DEFAULT_ANALYZERS.add(new CreateAnalyzer());
+    DEFAULT_ANALYZERS.add(new CreateIndexAnalyzer());
     DEFAULT_ANALYZERS.add(new DocumentInsertAnalyzer());
     DEFAULT_ANALYZERS.add(new DatastoreDataInsertAnalyzer());
     DEFAULT_ANALYZERS.add(new DatastoreMetaInsertAnalyzer());

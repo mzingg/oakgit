@@ -35,6 +35,10 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
       return NO_RESULT;
     }
 
+    if (command instanceof CreateIndexCommand) {
+      return SUCCESSFULL_RESULT_WITHOUT_DATA;
+    }
+
     if (!(command instanceof ContainerCommand<?>)) {
       return NO_RESULT;
     }

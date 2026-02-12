@@ -2,6 +2,23 @@ package oakgit.jdbc;
 
 public abstract class DefaultOakGitConnection extends UnsupportedConnection {
 
+  private boolean closed;
+
+  @Override
+  public void close() {
+    closed = true;
+  }
+
+  @Override
+  public boolean isClosed() {
+    return closed;
+  }
+
+  @Override
+  public boolean isValid(int timeout) {
+    return !closed;
+  }
+
   @Override
   public boolean getAutoCommit() {
     return true;
