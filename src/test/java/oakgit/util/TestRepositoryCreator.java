@@ -20,7 +20,6 @@ import org.apache.jackrabbit.oak.api.CommitFailedException;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
 import org.apache.jackrabbit.oak.api.Root;
-import org.apache.jackrabbit.oak.api.Type;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.namepath.NamePathMapper;
 import org.apache.jackrabbit.oak.plugins.atomic.AtomicCounterEditorProvider;
@@ -43,8 +42,6 @@ import org.apache.jackrabbit.oak.security.internal.TestSecurityProvider;
 import org.apache.jackrabbit.oak.security.principal.PrincipalConfigurationImpl;
 import org.apache.jackrabbit.oak.security.privilege.PrivilegeConfigurationImpl;
 import org.apache.jackrabbit.oak.security.user.UserConfigurationImpl;
-import org.apache.jackrabbit.oak.spi.commit.CommitInfo;
-import org.apache.jackrabbit.oak.spi.commit.EmptyHook;
 import org.apache.jackrabbit.oak.spi.query.WhiteboardIndexProvider;
 import org.apache.jackrabbit.oak.spi.security.ConfigurationParameters;
 import org.apache.jackrabbit.oak.spi.security.SecurityProvider;
@@ -54,7 +51,6 @@ import org.apache.jackrabbit.oak.spi.security.principal.EveryonePrincipal;
 import org.apache.jackrabbit.oak.spi.security.user.AuthorizableType;
 import org.apache.jackrabbit.oak.spi.security.user.UserConfiguration;
 import org.apache.jackrabbit.oak.spi.security.user.util.UserUtil;
-import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.whiteboard.DefaultWhiteboard;
 import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 
@@ -68,10 +64,8 @@ import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
  *   <li>CommitStats commit hook (requires OSGi configuration)
  * </ul>
  *
- * <p>Version store pre-population (AEM default: prePopulateVersionStore=true) is done as a separate
- * commit after repository creation, because the 65K intermediate nodes combined with node type
- * registration in a single InitialContent commit overwhelms the DocumentNodeStore branch merge via
- * our JDBC driver.
+ * <p>Version store pre-population is enabled via {@code
+ * InitialContent.withPrePopulatedVersionStore()}.
  */
 public class TestRepositoryCreator {
 
@@ -137,7 +131,7 @@ public class TestRepositoryCreator {
         new Jcr(oak, false)
             .with(Runnable::run)
             .with(whiteboard)
-            .with(new InitialContent())
+            .with(new InitialContent().withPrePopulatedVersionStore())
             .with(createGraniteIndexDefinitions())
             .with(JcrConflictHandler.createJcrConflictHandler())
             .with(new CqLastModifiedConflictHandler())
@@ -157,35 +151,9 @@ public class TestRepositoryCreator {
             .with(BundlingConfigInitializer.INSTANCE);
 
     ContentRepository contentRepository = jcr.createContentRepository();
-    prePopulateVersionStore();
     setupPermissions(contentRepository, securityProvider);
 
     return (JackrabbitRepository) jcr.createRepository();
-  }
-
-  private void prePopulateVersionStore() {
-    NodeBuilder builder = nodeStore.getRoot().builder();
-    NodeBuilder vs = builder.child("jcr:system").child("jcr:versionStorage");
-    vs.setProperty("rep:versionStorageInit", 1);
-    for (int i = 0; i < 0xff; i++) {
-      NodeBuilder c = versionStorageChild(vs, String.format("%02x", i));
-      for (int j = 0; j < 0xff; j++) {
-        versionStorageChild(c, String.format("%02x", j));
-      }
-    }
-    try {
-      nodeStore.merge(builder, EmptyHook.INSTANCE, CommitInfo.EMPTY);
-    } catch (CommitFailedException e) {
-      throw new RuntimeException("Failed to pre-populate version store", e);
-    }
-  }
-
-  private static NodeBuilder versionStorageChild(NodeBuilder node, String name) {
-    NodeBuilder child = node.child(name);
-    if (!child.hasProperty("jcr:primaryType")) {
-      child.setProperty("jcr:primaryType", "rep:versionStorage", Type.NAME);
-    }
-    return child;
   }
 
   private GraniteIndexDefinitions createGraniteIndexDefinitions() {

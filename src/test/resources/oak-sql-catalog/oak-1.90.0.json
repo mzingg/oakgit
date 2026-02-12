@@ -185,8 +185,8 @@
       "sqlTemplate": "delete from {T} where ID in (?,?,...)",
       "exampleSql": "delete from NODES where ID in (?,?,?,?)",
       "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "DeleteByIdListAnalyzer",
+      "implemented": true,
       "priority": "P1"
     },
     {
@@ -196,8 +196,8 @@
       "sqlTemplate": "delete from {T} where ID = ? and MODIFIED = ?",
       "exampleSql": "delete from NODES where ID = ? and MODIFIED = ?",
       "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "DeleteByIdAndModifiedAnalyzer",
+      "implemented": true,
       "priority": "P1"
     },
     {
@@ -207,8 +207,8 @@
       "sqlTemplate": "delete from DATASTORE_META where ID = ?",
       "exampleSql": "delete from DATASTORE_META where ID = ?",
       "tables": ["DATASTORE_META"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "DeleteByIdAnalyzer",
+      "implemented": true,
       "priority": "P2"
     },
     {
@@ -218,8 +218,8 @@
       "sqlTemplate": "delete from DATASTORE_DATA where ID = ?",
       "exampleSql": "delete from DATASTORE_DATA where ID = ?",
       "tables": ["DATASTORE_DATA"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "DeleteByIdAnalyzer",
+      "implemented": true,
       "priority": "P2"
     },
     {
@@ -229,8 +229,8 @@
       "sqlTemplate": "update DATASTORE_META set LASTMOD = ? where ID = ?",
       "exampleSql": "update DATASTORE_META set LASTMOD = ? where ID = ?",
       "tables": ["DATASTORE_META"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "UpdateDatastoreMetaLastmodAnalyzer",
+      "implemented": true,
       "priority": "P1"
     },
     {
@@ -240,8 +240,8 @@
       "sqlTemplate": "update DATASTORE_META set LASTMOD = ? where ID = ? and LASTMOD < ?",
       "exampleSql": "update DATASTORE_META set LASTMOD = ? where ID = ? and LASTMOD < ?",
       "tables": ["DATASTORE_META"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "UpdateDatastoreMetaLastmodAnalyzer",
+      "implemented": true,
       "priority": "P2"
     },
     {
@@ -251,8 +251,8 @@
       "sqlTemplate": "select ID from DATASTORE_META where LASTMOD < ?",
       "exampleSql": "select ID from DATASTORE_META where LASTMOD < ?",
       "tables": ["DATASTORE_META"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "SelectDatastoreMetaByLastmodAnalyzer",
+      "implemented": true,
       "priority": "P2"
     },
     {
@@ -262,8 +262,41 @@
       "sqlTemplate": "select {columns} from {T} where ID > ? and ID < ? and MODIFIED >= ? order by ID FETCH FIRST {N} ROWS ONLY",
       "exampleSql": "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from JOURNAL where ID > ? and ID < ? and MODIFIED >= ? order by ID FETCH FIRST 100 ROWS ONLY",
       "tables": ["JOURNAL"],
-      "expectedAnalyzer": null,
-      "implemented": false,
+      "expectedAnalyzer": "SelectByRangeAndModifiedAnalyzer",
+      "implemented": true,
+      "priority": "P2"
+    },
+    {
+      "id": "select-min-modified",
+      "operation": "SELECT",
+      "description": "Select minimum MODIFIED timestamp for deleted documents (revision GC)",
+      "sqlTemplate": "select MIN(MODIFIED) from {T} where DELETEDONCE = ?",
+      "exampleSql": "select MIN(MODIFIED) from NODES where DELETEDONCE = ?",
+      "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
+      "expectedAnalyzer": "SelectMinModifiedAnalyzer",
+      "implemented": true,
+      "priority": "P2"
+    },
+    {
+      "id": "select-by-deletedonce-and-modified-range",
+      "operation": "SELECT",
+      "description": "Version GC scan: find deleted documents within a MODIFIED time window",
+      "sqlTemplate": "select {columns} from {T} where DELETEDONCE = ? and MODIFIED < ? and MODIFIED >= ?",
+      "exampleSql": "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where DELETEDONCE = ? and MODIFIED < ? and MODIFIED >= ?",
+      "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
+      "expectedAnalyzer": "SelectByDeletedOnceAndModifiedRangeAnalyzer",
+      "implemented": true,
+      "priority": "P2"
+    },
+    {
+      "id": "delete-by-modified-range",
+      "operation": "DELETE",
+      "description": "Delete by MODIFIED timestamp range (journal GC)",
+      "sqlTemplate": "delete from {T} where MODIFIED > ? and MODIFIED < ?",
+      "exampleSql": "delete from JOURNAL where MODIFIED > ? and MODIFIED < ?",
+      "tables": ["JOURNAL"],
+      "expectedAnalyzer": "DeleteByModifiedRangeAnalyzer",
+      "implemented": true,
       "priority": "P2"
     },
     {

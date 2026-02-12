@@ -1,6 +1,7 @@
 package oakgit.engine;
 
 import java.sql.ResultSet;
+import oakgit.jdbc.OakGitResultSet;
 
 public interface CommandResult {
 
@@ -39,6 +40,24 @@ public interface CommandResult {
         @Override
         public int affectedCount() {
           return 1;
+        }
+      };
+
+  CommandResult EMPTY_QUERY_RESULT =
+      new CommandResult() {
+        @Override
+        public ResultSet toResultSet() {
+          return OakGitResultSet.EMPTY_RESULT_SET;
+        }
+
+        @Override
+        public boolean wasSuccessfull() {
+          return true;
+        }
+
+        @Override
+        public int affectedCount() {
+          return 0;
         }
       };
 

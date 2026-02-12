@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.stream.Stream;
 import oakgit.UnitTest;
 import oakgit.engine.CommandFactory;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -43,28 +42,12 @@ class CatalogCoverageTest {
     }
   }
 
-  @Nested
-  @Tag("unit")
-  @DisplayName("Unimplemented patterns (coverage gaps)")
-  class UnimplementedPatterns {
-
-    static Stream<Arguments> unimplementedPatterns() {
-      return CATALOG.unimplementedPatterns().stream()
-          .map(p -> Arguments.of(p.id(), p.exampleSql(), p.operation(), p.priority()));
-    }
-
-    @ParameterizedTest(name = "[{0}] {2} (priority: {3})")
-    @MethodSource("unimplementedPatterns")
-    @DisplayName("Unimplemented pattern is documented")
-    @Disabled("Not yet implemented — these become failures as analyzers are added")
-    void unimplementedPatternIsNotYetRecognized(
-        String patternId, String exampleSql, String operation, String priority) {
-      var matchResult = COMMAND_FACTORY.match(exampleSql);
-
-      assertThat(matchResult)
-          .as("Pattern '%s' (%s, %s) should be implemented", patternId, operation, priority)
-          .isPresent();
-    }
+  @UnitTest
+  @DisplayName("All catalog patterns are implemented")
+  void allPatternsAreImplemented() {
+    assertThat(CATALOG.unimplementedPatterns())
+        .as("All catalog patterns should be implemented")
+        .isEmpty();
   }
 
   @UnitTest

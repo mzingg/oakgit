@@ -29,6 +29,15 @@ public class CommandFactory {
     DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
     DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectMinModifiedAnalyzer());
+    DEFAULT_ANALYZERS.add(new DeleteByModifiedRangeAnalyzer());
+    DEFAULT_ANALYZERS.add(new DeleteByIdListAnalyzer());
+    DEFAULT_ANALYZERS.add(new DeleteByIdAndModifiedAnalyzer());
+    DEFAULT_ANALYZERS.add(new DeleteByIdAnalyzer());
+    DEFAULT_ANALYZERS.add(new UpdateDatastoreMetaLastmodAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectDatastoreMetaByLastmodAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectByRangeAndModifiedAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectByDeletedOnceAndModifiedRangeAnalyzer());
   }
 
   private List<QueryAnalyzer> analyzers;

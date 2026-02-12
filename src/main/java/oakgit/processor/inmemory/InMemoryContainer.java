@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import oakgit.engine.model.ContainerEntry;
+import oakgit.engine.model.DatastoreMetaEntry;
+import oakgit.engine.model.DocumentEntry;
 import oakgit.engine.model.ModCountSupport;
 
 @RequiredArgsConstructor
@@ -16,6 +18,10 @@ public class InMemoryContainer {
 
   public boolean containsEntry(String id) {
     return entries.containsKey(id);
+  }
+
+  public boolean removeEntry(String id) {
+    return entries.remove(id) != null;
   }
 
   public <T extends ContainerEntry<T>> InMemoryContainer setEntry(
@@ -85,6 +91,62 @@ public class InMemoryContainer {
         ContainerEntry<?> containerEntry = entries.get(id);
         if (resultType.isAssignableFrom(containerEntry.getClass())) {
           result.add((T) containerEntry.copy());
+        }
+      }
+    }
+
+    return result;
+  }
+
+  public List<DatastoreMetaEntry> findByLastmodLessThan(long lastmod) {
+    ArrayList<DatastoreMetaEntry> result = new ArrayList<>();
+
+    for (ContainerEntry<?> entry : entries.values()) {
+      if (entry instanceof DatastoreMetaEntry meta
+          && meta.getLastmod() != null
+          && meta.getLastmod() < lastmod) {
+        result.add(meta.copy());
+      }
+    }
+
+    return result;
+  }
+
+  public List<DocumentEntry> findByDeletedOnceAndModifiedRange(
+      int deletedOnce, long modifiedLowerBound, long modifiedUpperBound) {
+    return entries.values().stream()
+        .filter(DocumentEntry.class::isInstance)
+        .map(DocumentEntry.class::cast)
+        .filter(e -> e.getDeletedOnce() != null && e.getDeletedOnce() == deletedOnce)
+        .filter(
+            e ->
+                e.getModified() != null
+                    && e.getModified() >= modifiedLowerBound
+                    && e.getModified() < modifiedUpperBound)
+        .map(DocumentEntry::copy)
+        .toList();
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends ContainerEntry<T>> List<T> findByIdRangeAndModified(
+      String idMin, String idMax, long minModified, Class<T> resultType, int limit) {
+    ArrayList<T> result = new ArrayList<>();
+
+    int count = 0;
+    for (ContainerEntry<?> containerEntry : entries.values()) {
+      if (count >= limit) {
+        break;
+      }
+      if (!resultType.isAssignableFrom(containerEntry.getClass())) {
+        continue;
+      }
+      String entryId = containerEntry.getId();
+      if (entryId.compareTo(idMin) > 0 && entryId.compareTo(idMax) < 0) {
+        if (containerEntry instanceof DocumentEntry doc
+            && doc.getModified() != null
+            && doc.getModified() >= minModified) {
+          result.add((T) containerEntry.copy());
+          count++;
         }
       }
     }

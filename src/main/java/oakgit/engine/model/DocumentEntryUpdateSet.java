@@ -43,6 +43,10 @@ public class DocumentEntryUpdateSet {
         value = ((Function<DocumentEntry, ?>) value).apply(entityToUpdate);
       }
 
+      if (value instanceof String && targetType.equals(byte[].class)) {
+        value = ((String) value).getBytes();
+      }
+
       if (value == null || targetType.isAssignableFrom(value.getClass())) {
         setter.accept((T) value);
       }

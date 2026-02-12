@@ -1,5 +1,6 @@
 package oakgit.processor.inmemory;
 
+import static oakgit.engine.CommandResult.EMPTY_QUERY_RESULT;
 import static oakgit.engine.CommandResult.NO_RESULT;
 import static oakgit.engine.CommandResult.SUCCESSFULL_RESULT_WITHOUT_DATA;
 
@@ -15,6 +16,7 @@ import oakgit.engine.CommandResult;
 import oakgit.engine.ContainerCommand;
 import oakgit.engine.commands.*;
 import oakgit.engine.model.ContainerEntry;
+import oakgit.engine.model.DatastoreMetaEntry;
 import oakgit.engine.model.DocumentEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,138 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
 
     if (command instanceof CreateIndexCommand) {
       return SUCCESSFULL_RESULT_WITHOUT_DATA;
+    }
+
+    if (command instanceof SelectMinModifiedCommand) {
+      return EMPTY_QUERY_RESULT;
+    }
+
+    if (command instanceof SelectByDeletedOnceAndModifiedRangeCommand selectCmd) {
+      lock.readLock().lock();
+      try {
+        InMemoryContainer container =
+            getContainer(selectCmd.getContainerName()).orElseThrow(IllegalStateException::new);
+        List<DocumentEntry> found =
+            container.findByDeletedOnceAndModifiedRange(
+                selectCmd.getDeletedOnce(),
+                selectCmd.getModifiedLowerBound(),
+                selectCmd.getModifiedUpperBound());
+        return selectCmd.buildResult(found);
+      } finally {
+        lock.readLock().unlock();
+      }
+    }
+
+    if (command instanceof DeleteByModifiedRangeCommand) {
+      return SUCCESSFULL_RESULT_WITHOUT_DATA;
+    }
+
+    if (command instanceof DeleteByIdCommand<?> deleteByIdCommand) {
+      lock.writeLock().lock();
+      try {
+        getContainer(deleteByIdCommand.getContainerName())
+            .ifPresent(container -> container.removeEntry(deleteByIdCommand.getId()));
+        return SUCCESSFULL_RESULT_WITHOUT_DATA;
+      } finally {
+        lock.writeLock().unlock();
+      }
+    }
+
+    if (command instanceof DeleteByIdAndModifiedCommand<?> deleteCommand) {
+      lock.writeLock().lock();
+      try {
+        getContainer(deleteCommand.getContainerName())
+            .ifPresent(
+                container -> {
+                  Optional<? extends ContainerEntry<?>> entry =
+                      container.findById(deleteCommand.getId(), deleteCommand.getEntryType());
+                  entry.ifPresent(
+                      e -> {
+                        if (e instanceof DocumentEntry doc
+                            && doc.getModified() != null
+                            && doc.getModified() == deleteCommand.getModified()) {
+                          container.removeEntry(deleteCommand.getId());
+                        }
+                      });
+                });
+        return SUCCESSFULL_RESULT_WITHOUT_DATA;
+      } finally {
+        lock.writeLock().unlock();
+      }
+    }
+
+    if (command instanceof DeleteByIdListCommand<?> deleteListCommand) {
+      lock.writeLock().lock();
+      try {
+        getContainer(deleteListCommand.getContainerName())
+            .ifPresent(container -> deleteListCommand.getIds().forEach(container::removeEntry));
+        return SUCCESSFULL_RESULT_WITHOUT_DATA;
+      } finally {
+        lock.writeLock().unlock();
+      }
+    }
+
+    if (command instanceof UpdateDatastoreMetaLastmodCommand updateLastmodCommand) {
+      lock.writeLock().lock();
+      try {
+        getContainer(updateLastmodCommand.getContainerName())
+            .ifPresent(
+                container -> {
+                  Optional<DatastoreMetaEntry> entry =
+                      container.findById(updateLastmodCommand.getId(), DatastoreMetaEntry.class);
+                  entry.ifPresent(
+                      e -> {
+                        Long threshold = updateLastmodCommand.getLastmodThreshold();
+                        if (threshold == null
+                            || (e.getLastmod() != null && e.getLastmod() < threshold)) {
+                          e.setLastmod(updateLastmodCommand.getLastmod());
+                          container.setEntry(e);
+                        }
+                      });
+                });
+        return SUCCESSFULL_RESULT_WITHOUT_DATA;
+      } finally {
+        lock.writeLock().unlock();
+      }
+    }
+
+    if (command instanceof SelectDatastoreMetaByLastmodCommand selectLastmodCommand) {
+      lock.readLock().lock();
+      try {
+        Optional<InMemoryContainer> container =
+            getContainer(selectLastmodCommand.getContainerName());
+        if (container.isPresent()) {
+          List<DatastoreMetaEntry> found =
+              container.get().findByLastmodLessThan(selectLastmodCommand.getLastmod());
+          return selectLastmodCommand.buildResult(found);
+        }
+        return selectLastmodCommand.buildResult(List.of());
+      } finally {
+        lock.readLock().unlock();
+      }
+    }
+
+    if (command instanceof SelectByRangeAndModifiedCommand<?> selectRangeModCommand) {
+      lock.readLock().lock();
+      try {
+        Optional<InMemoryContainer> container =
+            getContainer(selectRangeModCommand.getContainerName());
+        if (container.isPresent()) {
+          List<?> found =
+              container
+                  .get()
+                  .findByIdRangeAndModified(
+                      selectRangeModCommand.getIdMin(),
+                      selectRangeModCommand.getIdMax(),
+                      selectRangeModCommand.getMinModified(),
+                      selectRangeModCommand.getEntryType(),
+                      selectRangeModCommand.getLimit());
+          return selectRangeModCommand.buildResult(found);
+        }
+        return selectRangeModCommand.buildResult(List.of());
+      } finally {
+        lock.readLock().unlock();
+      }
     }
 
     if (!(command instanceof ContainerCommand<?>)) {

@@ -31,7 +31,7 @@
     <lombok.version>1.18.42</lombok.version>
 
     <localdev.aem.root>../run/author</localdev.aem.root>
-    <localdev.aem.jar>aem-author-p4502.jar</localdev.aem.jar>
+    <localdev.aem.jar>aem-quickstart.jar</localdev.aem.jar>
   </properties>
 
   <build>
@@ -44,12 +44,16 @@
         <configuration>
           <instructions>
             <Export-Package>oakgit.jdbc</Export-Package>
+            <Bundle-Activator>oakgit.jdbc.OakGitActivator</Bundle-Activator>
             <Import-Package>
               !javax.net.ssl,
+              !sun.net.www.protocol.http,
+              !sun.security.jgss,
               *
             </Import-Package>
             <Embed-Dependency>
               org.eclipse.jgit,
+              JavaEWAH,
               commons-lang3
             </Embed-Dependency>
           </instructions>
@@ -277,11 +281,24 @@
       <version>7.5.0.202512021534-r</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.googlecode.javaewah</groupId>
+      <artifactId>JavaEWAH</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+
     <!-- Transitive dependencies -->
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi.core</artifactId>
       <version>8.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.cm</artifactId>
+      <version>1.6.1</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -559,6 +576,8 @@
     </profile>
 
     <!-- AEM local deployment: mvn install -Plocaldev -->
+    <!-- Extracts quickstart JAR from ops/deps/aem-sdk-*.zip, unpacks AEM, -->
+    <!-- copies OSGi configs + oakgit bundle + DB drivers to crx-quickstart/install/ -->
     <profile>
       <id>localdev</id>
       <build>
@@ -613,14 +632,32 @@
             <version>3.2.0</version>
             <executions>
               <execution>
-                <id>remove-aem-dir</id>
+                <id>prepare-aem-root</id>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>run</goal>
                 </goals>
                 <configuration>
                   <target>
+                    <!-- Clean previous installation -->
                     <delete dir="${localdev.aem.root}/crx-quickstart" verbose="true"/>
+                    <delete file="${localdev.aem.root}/${localdev.aem.jar}" quiet="true"/>
+                    <mkdir dir="${localdev.aem.root}"/>
+
+                    <!-- Resolve SDK zip from ops/deps/ -->
+                    <pathconvert property="sdk.zip.path" setonempty="false">
+                      <fileset dir="${project.basedir}/ops/deps" includes="aem-sdk-*.zip"/>
+                    </pathconvert>
+                    <fail unless="sdk.zip.path"
+                          message="No aem-sdk-*.zip found in ops/deps/ — download the AEM SDK first"/>
+
+                    <!-- Extract quickstart JAR from SDK zip, rename to stable name -->
+                    <unzip src="${sdk.zip.path}" dest="${localdev.aem.root}">
+                      <patternset>
+                        <include name="aem-sdk-quickstart-*.jar"/>
+                      </patternset>
+                      <mapper type="glob" from="aem-sdk-quickstart-*.jar" to="${localdev.aem.jar}"/>
+                    </unzip>
                   </target>
                 </configuration>
               </execution>

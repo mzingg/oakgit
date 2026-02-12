@@ -1,9 +1,6 @@
 package oakgit.jdbc;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -33,17 +30,9 @@ public class OakGitConnection extends DefaultOakGitConnection {
     return git;
   }
 
-  public synchronized void queryLog(String sql) {
-    try {
-      Files.writeString(
-          getConfiguration().getGitDirectory().resolve("query.log"),
-          sql + "\r\n",
-          StandardCharsets.UTF_8,
-          StandardOpenOption.CREATE,
-          StandardOpenOption.APPEND);
-    } catch (IOException ioException) {
-      throw new IllegalStateException(ioException);
-    }
+  public void queryLog(String sql) {
+    // no-op — file-based query logging disabled for performance
+    // (synchronized file append per SQL statement caused significant slowdown)
   }
 
   @Override
