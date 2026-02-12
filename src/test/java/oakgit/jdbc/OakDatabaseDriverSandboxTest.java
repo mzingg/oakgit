@@ -14,8 +14,6 @@ import oakgit.util.TestHelpers;
 import oakgit.util.TestRepositoryCreator;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.oak.Oak;
-import org.apache.jackrabbit.oak.api.ContentRepository;
-import org.apache.jackrabbit.oak.api.ContentSession;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
 import org.apache.jackrabbit.oak.plugins.document.rdb.RDBBlobStoreDB;
@@ -100,7 +98,7 @@ public class OakDatabaseDriverSandboxTest {
   class DerbyTests {
 
     @SandboxTest
-    void canCreateOakSession() throws Exception {
+    void canSaveAndReadJcrProperties() throws Exception {
       System.setProperty("derby.stream.error.field", "oakgit.util.TestHelpers.DERBY_DEV_NULL");
       DataSource dataSource =
           RDBDataSourceFactory.forJdbcUrl(
@@ -108,13 +106,18 @@ public class OakDatabaseDriverSandboxTest {
 
       DocumentNodeStore store =
           aNewNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY);
-      ContentRepository contentRepository =
-          new Oak(store).with(new OpenSecurityProvider()).createContentRepository();
-      ContentSession session =
+      Repository contentRepository =
+          new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
+      Session session =
           contentRepository.login(
               new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+      Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
+      hello.setProperty("velo", "velo");
+      session.save();
 
-      assertThat(session).isInstanceOf(ContentSession.class);
+      Node actual = session.getNode("/jcr:system/hello");
+      assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+      assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
       store.dispose();
     }
   }
