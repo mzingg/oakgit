@@ -1,5 +1,9 @@
 package oakgit.util;
 
+import com.adobe.granite.repository.impl.CqLastModifiedConflictHandler;
+import com.adobe.granite.repository.impl.CqLastRolledoutConflictHandler;
+import com.adobe.granite.repository.impl.DeleteConflictHandler;
+import com.adobe.granite.repository.indexdefs.GraniteIndexDefinitions;
 import java.io.IOException;
 import javax.jcr.RepositoryException;
 import javax.jcr.security.AccessControlManager;
@@ -16,6 +20,7 @@ import org.apache.jackrabbit.oak.api.CommitFailedException;
 import org.apache.jackrabbit.oak.api.ContentRepository;
 import org.apache.jackrabbit.oak.api.ContentSession;
 import org.apache.jackrabbit.oak.api.Root;
+import org.apache.jackrabbit.oak.api.Type;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.namepath.NamePathMapper;
 import org.apache.jackrabbit.oak.plugins.atomic.AtomicCounterEditorProvider;
@@ -28,7 +33,6 @@ import org.apache.jackrabbit.oak.plugins.name.NameValidatorProvider;
 import org.apache.jackrabbit.oak.plugins.name.NamespaceEditorProvider;
 import org.apache.jackrabbit.oak.plugins.nodetype.TypeEditorProvider;
 import org.apache.jackrabbit.oak.plugins.observation.ChangeCollectorProvider;
-import org.apache.jackrabbit.oak.plugins.observation.CommitRateLimiter;
 import org.apache.jackrabbit.oak.plugins.tree.impl.RootProviderService;
 import org.apache.jackrabbit.oak.plugins.tree.impl.TreeProviderService;
 import org.apache.jackrabbit.oak.plugins.version.VersionHook;
@@ -39,36 +43,45 @@ import org.apache.jackrabbit.oak.security.internal.TestSecurityProvider;
 import org.apache.jackrabbit.oak.security.principal.PrincipalConfigurationImpl;
 import org.apache.jackrabbit.oak.security.privilege.PrivilegeConfigurationImpl;
 import org.apache.jackrabbit.oak.security.user.UserConfigurationImpl;
-import org.apache.jackrabbit.oak.spi.commit.EditorProvider;
+import org.apache.jackrabbit.oak.spi.commit.CommitInfo;
+import org.apache.jackrabbit.oak.spi.commit.EmptyHook;
 import org.apache.jackrabbit.oak.spi.query.WhiteboardIndexProvider;
+import org.apache.jackrabbit.oak.spi.security.ConfigurationParameters;
 import org.apache.jackrabbit.oak.spi.security.SecurityProvider;
 import org.apache.jackrabbit.oak.spi.security.authentication.SystemSubject;
 import org.apache.jackrabbit.oak.spi.security.authorization.AuthorizationConfiguration;
 import org.apache.jackrabbit.oak.spi.security.principal.EveryonePrincipal;
+import org.apache.jackrabbit.oak.spi.security.user.AuthorizableType;
+import org.apache.jackrabbit.oak.spi.security.user.UserConfiguration;
+import org.apache.jackrabbit.oak.spi.security.user.util.UserUtil;
+import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.whiteboard.DefaultWhiteboard;
 import org.apache.jackrabbit.oak.spi.whiteboard.Whiteboard;
 
+/**
+ * Creates a JackrabbitRepository that mirrors AEM's SlingRepositoryManager.createRepository() from
+ * com.adobe.granite.repository-2.0.4.
+ *
+ * <p>Omitted from AEM production setup:
+ *
+ * <ul>
+ *   <li>CommitStats commit hook (requires OSGi configuration)
+ * </ul>
+ *
+ * <p>Version store pre-population (AEM default: prePopulateVersionStore=true) is done as a separate
+ * commit after repository creation, because the 65K intermediate nodes combined with node type
+ * registration in a single InitialContent commit overwhelms the DocumentNodeStore branch merge via
+ * our JDBC driver.
+ */
 public class TestRepositoryCreator {
 
   private final DocumentNodeStore nodeStore;
   private final SecurityProvider securityProvider;
   private final Whiteboard whiteboard;
-  private EditorProvider changeCollectorProvider;
-  private final CommitRateLimiter commitRateLimiter;
-  private int observationQueueLength;
-  private final WhiteboardIndexProvider indexProvider;
-  private final WhiteboardIndexEditorProvider indexEditorProvider;
-  private boolean fastQueryResultSize;
 
   public TestRepositoryCreator(DocumentNodeStore nodeStore) {
     this.nodeStore = nodeStore;
     this.whiteboard = new DefaultWhiteboard();
-    this.changeCollectorProvider = new ChangeCollectorProvider();
-    this.commitRateLimiter = new CommitRateLimiter();
-    this.observationQueueLength = 1000;
-    this.indexProvider = new WhiteboardIndexProvider();
-    this.indexEditorProvider = new WhiteboardIndexEditorProvider();
-    this.fastQueryResultSize = true;
 
     TestSecurityProvider testSecurityProvider = new TestSecurityProvider();
 
@@ -125,42 +138,65 @@ public class TestRepositoryCreator {
             .with(Runnable::run)
             .with(whiteboard)
             .with(new InitialContent())
+            .with(createGraniteIndexDefinitions())
             .with(JcrConflictHandler.createJcrConflictHandler())
+            .with(new CqLastModifiedConflictHandler())
+            .with(new CqLastRolledoutConflictHandler())
+            .with(new DeleteConflictHandler(null))
             .with(new VersionHook())
             .with(securityProvider)
             .with(new NameValidatorProvider())
             .with(new NamespaceEditorProvider())
             .with(new TypeEditorProvider())
             .with(new ConflictValidatorProvider())
-            .with(new AtomicCounterEditorProvider());
+            .with(new AtomicCounterEditorProvider())
+            .with(new ChangeCollectorProvider())
+            .with(new WhiteboardIndexProvider())
+            .with(new WhiteboardIndexEditorProvider())
+            .with("crx.default")
+            .with(BundlingConfigInitializer.INSTANCE);
 
-    if (this.changeCollectorProvider != null) {
-      jcr.with(this.changeCollectorProvider);
-    }
-
-    jcr.with(this.indexProvider)
-        .with(this.indexEditorProvider)
-        .with("crx.default")
-        .withFastQueryResultSize(this.fastQueryResultSize);
-
-    if (this.observationQueueLength > 0) {
-      jcr.withObservationQueueLength(this.observationQueueLength);
-    }
-
-    if (this.commitRateLimiter != null) {
-      jcr.with(this.commitRateLimiter);
-    }
-
-    jcr.with(BundlingConfigInitializer.INSTANCE);
     ContentRepository contentRepository = jcr.createContentRepository();
+    prePopulateVersionStore();
     setupPermissions(contentRepository, securityProvider);
-    //    if (this.componentContext != null) {
-    //      this.oakRepositoryRegistration =
-    // this.componentContext.getBundleContext().registerService(ContentRepository.class,
-    // contentRepository, (Dictionary) null);
-    //    }
 
     return (JackrabbitRepository) jcr.createRepository();
+  }
+
+  private void prePopulateVersionStore() {
+    NodeBuilder builder = nodeStore.getRoot().builder();
+    NodeBuilder vs = builder.child("jcr:system").child("jcr:versionStorage");
+    vs.setProperty("rep:versionStorageInit", 1);
+    for (int i = 0; i < 0xff; i++) {
+      NodeBuilder c = versionStorageChild(vs, String.format("%02x", i));
+      for (int j = 0; j < 0xff; j++) {
+        versionStorageChild(c, String.format("%02x", j));
+      }
+    }
+    try {
+      nodeStore.merge(builder, EmptyHook.INSTANCE, CommitInfo.EMPTY);
+    } catch (CommitFailedException e) {
+      throw new RuntimeException("Failed to pre-populate version store", e);
+    }
+  }
+
+  private static NodeBuilder versionStorageChild(NodeBuilder node, String name) {
+    NodeBuilder child = node.child(name);
+    if (!child.hasProperty("jcr:primaryType")) {
+      child.setProperty("jcr:primaryType", "rep:versionStorage", Type.NAME);
+    }
+    return child;
+  }
+
+  private GraniteIndexDefinitions createGraniteIndexDefinitions() {
+    GraniteIndexDefinitions gc = new GraniteIndexDefinitions(null, false);
+    String userRoot =
+        UserUtil.getAuthorizableRootPath(
+            (ConfigurationParameters)
+                securityProvider.getConfiguration(UserConfiguration.class).getParameters(),
+            AuthorizableType.USER);
+    gc.setUserHomePath(userRoot);
+    return gc;
   }
 
   private static void setupPermissions(
@@ -187,8 +223,7 @@ public class TestRepositoryCreator {
 
     while (it.hasNext()) {
       AccessControlPolicy policy = it.nextAccessControlPolicy();
-      if (policy instanceof JackrabbitAccessControlList) {
-        JackrabbitAccessControlList acl = (JackrabbitAccessControlList) policy;
+      if (policy instanceof JackrabbitAccessControlList acl) {
         Privilege[] jcrAll =
             AccessControlUtils.privilegesFromNames(acMgr, new String[] {"jcr:all"});
         acl.addEntry(EveryonePrincipal.getInstance(), jcrAll, false);
