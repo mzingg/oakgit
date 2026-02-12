@@ -150,7 +150,7 @@ public class OakDatabaseDriverSandboxTest {
     }
 
     @SandboxTest
-    void canInstantiateWithAemInitializer() throws Exception {
+    void canInstantiateWithAemInitializerAndSaveAndReadJcrProperties() throws Exception {
       Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
       Git.init().setDirectory(gitDirectory.toFile()).call();
       String jdbcUrl = "jdbc:oakgit://" + gitDirectory.toAbsolutePath();
@@ -158,11 +158,15 @@ public class OakDatabaseDriverSandboxTest {
       DataSource dataSource = RDBDataSourceFactory.forJdbcUrl(jdbcUrl, "", "");
       DocumentNodeStore nodeStore =
           aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
-      TestRepositoryCreator testRepositoryCreator = new TestRepositoryCreator(nodeStore);
+      JackrabbitRepository repository = new TestRepositoryCreator(nodeStore).create();
+      Session session = repository.login(new SimpleCredentials("admin", "admin".toCharArray()));
+      Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
+      hello.setProperty("velo", "velo");
+      session.save();
 
-      JackrabbitRepository repository = testRepositoryCreator.create();
-
-      assertThat(repository).isInstanceOf(Repository.class);
+      Node actual = session.getNode("/jcr:system/hello");
+      assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
+      assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
       nodeStore.dispose();
     }
   }
