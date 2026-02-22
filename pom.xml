@@ -30,8 +30,6 @@
     <mockito.version>5.21.0</mockito.version>
     <lombok.version>1.18.42</lombok.version>
 
-    <localdev.aem.root>../run/author</localdev.aem.root>
-    <localdev.aem.jar>aem-quickstart.jar</localdev.aem.jar>
   </properties>
 
   <build>
@@ -568,116 +566,6 @@
                 <goals>
                   <goal>check</goal>
                 </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- AEM local deployment: mvn install -Plocaldev -->
-    <!-- Extracts quickstart JAR from ops/deps/aem-sdk-*.zip, unpacks AEM, -->
-    <!-- copies OSGi configs + oakgit bundle + DB drivers to crx-quickstart/install/ -->
-    <profile>
-      <id>localdev</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>copy-database-drivers</id>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-                <configuration>
-                  <outputDirectory>${localdev.aem.root}/crx-quickstart/install/9</outputDirectory>
-                  <includeArtifactIds>
-                    postgresql,
-                    mysql-connector-j
-                  </includeArtifactIds>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>3.6.3</version>
-            <executions>
-              <execution>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>java</executable>
-                  <workingDirectory>${localdev.aem.root}</workingDirectory>
-                  <arguments>
-                    <argument>-jar</argument>
-                    <argument>${localdev.aem.jar}</argument>
-                    <argument>-unpack</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.2.0</version>
-            <executions>
-              <execution>
-                <id>prepare-aem-root</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <!-- Clean previous installation -->
-                    <delete dir="${localdev.aem.root}/crx-quickstart" verbose="true"/>
-                    <delete file="${localdev.aem.root}/${localdev.aem.jar}" quiet="true"/>
-                    <mkdir dir="${localdev.aem.root}"/>
-
-                    <!-- Resolve SDK zip from ops/deps/ -->
-                    <pathconvert property="sdk.zip.path" setonempty="false">
-                      <fileset dir="${project.basedir}/ops/deps" includes="aem-sdk-*.zip"/>
-                    </pathconvert>
-                    <fail unless="sdk.zip.path"
-                          message="No aem-sdk-*.zip found in ops/deps/ — download the AEM SDK first"/>
-
-                    <!-- Extract quickstart JAR from SDK zip, rename to stable name -->
-                    <unzip src="${sdk.zip.path}" dest="${localdev.aem.root}">
-                      <patternset>
-                        <include name="aem-sdk-quickstart-*.jar"/>
-                      </patternset>
-                      <mapper type="glob" from="aem-sdk-quickstart-*.jar" to="${localdev.aem.jar}"/>
-                    </unzip>
-                  </target>
-                </configuration>
-              </execution>
-              <execution>
-                <id>copy-config-and-artifact</id>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <configuration>
-                  <target>
-                    <copy todir="${localdev.aem.root}/crx-quickstart" overwrite="true" verbose="true">
-                      <fileset dir="${project.basedir}/ops/localdev/crx-quickstart"/>
-                    </copy>
-                    <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
-                          todir="${localdev.aem.root}/crx-quickstart/install/9"
-                          overwrite="true"
-                          verbose="true"/>
-                  </target>
-                </configuration>
               </execution>
             </executions>
           </plugin>
