@@ -71,7 +71,7 @@
             type = "app";
             program = toString (
               pkgs.writeShellScript "localdeploy-wrapper" ''
-                export PATH="${maven4}/bin:${pkgs.jdk21}/bin:${pkgs.findutils}/bin:${pkgs.unzip}/bin:${pkgs.coreutils}/bin:$PATH"
+                export PATH="${maven4}/bin:${pkgs.jdk21}/bin:${pkgs.findutils}/bin:${pkgs.unzip}/bin:${pkgs.coreutils}/bin:${pkgs.curl}/bin:${pkgs.jq}/bin:$PATH"
                 export JAVA_HOME="${pkgs.jdk21}"
                 exec ${pkgs.bash}/bin/bash ${./.nix/apps/localdeploy.sh}
               ''
