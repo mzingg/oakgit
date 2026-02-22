@@ -14,14 +14,6 @@ AEM_JAR="aem-quickstart.jar"
 echo -e "${BOLD}${CYAN}Building project...${NC}"
 mvn -f "$PROJECT_ROOT/pom.xml" package -DskipTests -q
 
-# --- Resolve DB driver JARs ---
-echo -e "${BOLD}${CYAN}Resolving database driver JARs...${NC}"
-DB_DRIVER_DIR="$PROJECT_ROOT/target/db-drivers"
-rm -rf "$DB_DRIVER_DIR"
-mvn -f "$PROJECT_ROOT/pom.xml" dependency:copy-dependencies \
-  -DincludeArtifactIds=postgresql,mysql-connector-j \
-  -DoutputDirectory="$DB_DRIVER_DIR" -q
-
 # --- Clean previous installation ---
 echo -e "${BOLD}${CYAN}Cleaning previous AEM installation...${NC}"
 rm -rf "$AEM_ROOT/crx-quickstart"
@@ -62,14 +54,6 @@ if [[ -z "$BUNDLE_JAR" ]]; then
 fi
 mkdir -p "$AEM_ROOT/crx-quickstart/install/9"
 cp -v "$BUNDLE_JAR" "$AEM_ROOT/crx-quickstart/install/9/"
-
-# --- Copy DB driver JARs ---
-echo -e "${BOLD}${CYAN}Copying database driver JARs...${NC}"
-if [[ -d "$DB_DRIVER_DIR" ]] && ls "$DB_DRIVER_DIR"/*.jar &>/dev/null; then
-  cp -v "$DB_DRIVER_DIR"/*.jar "$AEM_ROOT/crx-quickstart/install/9/"
-else
-  echo "Warning: No database driver JARs found — skipping"
-fi
 
 echo ""
 echo -e "${BOLD}${CYAN}Local AEM deployment ready at: $AEM_ROOT${NC}"
