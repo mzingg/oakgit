@@ -77,6 +77,16 @@
               ''
             );
           };
+          localrun = {
+            type = "app";
+            program = toString (
+              pkgs.writeShellScript "localrun-wrapper" ''
+                export PATH="${pkgs.jdk21}/bin:${pkgs.coreutils}/bin:${pkgs.procps}/bin:$PATH"
+                export JAVA_HOME="${pkgs.jdk21}"
+                exec ${pkgs.bash}/bin/bash ${./.nix/apps/localrun.sh}
+              ''
+            );
+          };
         }
       );
 
