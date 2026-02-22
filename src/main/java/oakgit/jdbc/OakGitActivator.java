@@ -37,6 +37,7 @@ public class OakGitActivator implements BundleActivator {
       factoryRegistration.unregister();
     }
     factory.destroyAll();
+    OakGitDriver.closeAll();
   }
 
   private static class DataSourceFactory implements ManagedServiceFactory {

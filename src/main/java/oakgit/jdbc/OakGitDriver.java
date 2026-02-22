@@ -57,6 +57,19 @@ public class OakGitDriver implements Driver {
     }
   }
 
+  /** Closes all processors, flushing pending writes. Called during bundle shutdown. */
+  static void closeAll() {
+    PROCESSORS.forEach(
+        (url, processor) -> {
+          try {
+            processor.close();
+          } catch (Exception e) {
+            // best-effort cleanup
+          }
+        });
+    PROCESSORS.clear();
+  }
+
   @Override
   public boolean acceptsURL(String url) {
     return OakGitDriverConfiguration.fromUrl(url, VERSION, ARTIFACT_ID)
