@@ -87,6 +87,26 @@
               ''
             );
           };
+          profile = {
+            type = "app";
+            program = toString (
+              pkgs.writeShellScript "profile-wrapper" ''
+                export PATH="${pkgs.jdk21}/bin:${pkgs.async-profiler}/bin:${pkgs.coreutils}/bin:${pkgs.procps}/bin:$PATH"
+                export JAVA_HOME="${pkgs.jdk21}"
+                exec ${pkgs.bash}/bin/bash ${./.nix/apps/profile.sh} "$@"
+              ''
+            );
+          };
+          profile-report = {
+            type = "app";
+            program = toString (
+              pkgs.writeShellScript "profile-report-wrapper" ''
+                export PATH="${pkgs.jdk21}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:$PATH"
+                export JAVA_HOME="${pkgs.jdk21}"
+                exec ${pkgs.bash}/bin/bash ${./.nix/apps/profile-report.sh} "$@"
+              ''
+            );
+          };
         }
       );
 
@@ -103,6 +123,7 @@
               pkgs.jdk21
               maven4
               treefmt
+              pkgs.async-profiler
             ];
 
             shellHook = ''

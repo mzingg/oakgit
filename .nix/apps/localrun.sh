@@ -35,6 +35,9 @@ if [[ -n "$PID" ]] && kill -0 "$PID" 2>/dev/null; then
   fi
 fi
 
+# --- Ensure profiling output dir exists ---
+mkdir -p "$AEM_ROOT/profiling"
+
 # --- Start AEM ---
 echo -e "${BOLD}${CYAN}Starting AEM...${NC}"
 "$AEM_ROOT/crx-quickstart/bin/start"

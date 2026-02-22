@@ -134,6 +134,11 @@ if [ $CQ_USE_CLDR ]; then
 fi
 START_OPTS="${START_OPTS} -Dsling.properties=conf/sling.properties"
 
+# Always-on JFR recording for profiling oakgit
+PROFILING_DIR="$(pwd)/profiling"
+mkdir -p "$PROFILING_DIR"
+CQ_JVM_OPTS="${CQ_JVM_OPTS} -XX:StartFlightRecording=name=oakgit,filename=${PROFILING_DIR}/recording.jfr,dumponexit=true,settings=profile,maxsize=1g"
+
 (
   (
     java $CQ_JVM_OPTS -jar $CURR_DIR/$CQ_JARFILE $START_OPTS &
