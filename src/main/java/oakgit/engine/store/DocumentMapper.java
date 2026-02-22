@@ -65,7 +65,7 @@ public final class DocumentMapper {
     throw new IllegalArgumentException("Unknown entry type: " + type.getName());
   }
 
-  static StorageDocument deepCopy(StorageDocument doc) {
+  public static StorageDocument deepCopy(StorageDocument doc) {
     return new StorageDocument()
         .setId(doc.getId())
         .setModified(doc.getModified())

@@ -11,7 +11,7 @@ public class InMemoryEntryStore implements EntryStore {
 
   @Override
   public void createContainer(String name) {
-    containers.put(name, new HashMap<>());
+    containers.putIfAbsent(name, new HashMap<>());
   }
 
   @Override

@@ -33,7 +33,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     connection.queryLog("P/U>>" + placeholderData);
 
     return processor
-        .execute(factory.getCommandForSql(getSql(), placeholderData, maxRows))
+        .execute(factory.getCommandForSql(getSql(), placeholderData, effectiveLimit()))
         .affectedCount();
   }
 
@@ -52,7 +52,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
     connection.queryLog("P/Q>>" + placeholderData);
 
     return processor
-        .execute(factory.getCommandForSql(getSql(), placeholderData, maxRows))
+        .execute(factory.getCommandForSql(getSql(), placeholderData, effectiveLimit()))
         .toResultSet();
   }
 
@@ -77,7 +77,7 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
       try {
         result[i] =
             processor
-                .execute(factory.getCommandForSql(getSql(), dataList.get(i), maxRows))
+                .execute(factory.getCommandForSql(getSql(), dataList.get(i), effectiveLimit()))
                 .affectedCount();
       } catch (IllegalStateException stateException) {
         result[i] = Statement.EXECUTE_FAILED;
@@ -154,5 +154,10 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
   @Override
   public void setFetchSize(int rows) {
     this.maxRows = rows;
+  }
+
+  /** JDBC defines 0 as "unlimited"; translate to MAX_VALUE for internal use. */
+  private int effectiveLimit() {
+    return maxRows > 0 ? maxRows : Integer.MAX_VALUE;
   }
 }

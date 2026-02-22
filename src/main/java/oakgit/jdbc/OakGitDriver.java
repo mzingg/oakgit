@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import oakgit.engine.CommandFactory;
 import oakgit.engine.CommandProcessor;
-import oakgit.engine.store.InMemoryEntryStore;
+import oakgit.engine.store.FileEntryStore;
 
 public class OakGitDriver implements Driver {
 
@@ -34,7 +34,8 @@ public class OakGitDriver implements Driver {
     if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
       CommandProcessor processor =
           PROCESSORS.computeIfAbsent(
-              configuration.getUrl(), k -> new CommandProcessor(new InMemoryEntryStore()));
+              configuration.getUrl(),
+              k -> new CommandProcessor(new FileEntryStore(configuration.getGitDirectory())));
       return new OakGitConnection(configuration, processor, new CommandFactory());
     }
 
@@ -46,7 +47,14 @@ public class OakGitDriver implements Driver {
    * to the same URL will use a fresh processor.
    */
   public static void resetProcessor(String url) {
-    PROCESSORS.remove(url);
+    var processor = PROCESSORS.remove(url);
+    if (processor != null) {
+      try {
+        processor.discardAndClose();
+      } catch (Exception e) {
+        // best-effort cleanup
+      }
+    }
   }
 
   @Override

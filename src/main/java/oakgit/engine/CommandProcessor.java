@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import oakgit.engine.commands.*;
+import oakgit.engine.commands.SelectCountByDeletedOnceCommand;
 import oakgit.engine.model.ContainerEntry;
 import oakgit.engine.model.DatastoreMetaEntry;
 import oakgit.engine.model.DocumentEntry;
@@ -18,7 +19,7 @@ import oakgit.engine.store.StorageDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CommandProcessor {
+public final class CommandProcessor implements AutoCloseable {
 
   private static final Logger LOG = LoggerFactory.getLogger(CommandProcessor.class);
 
@@ -27,6 +28,15 @@ public final class CommandProcessor {
 
   public CommandProcessor(EntryStore store) {
     this.store = store;
+  }
+
+  @Override
+  public void close() throws Exception {
+    store.close();
+  }
+
+  public void discardAndClose() throws Exception {
+    store.discardAndClose();
   }
 
   public CommandResult execute(Command command) {
@@ -38,6 +48,20 @@ public final class CommandProcessor {
 
     if (command instanceof CreateIndexCommand) {
       return SUCCESSFULL_RESULT_WITHOUT_DATA;
+    }
+
+    if (command instanceof SelectCountByDeletedOnceCommand cmd) {
+      lock.readLock().lock();
+      try {
+        String container = cmd.getTableName().toUpperCase();
+        if (store.hasContainer(container)) {
+          long count = store.countByDeletedOnce(container, cmd.getDeletedOnce());
+          return cmd.buildResult(count);
+        }
+        return cmd.buildResult(0);
+      } finally {
+        lock.readLock().unlock();
+      }
     }
 
     if (command instanceof SelectMinModifiedCommand) {
@@ -70,6 +94,23 @@ public final class CommandProcessor {
           List<StorageDocument> docs =
               store.findByVersionUpgrade(
                   container, cmd.getExcludedIdPatterns(), cmd.getMaxVersion());
+          List<DocumentEntry> entries =
+              docs.stream().map(d -> DocumentMapper.toEntry(d, DocumentEntry.class)).toList();
+          return cmd.buildResult(entries);
+        }
+        return cmd.buildResult(List.of());
+      } finally {
+        lock.readLock().unlock();
+      }
+    }
+
+    if (command instanceof SelectByModifiedAndSdtypeNullCommand cmd) {
+      lock.readLock().lock();
+      try {
+        String container = cmd.getContainerName().toUpperCase();
+        if (store.hasContainer(container)) {
+          List<StorageDocument> docs =
+              store.findByModifiedAndSdtypeNull(container, cmd.getMinModified());
           List<DocumentEntry> entries =
               docs.stream().map(d -> DocumentMapper.toEntry(d, DocumentEntry.class)).toList();
           return cmd.buildResult(entries);

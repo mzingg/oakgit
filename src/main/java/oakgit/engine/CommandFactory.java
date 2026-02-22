@@ -29,6 +29,7 @@ public class CommandFactory {
     DEFAULT_ANALYZERS.add(new SelectByRangeAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByIdAnalyzer());
     DEFAULT_ANALYZERS.add(new UpdateAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectCountByDeletedOnceAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectMinModifiedAnalyzer());
     DEFAULT_ANALYZERS.add(new DeleteByModifiedRangeAnalyzer());
     DEFAULT_ANALYZERS.add(new DeleteByIdListAnalyzer());
@@ -40,6 +41,7 @@ public class CommandFactory {
     DEFAULT_ANALYZERS.add(new SelectByDeletedOnceAndModifiedRangeAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectBySdtypeAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByVersionUpgradeAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectByModifiedAndSdtypeNullAnalyzer());
   }
 
   private List<QueryAnalyzer> analyzers;

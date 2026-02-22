@@ -3,7 +3,15 @@ package oakgit.engine.store;
 import java.util.List;
 import java.util.Optional;
 
-public interface EntryStore {
+public interface EntryStore extends AutoCloseable {
+
+  @Override
+  default void close() throws Exception {}
+
+  /** Discards pending writes and stops the store without flushing to disk. */
+  default void discardAndClose() throws Exception {
+    close();
+  }
 
   void createContainer(String name);
 
@@ -24,7 +32,7 @@ public interface EntryStore {
   default List<StorageDocument> findByIdRange(
       String container, String idMin, String idMax, int limit) {
     return getAll(container).stream()
-        .filter(d -> d.getId().compareTo(idMin) >= 0 && d.getId().compareTo(idMax) <= 0)
+        .filter(d -> d.getId().compareTo(idMin) > 0 && d.getId().compareTo(idMax) < 0)
         .limit(limit)
         .toList();
   }
@@ -69,6 +77,19 @@ public interface EntryStore {
         .filter(d -> d.getVersion() == null || d.getVersion() < maxVersion)
         .filter(d -> excludedIdPatterns.stream().noneMatch(p -> sqlLikeMatch(d.getId(), p)))
         .toList();
+  }
+
+  default List<StorageDocument> findByModifiedAndSdtypeNull(String container, long minModified) {
+    return getAll(container).stream()
+        .filter(d -> d.getModified() != null && d.getModified() >= minModified)
+        .filter(d -> d.getSdType() == null)
+        .toList();
+  }
+
+  default long countByDeletedOnce(String container, int deletedOnce) {
+    return getAll(container).stream()
+        .filter(d -> d.getDeletedOnce() != null && d.getDeletedOnce() == deletedOnce)
+        .count();
   }
 
   default List<StorageDocument> findByLastmodLessThan(String container, long lastmod) {

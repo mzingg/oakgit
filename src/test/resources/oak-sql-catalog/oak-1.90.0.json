@@ -267,6 +267,17 @@
       "priority": "P2"
     },
     {
+      "id": "select-count-by-deletedonce",
+      "operation": "SELECT",
+      "description": "Count deleted documents for revision GC upper bounds check",
+      "sqlTemplate": "select COUNT(*) from {T} where DELETEDONCE = ?",
+      "exampleSql": "select COUNT(*) from NODES where DELETEDONCE = ?",
+      "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
+      "expectedAnalyzer": "SelectCountByDeletedOnceAnalyzer",
+      "implemented": true,
+      "priority": "P2"
+    },
+    {
       "id": "select-min-modified",
       "operation": "SELECT",
       "description": "Select minimum MODIFIED timestamp for deleted documents (revision GC)",
@@ -340,6 +351,17 @@
       "exampleSql": "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where SDTYPE in (?, ?, ?)  and SDMAXREVTIME <= ? and VERSION >= ?",
       "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
       "expectedAnalyzer": "SelectBySdtypeAnalyzer",
+      "implemented": true,
+      "priority": "P2"
+    },
+    {
+      "id": "select-by-modified-and-sdtype-null",
+      "operation": "SELECT",
+      "description": "Recovery sweep: find documents with MODIFIED >= threshold and no SDTYPE (non-split documents)",
+      "sqlTemplate": "select {columns} from {T} where MODIFIED >= ? and SDTYPE is null",
+      "exampleSql": "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where MODIFIED >= ? and SDTYPE is null",
+      "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
+      "expectedAnalyzer": "SelectByModifiedAndSdtypeNullAnalyzer",
       "implemented": true,
       "priority": "P2"
     },
