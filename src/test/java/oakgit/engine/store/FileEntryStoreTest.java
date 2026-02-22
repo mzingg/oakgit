@@ -38,15 +38,13 @@ class FileEntryStoreTest {
     void putAndGet(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("1:/content");
-        doc.setModified(42L);
+        var doc = StorageDocument.builder().id("1:/content").modified(42L).build();
 
         store.put("NODES", doc);
 
         var result = store.get("NODES", "1:/content");
         assertThat(result).isPresent();
-        assertThat(result.get().getModified()).isEqualTo(42L);
+        assertThat(result.get().modified()).isEqualTo(42L);
       }
     }
 
@@ -73,8 +71,7 @@ class FileEntryStoreTest {
     void containsKeyTrue(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("test-id");
+        var doc = StorageDocument.builder().id("test-id").build();
         store.put("NODES", doc);
 
         assertThat(store.containsKey("NODES", "test-id")).isTrue();
@@ -96,8 +93,7 @@ class FileEntryStoreTest {
     void removeExisting(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("doomed");
+        var doc = StorageDocument.builder().id("doomed").build();
         store.put("NODES", doc);
 
         assertThat(store.remove("NODES", "doomed")).isTrue();
@@ -121,9 +117,7 @@ class FileEntryStoreTest {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
         for (var id : java.util.List.of("a", "b", "c")) {
-          var doc = new StorageDocument();
-          doc.setId(id);
-          store.put("NODES", doc);
+          store.put("NODES", StorageDocument.builder().id(id).build());
         }
 
         store.removeAll("NODES", java.util.List.of("a", "c"));
@@ -140,15 +134,13 @@ class FileEntryStoreTest {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
         for (var id : java.util.List.of("x", "y")) {
-          var doc = new StorageDocument();
-          doc.setId(id);
-          store.put("NODES", doc);
+          store.put("NODES", StorageDocument.builder().id(id).build());
         }
 
         var all = store.getAll("NODES");
 
         assertThat(all).hasSize(2);
-        assertThat(all).extracting(StorageDocument::getId).containsExactlyInAnyOrder("x", "y");
+        assertThat(all).extracting(StorageDocument::id).containsExactlyInAnyOrder("x", "y");
       }
     }
 
@@ -170,17 +162,15 @@ class FileEntryStoreTest {
     void putWritesFile(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("1:/content");
-        doc.setModified(99L);
+        var doc = StorageDocument.builder().id("1:/content").modified(99L).build();
         store.put("NODES", doc);
       }
 
       var file = dir.resolve("NODES/1_/content/_data.json");
       assertThat(file).exists();
       var restored = StorageDocumentCodec.fromJson(Files.readString(file));
-      assertThat(restored.getId()).isEqualTo("1:/content");
-      assertThat(restored.getModified()).isEqualTo(99L);
+      assertThat(restored.id()).isEqualTo("1:/content");
+      assertThat(restored.modified()).isEqualTo(99L);
     }
 
     @UnitTest
@@ -188,8 +178,7 @@ class FileEntryStoreTest {
     void removeDeletesFile(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("victim");
+        var doc = StorageDocument.builder().id("victim").build();
         store.put("NODES", doc);
       }
 
@@ -217,8 +206,7 @@ class FileEntryStoreTest {
     void idToPathColonEncoding(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("0:/");
+        var doc = StorageDocument.builder().id("0:/").build();
         store.put("NODES", doc);
       }
 
@@ -230,8 +218,7 @@ class FileEntryStoreTest {
     void deeplyNestedId(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("1:/content/dam/image.png/jcr:content");
+        var doc = StorageDocument.builder().id("1:/content/dam/image.png/jcr:content").build();
         store.put("NODES", doc);
       }
 
@@ -243,8 +230,7 @@ class FileEntryStoreTest {
     void simpleId(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("DATASTORE_DATA");
-        var doc = new StorageDocument();
-        doc.setId("abc123hash");
+        var doc = StorageDocument.builder().id("abc123hash").build();
         store.put("DATASTORE_DATA", doc);
       }
 
@@ -252,22 +238,20 @@ class FileEntryStoreTest {
     }
 
     @UnitTest
-    @DisplayName("deep copy prevents mutation after enqueue")
-    void deepCopyPreventsRace(@TempDir Path dir) throws Exception {
+    @DisplayName("immutable record is safe to share between map and queue")
+    void immutableRecordSafe(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("mutable");
-        doc.setLastmod(100L);
+        var doc = StorageDocument.builder().id("mutable").lastmod(100L).build();
         store.put("NODES", doc);
 
-        // mutate the in-memory doc after put
-        doc.setLastmod(999L);
+        // put a new record with different lastmod — original is immutable
+        store.put("NODES", StorageDocument.builder().id("mutable").lastmod(999L).build());
       }
 
       var file = dir.resolve("NODES/mutable/_data.json");
       var restored = StorageDocumentCodec.fromJson(Files.readString(file));
-      assertThat(restored.getLastmod()).isEqualTo(100L);
+      assertThat(restored.lastmod()).isEqualTo(999L);
     }
   }
 
@@ -278,19 +262,16 @@ class FileEntryStoreTest {
     @UnitTest
     @DisplayName("loads documents from pre-populated directory")
     void loadsPrePopulated(@TempDir Path dir) throws Exception {
-      // pre-populate disk
       var nodesDir = dir.resolve("NODES/1_/content");
       Files.createDirectories(nodesDir);
-      var doc = new StorageDocument();
-      doc.setId("1:/content");
-      doc.setModified(77L);
+      var doc = StorageDocument.builder().id("1:/content").modified(77L).build();
       Files.writeString(nodesDir.resolve("_data.json"), StorageDocumentCodec.toJson(doc));
 
       try (var store = new FileEntryStore(dir)) {
         assertThat(store.hasContainer("NODES")).isTrue();
         var loaded = store.get("NODES", "1:/content");
         assertThat(loaded).isPresent();
-        assertThat(loaded.get().getModified()).isEqualTo(77L);
+        assertThat(loaded.get().modified()).isEqualTo(77L);
       }
     }
 
@@ -299,15 +280,13 @@ class FileEntryStoreTest {
     void loadsIdFromJson(@TempDir Path dir) throws Exception {
       var containerDir = dir.resolve("SETTINGS/versionGC");
       Files.createDirectories(containerDir);
-      var doc = new StorageDocument();
-      doc.setId("versionGC");
-      doc.setVersion(3);
+      var doc = StorageDocument.builder().id("versionGC").version(3).build();
       Files.writeString(containerDir.resolve("_data.json"), StorageDocumentCodec.toJson(doc));
 
       try (var store = new FileEntryStore(dir)) {
         var loaded = store.get("SETTINGS", "versionGC");
         assertThat(loaded).isPresent();
-        assertThat(loaded.get().getVersion()).isEqualTo(3);
+        assertThat(loaded.get().version()).isEqualTo(3);
       }
     }
 
@@ -316,8 +295,7 @@ class FileEntryStoreTest {
     void corruptedFileSkipped(@TempDir Path dir) throws Exception {
       var nodesDir = dir.resolve("NODES/good");
       Files.createDirectories(nodesDir);
-      var goodDoc = new StorageDocument();
-      goodDoc.setId("good");
+      var goodDoc = StorageDocument.builder().id("good").build();
       Files.writeString(nodesDir.resolve("_data.json"), StorageDocumentCodec.toJson(goodDoc));
 
       var badDir = dir.resolve("NODES/bad");
@@ -344,8 +322,7 @@ class FileEntryStoreTest {
       for (var container : java.util.List.of("NODES", "SETTINGS", "DATASTORE_DATA")) {
         var idDir = dir.resolve(container + "/item");
         Files.createDirectories(idDir);
-        var doc = new StorageDocument();
-        doc.setId("item");
+        var doc = StorageDocument.builder().id("item").build();
         Files.writeString(idDir.resolve("_data.json"), StorageDocumentCodec.toJson(doc));
       }
 
@@ -370,10 +347,7 @@ class FileEntryStoreTest {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
         for (var i = 0; i < 10; i++) {
-          var doc = new StorageDocument();
-          doc.setId("doc-" + i);
-          doc.setVersion(i);
-          store.put("NODES", doc);
+          store.put("NODES", StorageDocument.builder().id("doc-" + i).version(i).build());
         }
       }
 
@@ -387,18 +361,20 @@ class FileEntryStoreTest {
     void dataSurvivesReopen(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("persistent");
-        doc.setModCount(7L);
-        doc.setData(new byte[] {1, 2, 3});
+        var doc =
+            StorageDocument.builder()
+                .id("persistent")
+                .modCount(7L)
+                .data(new byte[] {1, 2, 3})
+                .build();
         store.put("NODES", doc);
       }
 
       try (var store = new FileEntryStore(dir)) {
         var loaded = store.get("NODES", "persistent");
         assertThat(loaded).isPresent();
-        assertThat(loaded.get().getModCount()).isEqualTo(7L);
-        assertThat(loaded.get().getData()).isEqualTo(new byte[] {1, 2, 3});
+        assertThat(loaded.get().modCount()).isEqualTo(7L);
+        assertThat(loaded.get().data()).isEqualTo(new byte[] {1, 2, 3});
       }
     }
   }
@@ -412,8 +388,7 @@ class FileEntryStoreTest {
     void prunesEmptyParents(@TempDir Path dir) throws Exception {
       try (var store = new FileEntryStore(dir)) {
         store.createContainer("NODES");
-        var doc = new StorageDocument();
-        doc.setId("1:/content/dam/deep");
+        var doc = StorageDocument.builder().id("1:/content/dam/deep").build();
         store.put("NODES", doc);
       }
 

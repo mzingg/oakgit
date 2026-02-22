@@ -3,7 +3,9 @@ package oakgit.jdbc;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
   private final String tableName;
 
   private List<Column> columns;
+  private final Map<String, Integer> columnIndex = new HashMap<>();
   private int entryPointer;
   private int maxEntries;
   private boolean wasNull;
@@ -34,8 +37,8 @@ public class OakGitResultSet extends UnsupportedResultSet {
   }
 
   public OakGitResultSet addColumn(Column column) {
-    Optional<Integer> internalIndex = getInternalColumnIndexForColumnName(column.name);
-    if (internalIndex.isEmpty()) {
+    if (!columnIndex.containsKey(column.name)) {
+      columnIndex.put(column.name, columns.size());
       columns.add(column);
     }
 
@@ -207,13 +210,7 @@ public class OakGitResultSet extends UnsupportedResultSet {
   }
 
   private Optional<Integer> getInternalColumnIndexForColumnName(String name) {
-    for (Column column : columns) {
-      if (column.name.equals(name)) {
-        return Optional.of(columns.indexOf(column));
-      }
-    }
-
-    return Optional.empty();
+    return Optional.ofNullable(columnIndex.get(name));
   }
 
   @RequiredArgsConstructor

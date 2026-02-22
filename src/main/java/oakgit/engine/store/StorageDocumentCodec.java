@@ -10,27 +10,27 @@ public final class StorageDocumentCodec {
     var sb = new StringBuilder("{\n");
     var first = true;
 
-    first = appendString(sb, "id", doc.getId(), first);
-    first = appendLong(sb, "modified", doc.getModified(), first);
-    first = appendLong(sb, "modCount", doc.getModCount(), first);
-    first = appendLong(sb, "cModCount", doc.getCModCount(), first);
-    first = appendLong(sb, "dSize", doc.getDSize(), first);
-    first = appendLong(sb, "sdMaxRevTime", doc.getSdMaxRevTime(), first);
-    first = appendLong(sb, "lastmod", doc.getLastmod(), first);
-    first = appendInteger(sb, "hasBinary", doc.getHasBinary(), first);
-    first = appendInteger(sb, "deletedOnce", doc.getDeletedOnce(), first);
-    first = appendInteger(sb, "version", doc.getVersion(), first);
-    first = appendInteger(sb, "sdType", doc.getSdType(), first);
-    first = appendInteger(sb, "lvl", doc.getLvl(), first);
-    first = appendBytes(sb, "data", doc.getData(), first);
-    appendBytes(sb, "bdata", doc.getBdata(), first);
+    first = appendString(sb, "id", doc.id(), first);
+    first = appendLong(sb, "modified", doc.modified(), first);
+    first = appendLong(sb, "modCount", doc.modCount(), first);
+    first = appendLong(sb, "cModCount", doc.cModCount(), first);
+    first = appendLong(sb, "dSize", doc.dSize(), first);
+    first = appendLong(sb, "sdMaxRevTime", doc.sdMaxRevTime(), first);
+    first = appendLong(sb, "lastmod", doc.lastmod(), first);
+    first = appendInteger(sb, "hasBinary", doc.hasBinary(), first);
+    first = appendInteger(sb, "deletedOnce", doc.deletedOnce(), first);
+    first = appendInteger(sb, "version", doc.version(), first);
+    first = appendInteger(sb, "sdType", doc.sdType(), first);
+    first = appendInteger(sb, "lvl", doc.lvl(), first);
+    first = appendBytes(sb, "data", doc.data(), first);
+    appendBytes(sb, "bdata", doc.bdata(), first);
 
     sb.append("\n}");
     return sb.toString();
   }
 
   public static StorageDocument fromJson(String json) {
-    var doc = new StorageDocument();
+    var builder = StorageDocument.builder();
     var content = json.strip();
     if (content.length() < 2
         || content.charAt(0) != '{'
@@ -42,6 +42,7 @@ public final class StorageDocumentCodec {
       throw new IllegalArgumentException("Missing required field: id");
     }
 
+    var hasId = false;
     var pos = 0;
     while (pos < content.length()) {
       pos = skipWhitespace(content, pos);
@@ -64,31 +65,35 @@ public final class StorageDocumentCodec {
       var valueResult = readValue(content, pos);
       pos = valueResult.end();
 
-      applyField(doc, key, valueResult.value());
+      if ("id".equals(key)) {
+        hasId = true;
+      }
+      applyField(builder, key, valueResult.value());
     }
 
-    if (doc.getId() == null) {
+    if (!hasId) {
       throw new IllegalArgumentException("Missing required field: id");
     }
-    return doc;
+    return builder.build();
   }
 
-  private static void applyField(StorageDocument doc, String key, String value) {
+  private static void applyField(
+      StorageDocument.StorageDocumentBuilder builder, String key, String value) {
     switch (key) {
-      case "id" -> doc.setId(value);
-      case "modified" -> doc.setModified(parseLong(value));
-      case "modCount" -> doc.setModCount(parseLong(value));
-      case "cModCount" -> doc.setCModCount(parseLong(value));
-      case "dSize" -> doc.setDSize(parseLong(value));
-      case "sdMaxRevTime" -> doc.setSdMaxRevTime(parseLong(value));
-      case "lastmod" -> doc.setLastmod(parseLong(value));
-      case "hasBinary" -> doc.setHasBinary(parseInt(value));
-      case "deletedOnce" -> doc.setDeletedOnce(parseInt(value));
-      case "version" -> doc.setVersion(parseInt(value));
-      case "sdType" -> doc.setSdType(parseInt(value));
-      case "lvl" -> doc.setLvl(parseInt(value));
-      case "data" -> doc.setData(decodeBytes(value));
-      case "bdata" -> doc.setBdata(decodeBytes(value));
+      case "id" -> builder.id(value);
+      case "modified" -> builder.modified(parseLong(value));
+      case "modCount" -> builder.modCount(parseLong(value));
+      case "cModCount" -> builder.cModCount(parseLong(value));
+      case "dSize" -> builder.dSize(parseLong(value));
+      case "sdMaxRevTime" -> builder.sdMaxRevTime(parseLong(value));
+      case "lastmod" -> builder.lastmod(parseLong(value));
+      case "hasBinary" -> builder.hasBinary(parseInt(value));
+      case "deletedOnce" -> builder.deletedOnce(parseInt(value));
+      case "version" -> builder.version(parseInt(value));
+      case "sdType" -> builder.sdType(parseInt(value));
+      case "lvl" -> builder.lvl(parseInt(value));
+      case "data" -> builder.data(decodeBytes(value));
+      case "bdata" -> builder.bdata(decodeBytes(value));
       default -> {} // ignore unknown fields
     }
   }

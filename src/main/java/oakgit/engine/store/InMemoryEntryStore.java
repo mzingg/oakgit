@@ -27,7 +27,7 @@ public class InMemoryEntryStore implements EntryStore {
 
   @Override
   public void put(String container, StorageDocument doc) {
-    containers.get(container).put(doc.getId(), doc);
+    containers.get(container).put(doc.id(), doc);
   }
 
   @Override

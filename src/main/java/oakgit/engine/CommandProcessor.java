@@ -168,7 +168,7 @@ public final class CommandProcessor implements AutoCloseable {
               .get(container, cmd.getId())
               .ifPresent(
                   doc -> {
-                    if (doc.getModified() != null && doc.getModified() == cmd.getModified()) {
+                    if (doc.modified() != null && doc.modified() == cmd.getModified()) {
                       store.remove(container, cmd.getId());
                     }
                   });
@@ -202,10 +202,8 @@ public final class CommandProcessor implements AutoCloseable {
               .ifPresent(
                   doc -> {
                     Long threshold = cmd.getLastmodThreshold();
-                    if (threshold == null
-                        || (doc.getLastmod() != null && doc.getLastmod() < threshold)) {
-                      doc.setLastmod(cmd.getLastmod());
-                      store.put(container, doc);
+                    if (threshold == null || (doc.lastmod() != null && doc.lastmod() < threshold)) {
+                      store.put(container, doc.withLastmod(cmd.getLastmod()));
                     }
                   });
         }
@@ -340,7 +338,7 @@ public final class CommandProcessor implements AutoCloseable {
         Optional<StorageDocument> existing = store.get(containerName, cmd.getId());
         if (existing.isPresent()) {
           StorageDocument doc = existing.get();
-          if (doc.getModCount() != null && doc.getModCount() == cmd.getModCount()) {
+          if (doc.modCount() != null && doc.modCount() == cmd.getModCount()) {
             DocumentEntry entity = DocumentMapper.toEntry(doc, DocumentEntry.class);
             cmd.getData().update(entity);
             store.put(containerName, DocumentMapper.fromEntry(entity));

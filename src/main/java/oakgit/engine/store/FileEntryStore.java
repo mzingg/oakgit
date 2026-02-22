@@ -61,8 +61,8 @@ public class FileEntryStore implements EntryStore {
 
   @Override
   public void put(String container, StorageDocument doc) {
-    containers.get(container).put(doc.getId(), doc);
-    writeQueue.add(new Put(container, doc.getId(), DocumentMapper.deepCopy(doc)));
+    containers.get(container).put(doc.id(), doc);
+    writeQueue.add(new Put(container, doc.id(), doc));
   }
 
   @Override
@@ -215,7 +215,7 @@ public class FileEntryStore implements EntryStore {
     try {
       var json = Files.readString(file);
       var doc = StorageDocumentCodec.fromJson(json);
-      entries.put(doc.getId(), doc);
+      entries.put(doc.id(), doc);
     } catch (Exception e) {
       LOG.error("Failed to load document from {}", file, e);
     }

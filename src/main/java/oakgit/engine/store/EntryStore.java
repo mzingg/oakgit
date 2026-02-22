@@ -32,7 +32,7 @@ public interface EntryStore extends AutoCloseable {
   default List<StorageDocument> findByIdRange(
       String container, String idMin, String idMax, int limit) {
     return getAll(container).stream()
-        .filter(d -> d.getId().compareTo(idMin) > 0 && d.getId().compareTo(idMax) < 0)
+        .filter(d -> d.id().compareTo(idMin) > 0 && d.id().compareTo(idMax) < 0)
         .limit(limit)
         .toList();
   }
@@ -44,8 +44,8 @@ public interface EntryStore extends AutoCloseable {
   default List<StorageDocument> findByIdRangeAndModified(
       String container, String idMin, String idMax, long minModified, int limit) {
     return getAll(container).stream()
-        .filter(d -> d.getId().compareTo(idMin) > 0 && d.getId().compareTo(idMax) < 0)
-        .filter(d -> d.getModified() != null && d.getModified() >= minModified)
+        .filter(d -> d.id().compareTo(idMin) > 0 && d.id().compareTo(idMax) < 0)
+        .filter(d -> d.modified() != null && d.modified() >= minModified)
         .limit(limit)
         .toList();
   }
@@ -53,48 +53,45 @@ public interface EntryStore extends AutoCloseable {
   default List<StorageDocument> findByDeletedOnceAndModifiedRange(
       String container, int deletedOnce, long lowerBound, long upperBound) {
     return getAll(container).stream()
-        .filter(d -> d.getDeletedOnce() != null && d.getDeletedOnce() == deletedOnce)
+        .filter(d -> d.deletedOnce() != null && d.deletedOnce() == deletedOnce)
         .filter(
-            d ->
-                d.getModified() != null
-                    && d.getModified() >= lowerBound
-                    && d.getModified() < upperBound)
+            d -> d.modified() != null && d.modified() >= lowerBound && d.modified() < upperBound)
         .toList();
   }
 
   default List<StorageDocument> findBySdtypeAndVersion(
       String container, List<Integer> sdTypes, long sdMaxRevTime, int minVersion) {
     return getAll(container).stream()
-        .filter(d -> d.getSdType() != null && sdTypes.contains(d.getSdType()))
-        .filter(d -> d.getSdMaxRevTime() != null && d.getSdMaxRevTime() <= sdMaxRevTime)
-        .filter(d -> d.getVersion() != null && d.getVersion() >= minVersion)
+        .filter(d -> d.sdType() != null && sdTypes.contains(d.sdType()))
+        .filter(d -> d.sdMaxRevTime() != null && d.sdMaxRevTime() <= sdMaxRevTime)
+        .filter(d -> d.version() != null && d.version() >= minVersion)
         .toList();
   }
 
   default List<StorageDocument> findByVersionUpgrade(
       String container, List<String> excludedIdPatterns, int maxVersion) {
     return getAll(container).stream()
-        .filter(d -> d.getVersion() == null || d.getVersion() < maxVersion)
-        .filter(d -> excludedIdPatterns.stream().noneMatch(p -> sqlLikeMatch(d.getId(), p)))
+        .filter(d -> d.version() == null || d.version() < maxVersion)
+        .filter(d -> excludedIdPatterns.stream().noneMatch(p -> sqlLikeMatch(d.id(), p)))
         .toList();
   }
 
   default List<StorageDocument> findByModifiedAndSdtypeNull(String container, long minModified) {
     return getAll(container).stream()
-        .filter(d -> d.getModified() != null && d.getModified() >= minModified)
-        .filter(d -> d.getSdType() == null)
+        .filter(d -> d.modified() != null && d.modified() >= minModified)
+        .filter(d -> d.sdType() == null)
         .toList();
   }
 
   default long countByDeletedOnce(String container, int deletedOnce) {
     return getAll(container).stream()
-        .filter(d -> d.getDeletedOnce() != null && d.getDeletedOnce() == deletedOnce)
+        .filter(d -> d.deletedOnce() != null && d.deletedOnce() == deletedOnce)
         .count();
   }
 
   default List<StorageDocument> findByLastmodLessThan(String container, long lastmod) {
     return getAll(container).stream()
-        .filter(d -> d.getLastmod() != null && d.getLastmod() < lastmod)
+        .filter(d -> d.lastmod() != null && d.lastmod() < lastmod)
         .toList();
   }
 

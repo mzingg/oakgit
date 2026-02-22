@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import oakgit.engine.commands.ErrorCommand;
@@ -45,6 +46,8 @@ public class CommandFactory {
   }
 
   private List<QueryAnalyzer> analyzers;
+  private final ConcurrentHashMap<String, Optional<QueryMatchResult>> matchCache =
+      new ConcurrentHashMap<>();
 
   public CommandFactory() {
     this.analyzers = DEFAULT_ANALYZERS;
@@ -76,6 +79,10 @@ public class CommandFactory {
   }
 
   public Optional<QueryMatchResult> match(String sqlQuery) {
+    return matchCache.computeIfAbsent(sqlQuery, this::matchUncached);
+  }
+
+  private Optional<QueryMatchResult> matchUncached(String sqlQuery) {
     for (QueryAnalyzer analyzer : analyzers) {
       QueryMatchResult matchResult = analyzer.matchAndCollect(sqlQuery);
       if (matchResult != null && matchResult.isInterested()) {

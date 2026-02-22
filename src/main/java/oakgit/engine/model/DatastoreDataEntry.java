@@ -14,6 +14,16 @@ import oakgit.jdbc.util.SqlType;
 @Setter
 public class DatastoreDataEntry implements ContainerEntry<DatastoreDataEntry> {
 
+  private static final LinkedHashMap<String, OakGitResultSet.Column> COLUMNS;
+
+  static {
+    COLUMNS = new LinkedHashMap<>();
+    COLUMNS.put(
+        "ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 64, Collections.emptyList()));
+    COLUMNS.put(
+        "DATA", new OakGitResultSet.Column("DATA", SqlType.BLOB.id, 0, Collections.emptyList()));
+  }
+
   @NonNull private String id = "";
 
   private byte[] data;
@@ -31,22 +41,16 @@ public class DatastoreDataEntry implements ContainerEntry<DatastoreDataEntry> {
 
   @Override
   public LinkedHashMap<String, OakGitResultSet.Column> getAvailableColumnsByName() {
-    LinkedHashMap<String, OakGitResultSet.Column> result = new LinkedHashMap<>();
-    result.put(
-        "ID", new OakGitResultSet.Column("ID", SqlType.VARCHAR.id, 64, Collections.emptyList()));
-    result.put(
-        "DATA", new OakGitResultSet.Column("DATA", SqlType.BLOB.id, 0, Collections.emptyList()));
-    return result;
+    return COLUMNS;
   }
 
   @Override
   public Optional<ColumnGetterResult> entryGetter(String fieldName) {
-    DatastoreDataEntry accessor = this.copy();
     switch (fieldName) {
       case "ID":
-        return Optional.of(new ColumnGetterResult(fieldName, accessor.getId()));
+        return Optional.of(new ColumnGetterResult(fieldName, getId()));
       case "DATA":
-        return Optional.of(new ColumnGetterResult(fieldName, accessor.getData()));
+        return Optional.of(new ColumnGetterResult(fieldName, getData()));
     }
     return Optional.empty();
   }

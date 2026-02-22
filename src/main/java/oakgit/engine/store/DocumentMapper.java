@@ -12,23 +12,24 @@ public final class DocumentMapper {
   public static StorageDocument fromEntry(ContainerEntry<?> entry) {
     return switch (entry) {
       case DocumentEntry e ->
-          new StorageDocument()
-              .setId(e.getId())
-              .setModified(e.getModified())
-              .setModCount(e.getModCount())
-              .setCModCount(e.getCModCount())
-              .setDSize(e.getDSize())
-              .setSdMaxRevTime(e.getSdMaxRevTime())
-              .setHasBinary(e.getHasBinary())
-              .setDeletedOnce(e.getDeletedOnce())
-              .setVersion(e.getVersion())
-              .setSdType(e.getSdType())
-              .setData(cloneBytes(e.getData()))
-              .setBdata(cloneBytes(e.getBdata()));
+          StorageDocument.builder()
+              .id(e.getId())
+              .modified(e.getModified())
+              .modCount(e.getModCount())
+              .cModCount(e.getCModCount())
+              .dSize(e.getDSize())
+              .sdMaxRevTime(e.getSdMaxRevTime())
+              .hasBinary(e.getHasBinary())
+              .deletedOnce(e.getDeletedOnce())
+              .version(e.getVersion())
+              .sdType(e.getSdType())
+              .data(cloneBytes(e.getData()))
+              .bdata(cloneBytes(e.getBdata()))
+              .build();
       case DatastoreDataEntry e ->
-          new StorageDocument().setId(e.getId()).setData(cloneBytes(e.getData()));
+          StorageDocument.builder().id(e.getId()).data(cloneBytes(e.getData())).build();
       case DatastoreMetaEntry e ->
-          new StorageDocument().setId(e.getId()).setLastmod(e.getLastmod()).setLvl(e.getLvl());
+          StorageDocument.builder().id(e.getId()).lastmod(e.getLastmod()).lvl(e.getLvl()).build();
       default ->
           throw new IllegalArgumentException("Unknown entry type: " + entry.getClass().getName());
     };
@@ -39,48 +40,27 @@ public final class DocumentMapper {
     if (type == DocumentEntry.class) {
       return (T)
           new DocumentEntry()
-              .setId(doc.getId())
-              .setModified(doc.getModified())
-              .setModCount(doc.getModCount())
-              .setCModCount(doc.getCModCount())
-              .setDSize(doc.getDSize())
-              .setSdMaxRevTime(doc.getSdMaxRevTime())
-              .setHasBinary(doc.getHasBinary())
-              .setDeletedOnce(doc.getDeletedOnce())
-              .setVersion(doc.getVersion())
-              .setSdType(doc.getSdType())
-              .setData(cloneBytes(doc.getData()))
-              .setBdata(cloneBytes(doc.getBdata()));
+              .setId(doc.id())
+              .setModified(doc.modified())
+              .setModCount(doc.modCount())
+              .setCModCount(doc.cModCount())
+              .setDSize(doc.dSize())
+              .setSdMaxRevTime(doc.sdMaxRevTime())
+              .setHasBinary(doc.hasBinary())
+              .setDeletedOnce(doc.deletedOnce())
+              .setVersion(doc.version())
+              .setSdType(doc.sdType())
+              .setData(cloneBytes(doc.data()))
+              .setBdata(cloneBytes(doc.bdata()));
     }
     if (type == DatastoreDataEntry.class) {
-      return (T) new DatastoreDataEntry().setId(doc.getId()).setData(cloneBytes(doc.getData()));
+      return (T) new DatastoreDataEntry().setId(doc.id()).setData(cloneBytes(doc.data()));
     }
     if (type == DatastoreMetaEntry.class) {
       return (T)
-          new DatastoreMetaEntry()
-              .setId(doc.getId())
-              .setLastmod(doc.getLastmod())
-              .setLvl(doc.getLvl());
+          new DatastoreMetaEntry().setId(doc.id()).setLastmod(doc.lastmod()).setLvl(doc.lvl());
     }
     throw new IllegalArgumentException("Unknown entry type: " + type.getName());
-  }
-
-  public static StorageDocument deepCopy(StorageDocument doc) {
-    return new StorageDocument()
-        .setId(doc.getId())
-        .setModified(doc.getModified())
-        .setModCount(doc.getModCount())
-        .setCModCount(doc.getCModCount())
-        .setDSize(doc.getDSize())
-        .setSdMaxRevTime(doc.getSdMaxRevTime())
-        .setLastmod(doc.getLastmod())
-        .setHasBinary(doc.getHasBinary())
-        .setDeletedOnce(doc.getDeletedOnce())
-        .setVersion(doc.getVersion())
-        .setSdType(doc.getSdType())
-        .setLvl(doc.getLvl())
-        .setData(cloneBytes(doc.getData()))
-        .setBdata(cloneBytes(doc.getBdata()));
   }
 
   private static byte[] cloneBytes(byte[] source) {
