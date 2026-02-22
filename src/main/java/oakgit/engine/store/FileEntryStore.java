@@ -10,7 +10,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +41,7 @@ public class FileEntryStore implements EntryStore {
 
   @Override
   public void createContainer(String name) {
-    containers.putIfAbsent(name, new HashMap<>());
+    containers.putIfAbsent(name, new ConcurrentSkipListMap<>());
     var containerDir = baseDirectory.resolve(name);
     try {
       Files.createDirectories(containerDir);
@@ -81,6 +83,35 @@ public class FileEntryStore implements EntryStore {
       return List.of();
     }
     return List.copyOf(entries.values());
+  }
+
+  @Override
+  public List<StorageDocument> findByIdRange(
+      String container, String idMin, String idMax, int limit) {
+    var entries = containers.get(container);
+    if (entries == null) {
+      return List.of();
+    }
+    if (entries instanceof NavigableMap<String, StorageDocument> sorted) {
+      return sorted.subMap(idMin, false, idMax, false).values().stream().limit(limit).toList();
+    }
+    return EntryStore.super.findByIdRange(container, idMin, idMax, limit);
+  }
+
+  @Override
+  public List<StorageDocument> findByIdRangeAndModified(
+      String container, String idMin, String idMax, long minModified, int limit) {
+    var entries = containers.get(container);
+    if (entries == null) {
+      return List.of();
+    }
+    if (entries instanceof NavigableMap<String, StorageDocument> sorted) {
+      return sorted.subMap(idMin, false, idMax, false).values().stream()
+          .filter(d -> d.modified() != null && d.modified() >= minModified)
+          .limit(limit)
+          .toList();
+    }
+    return EntryStore.super.findByIdRangeAndModified(container, idMin, idMax, minModified, limit);
   }
 
   @Override
@@ -184,7 +215,7 @@ public class FileEntryStore implements EntryStore {
           .forEach(
               containerDir -> {
                 var containerName = containerDir.getFileName().toString();
-                var entries = new HashMap<String, StorageDocument>();
+                var entries = new ConcurrentSkipListMap<String, StorageDocument>();
                 containers.put(containerName, entries);
                 loadContainer(containerDir, entries);
               });

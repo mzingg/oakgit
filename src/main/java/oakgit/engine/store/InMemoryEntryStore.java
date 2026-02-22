@@ -3,7 +3,9 @@ package oakgit.engine.store;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class InMemoryEntryStore implements EntryStore {
 
@@ -11,7 +13,7 @@ public class InMemoryEntryStore implements EntryStore {
 
   @Override
   public void createContainer(String name) {
-    containers.putIfAbsent(name, new HashMap<>());
+    containers.putIfAbsent(name, new ConcurrentSkipListMap<>());
   }
 
   @Override
@@ -46,6 +48,35 @@ public class InMemoryEntryStore implements EntryStore {
       return List.of();
     }
     return List.copyOf(entries.values());
+  }
+
+  @Override
+  public List<StorageDocument> findByIdRange(
+      String container, String idMin, String idMax, int limit) {
+    var entries = containers.get(container);
+    if (entries == null) {
+      return List.of();
+    }
+    if (entries instanceof NavigableMap<String, StorageDocument> sorted) {
+      return sorted.subMap(idMin, false, idMax, false).values().stream().limit(limit).toList();
+    }
+    return EntryStore.super.findByIdRange(container, idMin, idMax, limit);
+  }
+
+  @Override
+  public List<StorageDocument> findByIdRangeAndModified(
+      String container, String idMin, String idMax, long minModified, int limit) {
+    var entries = containers.get(container);
+    if (entries == null) {
+      return List.of();
+    }
+    if (entries instanceof NavigableMap<String, StorageDocument> sorted) {
+      return sorted.subMap(idMin, false, idMax, false).values().stream()
+          .filter(d -> d.modified() != null && d.modified() >= minModified)
+          .limit(limit)
+          .toList();
+    }
+    return EntryStore.super.findByIdRangeAndModified(container, idMin, idMax, minModified, limit);
   }
 
   @Override
