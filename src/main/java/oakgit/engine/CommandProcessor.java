@@ -24,10 +24,15 @@ public final class CommandProcessor implements AutoCloseable {
   private static final Logger LOG = LoggerFactory.getLogger(CommandProcessor.class);
 
   private final EntryStore store;
+  private final CommandFactory commandFactory = new CommandFactory();
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
   public CommandProcessor(EntryStore store) {
     this.store = store;
+  }
+
+  public CommandFactory getCommandFactory() {
+    return commandFactory;
   }
 
   @Override

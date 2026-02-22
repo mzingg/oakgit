@@ -108,7 +108,7 @@ class MultipleEntriesResultTest {
   }
 
   @UnitTest
-  void toResultSetWithNonEmptyFoundEntriesCallsTypeModifierAndGetFoundEntriesAndResultModifier() {
+  void toResultSetWithNonEmptyFoundEntriesCallsTypeModifierAndEntryGetterPerField() {
     DocumentEntry emptyType = spy(new DocumentEntry());
     List<String> resultFieldList = Collections.emptyList();
     DocumentEntry aFoundEntry = spy(new DocumentEntry().setId(UUID.randomUUID().toString()));
@@ -123,7 +123,8 @@ class MultipleEntriesResultTest {
     verify(emptyType, times(1)).getResultSetTypeModifier(eq(resultFieldList));
     verify(testObj, times(1)).wasSuccessfull();
     verify(testObj, times(1)).getFoundEntries();
-    verify(aFoundEntry, times(1)).getResultSetModifier(eq(resultFieldList));
+    // With inlined iteration, entryGetter is called once per column (12 columns for DocumentEntry)
+    verify(aFoundEntry, atLeastOnce()).entryGetter(anyString());
   }
 
   @UnitTest

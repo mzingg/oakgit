@@ -27,9 +27,21 @@ public class MultipleEntriesResult<T extends ContainerEntry<T>>
     List<String> fieldList = getResultFieldList();
     emptyType.getResultSetTypeModifier(fieldList).accept(result);
     if (wasSuccessfull()) {
-      getFoundEntries().stream()
-          .filter(ContainerEntry::isValidAndNotEmpty)
-          .forEach(e -> e.getResultSetModifier(fieldList).accept(result));
+      List<String> fields = emptyType.expandOrReturnFieldList(fieldList);
+      for (T entry : getFoundEntries()) {
+        if (ContainerEntry.isValidAndNotEmpty(entry)) {
+          for (String fieldName : fields) {
+            ContainerEntry.ColumnGetterResult getter =
+                entry
+                    .entryGetter(fieldName)
+                    .orElseThrow(
+                        () ->
+                            new IllegalStateException(
+                                "could not assign entry to fieldName: " + fieldName));
+            result.addValue(getter.getFieldName(), getter.getValue());
+          }
+        }
+      }
     }
 
     return result;

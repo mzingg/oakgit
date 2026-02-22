@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-import oakgit.engine.CommandFactory;
 import oakgit.engine.CommandProcessor;
 import oakgit.engine.store.FileEntryStore;
 
@@ -36,7 +35,7 @@ public class OakGitDriver implements Driver {
           PROCESSORS.computeIfAbsent(
               configuration.getUrl(),
               k -> new CommandProcessor(new FileEntryStore(configuration.getGitDirectory())));
-      return new OakGitConnection(configuration, processor, new CommandFactory());
+      return new OakGitConnection(configuration, processor, processor.getCommandFactory());
     }
 
     throw new SQLException("Invalid connection url");

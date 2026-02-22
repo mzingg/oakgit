@@ -46,12 +46,12 @@ public class OakGitResultSet extends UnsupportedResultSet {
   }
 
   public OakGitResultSet addValue(String columnName, Object value) {
-    Optional<Integer> internalIndex = getInternalColumnIndexForColumnName(columnName);
-    if (internalIndex.isEmpty()) {
-      throw new IllegalArgumentException("column does not exist");
+    Integer idx = columnIndex.get(columnName);
+    if (idx == null) {
+      throw new IllegalArgumentException("column does not exist: " + columnName);
     }
-    columns.get(internalIndex.get()).entries.add(value);
-    int entryCount = columns.get(internalIndex.get()).entries.size();
+    columns.get(idx).entries.add(value);
+    int entryCount = columns.get(idx).entries.size();
     if (entryCount > maxEntries) {
       maxEntries = entryCount;
     }

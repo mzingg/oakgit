@@ -99,26 +99,42 @@ public class OakDatabaseDriverSandboxTest {
 
     @SandboxTest
     void canSaveAndReadJcrProperties() throws Exception {
+      long t0 = System.nanoTime();
       System.setProperty("derby.stream.error.field", "oakgit.util.TestHelpers.DERBY_DEV_NULL");
       DataSource dataSource =
           RDBDataSourceFactory.forJdbcUrl(
               "jdbc:derby:memory:derby-oak-connection-test;create=true", "SA", "");
 
+      long t1 = System.nanoTime();
       DocumentNodeStore store =
           aNewNodeStore(dataSource, RDBDocumentStoreDB.DERBY, RDBBlobStoreDB.DERBY);
+      long t2 = System.nanoTime();
       Repository contentRepository =
           new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
       Session session =
           contentRepository.login(
               new SimpleCredentials("admin", "admin".toCharArray()), Oak.DEFAULT_WORKSPACE_NAME);
+      long t3 = System.nanoTime();
       Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
       hello.setProperty("velo", "velo");
       session.save();
+      long t4 = System.nanoTime();
 
       Node actual = session.getNode("/jcr:system/hello");
       assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
       assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
+      long t5 = System.nanoTime();
       store.dispose();
+      long t6 = System.nanoTime();
+      System.err.printf(
+          "[TIMING] DerbyTests | storeInit=%dms repo+login=%dms save=%dms read=%dms dispose=%dms"
+              + " total=%dms%n",
+          (t2 - t1) / 1_000_000,
+          (t3 - t2) / 1_000_000,
+          (t4 - t3) / 1_000_000,
+          (t5 - t4) / 1_000_000,
+          (t6 - t5) / 1_000_000,
+          (t6 - t0) / 1_000_000);
     }
   }
 
@@ -127,26 +143,42 @@ public class OakDatabaseDriverSandboxTest {
 
     @SandboxTest
     void canSaveAndReadJcrProperties() throws Exception {
+      long t0 = System.nanoTime();
       Path gitDirectory = TestHelpers.aCleanTestDirectory("oak-connection-test");
       Git.init().setDirectory(gitDirectory.toFile()).call();
       String jdbcUrl = "jdbc:oakgit://" + gitDirectory.toAbsolutePath();
       OakGitDriver.resetProcessor(jdbcUrl);
       DataSource dataSource = RDBDataSourceFactory.forJdbcUrl(jdbcUrl, "", "");
 
+      long t1 = System.nanoTime();
       DocumentNodeStore store =
           aNewNodeStore(dataSource, RDBDocumentStoreDB.DEFAULT, RDBBlobStoreDB.DEFAULT);
+      long t2 = System.nanoTime();
       Repository contentRepository =
           new Jcr(new Oak(store).with(new OpenSecurityProvider())).createRepository();
       Session session =
           contentRepository.login(new SimpleCredentials("admin", "admin".toCharArray()));
+      long t3 = System.nanoTime();
       Node hello = session.getRootNode().getNode("jcr:system").addNode("hello", "nt:unstructured");
       hello.setProperty("velo", "velo");
       session.save();
+      long t4 = System.nanoTime();
 
       Node actual = session.getNode("/jcr:system/hello");
       assertThat(actual.getProperty("velo").getString()).isEqualTo("velo");
       assertThat(actual.getPrimaryNodeType().getName()).isEqualTo("nt:unstructured");
+      long t5 = System.nanoTime();
       store.dispose();
+      long t6 = System.nanoTime();
+      System.err.printf(
+          "[TIMING] OakGitTests | storeInit=%dms repo+login=%dms save=%dms read=%dms dispose=%dms"
+              + " total=%dms%n",
+          (t2 - t1) / 1_000_000,
+          (t3 - t2) / 1_000_000,
+          (t4 - t3) / 1_000_000,
+          (t5 - t4) / 1_000_000,
+          (t6 - t5) / 1_000_000,
+          (t6 - t0) / 1_000_000);
     }
 
     @SandboxTest

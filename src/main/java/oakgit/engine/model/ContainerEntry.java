@@ -1,6 +1,5 @@
 package oakgit.engine.model;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 import lombok.Data;
@@ -11,22 +10,25 @@ public interface ContainerEntry<T extends ContainerEntry<T>> {
 
   /**
    * Returns an instance of an empty container typed to the given class. Always returns a new object
-   * instance. Calls the ctor(String) of the given type class. Use {@link
-   * ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is empty.
+   * instance. Use {@link ContainerEntry#isEmpty(ContainerEntry)} to test if a given object is
+   * empty.
    *
    * @param entryClass
    * @param <T>
    * @return ContainerEntry
    */
+  @SuppressWarnings("unchecked")
   static <T extends ContainerEntry<T>> T emptyOf(Class<T> entryClass) {
-    try {
-      return entryClass.getConstructor().newInstance();
-    } catch (InstantiationException
-        | IllegalAccessException
-        | NoSuchMethodException
-        | InvocationTargetException e) {
-      throw new IllegalArgumentException("no empty ctor found for ContainerEntry implementation");
+    if (entryClass == DocumentEntry.class) {
+      return (T) new DocumentEntry();
     }
+    if (entryClass == DatastoreDataEntry.class) {
+      return (T) new DatastoreDataEntry();
+    }
+    if (entryClass == DatastoreMetaEntry.class) {
+      return (T) new DatastoreMetaEntry();
+    }
+    throw new IllegalArgumentException("Unknown ContainerEntry type: " + entryClass.getName());
   }
 
   /**

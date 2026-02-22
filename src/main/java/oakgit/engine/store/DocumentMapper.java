@@ -37,6 +37,8 @@ public final class DocumentMapper {
 
   @SuppressWarnings("unchecked")
   public static <T extends ContainerEntry<T>> T toEntry(StorageDocument doc, Class<T> type) {
+    // No byte[] cloning on read path — StorageDocument is an immutable record,
+    // and OAK deserializes bytes into its own objects without mutating the source.
     if (type == DocumentEntry.class) {
       return (T)
           new DocumentEntry()
@@ -50,11 +52,11 @@ public final class DocumentMapper {
               .setDeletedOnce(doc.deletedOnce())
               .setVersion(doc.version())
               .setSdType(doc.sdType())
-              .setData(cloneBytes(doc.data()))
-              .setBdata(cloneBytes(doc.bdata()));
+              .setData(doc.data())
+              .setBdata(doc.bdata());
     }
     if (type == DatastoreDataEntry.class) {
-      return (T) new DatastoreDataEntry().setId(doc.id()).setData(cloneBytes(doc.data()));
+      return (T) new DatastoreDataEntry().setId(doc.id()).setData(doc.data());
     }
     if (type == DatastoreMetaEntry.class) {
       return (T)
