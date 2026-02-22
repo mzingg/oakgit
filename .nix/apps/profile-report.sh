@@ -67,7 +67,7 @@ cmd_hotmethods() {
   echo -e "${BOLD}${CYAN}Top 50 Hot Methods: $jfr${NC}"
   echo ""
   jfr print --events jdk.ExecutionSample --stack-depth 1 "$jfr" \
-    | grep -oP '(?<=at ).*(?=\()' \
+    | sed -nE 's/.*at (.*)\(.*/\1/p' \
     | sort | uniq -c | sort -rn | head -50
 }
 
@@ -77,7 +77,7 @@ cmd_alloc() {
   echo -e "${BOLD}${CYAN}Top 50 Allocation Sites: $jfr${NC}"
   echo ""
   jfr print --events jdk.ObjectAllocationSample --stack-depth 1 "$jfr" \
-    | grep -oP '(?<=at ).*(?=\()' \
+    | sed -nE 's/.*at (.*)\(.*/\1/p' \
     | sort | uniq -c | sort -rn | head -50
 }
 
