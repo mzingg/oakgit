@@ -14,10 +14,30 @@ AEM_JAR="aem-quickstart.jar"
 echo -e "${BOLD}${CYAN}Building project...${NC}"
 mvn -f "$PROJECT_ROOT/pom.xml" package -DskipTests -q
 
+# --- Stop running AEM instance ---
+CQ_PID_FILE="$AEM_ROOT/crx-quickstart/conf/cq.pid"
+if [[ -f "$AEM_ROOT/crx-quickstart/bin/stop" ]]; then
+  echo -e "${BOLD}${CYAN}Stopping AEM...${NC}"
+  "$AEM_ROOT/crx-quickstart/bin/stop" || true
+  PID=$(cat "$CQ_PID_FILE" 2>/dev/null || true)
+  if [[ -n "$PID" ]] && kill -0 "$PID" 2>/dev/null; then
+    echo "Waiting 10s for process $PID to exit..."
+    for i in $(seq 1 10); do
+      sleep 1
+      if ! kill -0 "$PID" 2>/dev/null; then
+        break
+      fi
+    done
+    if kill -0 "$PID" 2>/dev/null; then
+      echo "Force-killing process $PID"
+      kill -9 "$PID" || true
+    fi
+  fi
+fi
+
 # --- Clean previous installation ---
 echo -e "${BOLD}${CYAN}Cleaning previous AEM installation...${NC}"
-rm -rf "$AEM_ROOT/crx-quickstart"
-rm -f "$AEM_ROOT/$AEM_JAR"
+rm -rf "$AEM_ROOT"
 mkdir -p "$AEM_ROOT"
 
 # --- Find SDK zip ---
