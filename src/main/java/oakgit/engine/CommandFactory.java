@@ -38,6 +38,8 @@ public class CommandFactory {
     DEFAULT_ANALYZERS.add(new SelectDatastoreMetaByLastmodAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByRangeAndModifiedAnalyzer());
     DEFAULT_ANALYZERS.add(new SelectByDeletedOnceAndModifiedRangeAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectBySdtypeAnalyzer());
+    DEFAULT_ANALYZERS.add(new SelectByVersionUpgradeAnalyzer());
   }
 
   private List<QueryAnalyzer> analyzers;

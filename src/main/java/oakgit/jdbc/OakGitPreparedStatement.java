@@ -103,6 +103,16 @@ public class OakGitPreparedStatement extends UnsupportedPreparedStatement {
   }
 
   @Override
+  public void setInt(int parameterIndex, int x) {
+    placeholderData.set(parameterIndex, x);
+  }
+
+  @Override
+  public void setNull(int parameterIndex, int sqlType) {
+    placeholderData.set(parameterIndex, null);
+  }
+
+  @Override
   public void setString(int parameterIndex, String x) {
     placeholderData.set(parameterIndex, x);
   }

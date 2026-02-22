@@ -73,6 +73,8 @@ public class PlaceholderData {
         return Optional.of((T) element);
       } else if (targetClass.equals(Long.class) && element instanceof Integer) {
         return Optional.of((T) Long.valueOf(((Integer) element).longValue()));
+      } else if (targetClass.equals(Integer.class) && element instanceof Long longVal) {
+        return Optional.of((T) Integer.valueOf(longVal.intValue()));
       } else {
         throw new IllegalArgumentException(
             "Element [" + element + "] with index [" + index + "] is not of type " + targetClass);

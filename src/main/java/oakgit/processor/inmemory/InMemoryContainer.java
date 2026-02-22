@@ -127,6 +127,34 @@ public class InMemoryContainer {
         .toList();
   }
 
+  public List<DocumentEntry> findByVersionUpgrade(List<String> excludedIdPatterns, int maxVersion) {
+    return entries.values().stream()
+        .filter(DocumentEntry.class::isInstance)
+        .map(DocumentEntry.class::cast)
+        .filter(e -> e.getVersion() == null || e.getVersion() < maxVersion)
+        .filter(
+            e -> excludedIdPatterns.stream().noneMatch(pattern -> sqlLikeMatch(e.getId(), pattern)))
+        .map(DocumentEntry::copy)
+        .toList();
+  }
+
+  private static boolean sqlLikeMatch(String value, String likePattern) {
+    String regex = likePattern.replace("%", ".*").replace("_", ".");
+    return value.matches(regex);
+  }
+
+  public List<DocumentEntry> findBySdtypeAndSdMaxRevTimeAndVersion(
+      List<Integer> sdTypes, long sdMaxRevTime, int minVersion) {
+    return entries.values().stream()
+        .filter(DocumentEntry.class::isInstance)
+        .map(DocumentEntry.class::cast)
+        .filter(e -> e.getSdType() != null && sdTypes.contains(e.getSdType()))
+        .filter(e -> e.getSdMaxRevTime() != null && e.getSdMaxRevTime() <= sdMaxRevTime)
+        .filter(e -> e.getVersion() != null && e.getVersion() >= minVersion)
+        .map(DocumentEntry::copy)
+        .toList();
+  }
+
   @SuppressWarnings("unchecked")
   public <T extends ContainerEntry<T>> List<T> findByIdRangeAndModified(
       String idMin, String idMax, long minModified, Class<T> resultType, int limit) {

@@ -322,6 +322,28 @@
       "priority": "P1"
     },
     {
+      "id": "select-by-version-upgrade",
+      "operation": "SELECT",
+      "description": "Version upgrade scan: find documents with outdated or null VERSION, excluding system paths",
+      "sqlTemplate": "select {columns} from {T} where not (ID like ? or ID like ? ...) and (VERSION is null or VERSION < ?)",
+      "exampleSql": "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where not (ID like ? or ID like ? or ID like ?) and (VERSION is null or VERSION < ?)",
+      "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
+      "expectedAnalyzer": "SelectByVersionUpgradeAnalyzer",
+      "implemented": true,
+      "priority": "P2"
+    },
+    {
+      "id": "select-by-sdtype-and-sdmaxrevtime",
+      "operation": "SELECT",
+      "description": "Revision GC: find split documents by SDTYPE, SDMAXREVTIME, and VERSION",
+      "sqlTemplate": "select {columns} from {T} where SDTYPE in (?,?,...) and SDMAXREVTIME <= ? and VERSION >= ?",
+      "exampleSql": "select ID, MODIFIED, MODCOUNT, CMODCOUNT, HASBINARY, DELETEDONCE, VERSION, SDTYPE, SDMAXREVTIME, DATA, BDATA from NODES where SDTYPE in (?, ?, ?)  and SDMAXREVTIME <= ? and VERSION >= ?",
+      "tables": ["NODES", "CLUSTERNODES", "JOURNAL", "SETTINGS"],
+      "expectedAnalyzer": "SelectBySdtypeAnalyzer",
+      "implemented": true,
+      "priority": "P2"
+    },
+    {
       "id": "create-index-modified",
       "operation": "CREATE_INDEX",
       "description": "Create index on MODIFIED column",

@@ -33,7 +33,7 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
   public CommandResult execute(Command command) {
 
     if (command instanceof ErrorCommand errorCommand) {
-      LOG.warn("Unrecognized SQL: {}", errorCommand.getErrorMessage());
+      LOG.error("Unrecognized SQL: {}", errorCommand.getErrorMessage());
       return NO_RESULT;
     }
 
@@ -43,6 +43,44 @@ public final class InMemoryCommandProcessor implements CommandProcessor {
 
     if (command instanceof SelectMinModifiedCommand) {
       return EMPTY_QUERY_RESULT;
+    }
+
+    if (command instanceof SelectBySdtypeCommand selectSdtypeCmd) {
+      lock.readLock().lock();
+      try {
+        Optional<InMemoryContainer> container = getContainer(selectSdtypeCmd.getContainerName());
+        if (container.isPresent()) {
+          List<DocumentEntry> found =
+              container
+                  .get()
+                  .findBySdtypeAndSdMaxRevTimeAndVersion(
+                      selectSdtypeCmd.getSdTypes(),
+                      selectSdtypeCmd.getSdMaxRevTime(),
+                      selectSdtypeCmd.getMinVersion());
+          return selectSdtypeCmd.buildResult(found);
+        }
+        return selectSdtypeCmd.buildResult(List.of());
+      } finally {
+        lock.readLock().unlock();
+      }
+    }
+
+    if (command instanceof SelectByVersionUpgradeCommand versionUpgradeCmd) {
+      lock.readLock().lock();
+      try {
+        Optional<InMemoryContainer> container = getContainer(versionUpgradeCmd.getContainerName());
+        if (container.isPresent()) {
+          List<DocumentEntry> found =
+              container
+                  .get()
+                  .findByVersionUpgrade(
+                      versionUpgradeCmd.getExcludedIdPatterns(), versionUpgradeCmd.getMaxVersion());
+          return versionUpgradeCmd.buildResult(found);
+        }
+        return versionUpgradeCmd.buildResult(List.of());
+      } finally {
+        lock.readLock().unlock();
+      }
     }
 
     if (command instanceof SelectByDeletedOnceAndModifiedRangeCommand selectCmd) {
