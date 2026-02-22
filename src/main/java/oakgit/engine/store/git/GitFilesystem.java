@@ -1,4 +1,4 @@
-package oakgit.processor.git;
+package oakgit.engine.store.git;
 
 import java.io.IOException;
 import java.nio.file.Files;

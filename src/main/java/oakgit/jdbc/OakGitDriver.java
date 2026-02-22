@@ -6,13 +6,14 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import oakgit.engine.CommandFactory;
-import oakgit.processor.inmemory.InMemoryCommandProcessor;
+import oakgit.engine.CommandProcessor;
+import oakgit.engine.store.InMemoryEntryStore;
 
 public class OakGitDriver implements Driver {
 
   private static final String DEFAULT_VERSION = "0.1.0";
   private static final String ARTIFACT_ID = "oakgit-persistence";
-  private static final ConcurrentHashMap<String, InMemoryCommandProcessor> PROCESSORS =
+  private static final ConcurrentHashMap<String, CommandProcessor> PROCESSORS =
       new ConcurrentHashMap<>();
   private static final DriverVersion VERSION =
       DriverVersion.parse(
@@ -31,8 +32,9 @@ public class OakGitDriver implements Driver {
     OakGitDriverConfiguration configuration =
         OakGitDriverConfiguration.fromUrl(url, VERSION, ARTIFACT_ID);
     if (configuration != OakGitDriverConfiguration.INVALID_CONFIGURATION) {
-      InMemoryCommandProcessor processor =
-          PROCESSORS.computeIfAbsent(configuration.getUrl(), k -> new InMemoryCommandProcessor());
+      CommandProcessor processor =
+          PROCESSORS.computeIfAbsent(
+              configuration.getUrl(), k -> new CommandProcessor(new InMemoryEntryStore()));
       return new OakGitConnection(configuration, processor, new CommandFactory());
     }
 

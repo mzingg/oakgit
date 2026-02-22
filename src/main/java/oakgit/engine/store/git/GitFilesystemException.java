@@ -1,4 +1,4 @@
-package oakgit.processor.git;
+package oakgit.engine.store.git;
 
 public class GitFilesystemException extends Exception {
 
